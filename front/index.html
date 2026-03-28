@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benaluma - Mapa de Viajes</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="estilos/index.css">
+</head>
+
+<body>
+
+    <div id="mensaje-central">🗺️ Toca el mapa para publicar tu punto de salida</div>
+
+    <div class="top-nav" id="menu-usuario">
+    </div>
+
+    <div id="panel-publicar" style="display: none;">
+        <h3>Publicar Viaje 🚗</h3>
+        <input type="hidden" id="form-lat">
+        <input type="hidden" id="form-lng">
+
+        <label>Punto de Salida (Calle/Zona):</label>
+        <input type="text" id="form-origen" placeholder="Ej: Calle Real, Arroyo">
+
+        <label>Destino:</label>
+        <input type="text" id="form-destino" placeholder="Ej: Teatinos UMA">
+
+        <label>Fecha y Hora:</label>
+        <input type="datetime-local" id="form-fecha">
+
+        <div style="display:flex; gap:10px;">
+            <div style="flex:1">
+                <label>Plazas:</label>
+                <input type="number" id="form-plazas" value="3" min="1">
+            </div>
+            <div style="flex:1">
+                <label>Precio (€):</label>
+                <input type="number" id="form-precio" value="1.50" step="0.5">
+            </div>
+        </div>
+
+        <button onclick="enviarViajeAlBack()" class="btn btn-primario" style="width:100%; margin-top:15px;">Confirmar y
+            Aparecer en Lista</button>
+        <button onclick="cancelarPublicacion()" class="btn btn-secundario"
+            style="width:100%; margin-top:5px;">Cancelar</button>
+    </div>
+
+    <div id="lista-viajes-contenedor">
+        <h3>Viajes Disponibles 📍</h3>
+        <div id="lista-viajes">
+            <p style="color: #666; font-size: 14px;">Buscando viajes...</p>
+        </div>
+    </div>
+
+    <div id="miMapa"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="jscode/index.js"></script>
+</body>
+
+</html>

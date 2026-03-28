@@ -1,0 +1,124 @@
+/* --- Estilos base de la página --- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f3f4f6; /* El mismo fondo gris elegante */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* min-height en vez de height para que no se corte en móviles */
+    margin: 0;
+    padding: 20px; /* Un poco de aire a los lados */
+    box-sizing: border-box;
+}
+
+/* --- La tarjeta blanca central --- */
+.contenedor {
+    background-color: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 420px; /* Un pelín más ancho para que quepan bien los textos de error */
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* --- Textos --- */
+h1 {
+    margin-top: 0;
+    color: #1f2937;
+    font-size: 26px;
+}
+
+p {
+    color: #6b7280;
+    margin-bottom: 25px;
+    font-size: 15px;
+}
+
+/* --- Agrupación de los inputs --- */
+.grupo-input {
+    margin-bottom: 12px; /* Un poco más juntos para que el formulario no sea kilométrico */
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+}
+
+/* --- Las cajas de texto (Inputs) --- */
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2); 
+}
+
+/* --- El botón principal --- */
+button {
+    width: 100%;
+    padding: 14px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 15px;
+}
+
+button:hover {
+    background-color: #1d4ed8;
+}
+
+/* --- Enlaces inferiores --- */
+.enlace-login {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.enlace-login a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.enlace-login a:hover {
+    color: #1e40af;
+    text-decoration: underline;
+}
+
+/* =========================================
+   ESTILOS PARA LOS ERRORES DE VALIDACIÓN 
+   ========================================= */
+.error-texto {
+    color: #dc2626; /* Rojo intenso */
+    font-size: 13px;
+    margin-top: 4px;
+    display: block;
+    min-height: 18px; /* Ocupa espacio invisible para que no de saltos al aparecer el texto */
+    font-weight: 500;
+}
+
+.input-error {
+    border-color: #dc2626 !important;
+    background-color: #fef2f2 !important; /* Fondo rojizo muy clarito */
+    box-shadow: none !important;
+}

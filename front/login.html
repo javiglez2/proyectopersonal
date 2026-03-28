@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Benaluma</title>
+    <link rel="stylesheet" href="estilos/login.css"> 
+</head>
+<body>
+    <div class="contenedor">
+        <h1>Bienvenido de nuevo 👋</h1>
+        <p>Inicia sesión para buscar o publicar viajes</p>
+        
+        <form id="loginForm">
+            <div class="grupo-input">
+                <label for="emailLogin">Tu correo electrónico</label>
+                <input type="email" id="emailLogin" required placeholder="tuemail@ejemplo.com">
+            </div>
+
+            <div class="grupo-input">
+                <label for="contrasenaLogin">Contraseña</label>
+                <input type="password" id="contrasenaLogin" required placeholder="Tu contraseña">
+            </div>
+
+            <button type="submit">Entrar</button>
+        </form>
+        
+        <p class="enlace-inferior">
+            ¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a>
+        </p>
+    </div>
+    <script src="jscode/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f3f4f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.contenedor {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.grupo-input { margin-bottom: 20px; text-align: left; }
+label { display: block; margin-bottom: 8px; font-weight: 600; color: #374151; }
+input { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; box-sizing: border-box; }
+input:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.2); }
+
+button {
+    width: 100%; padding: 14px; background: #2563eb; color: white;
+    border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+}
+
+.enlace-inferior { margin-top: 20px; font-size: 14px; color: #6b7280; }
+.enlace-inferior a { color: #2563eb; text-decoration: none; font-weight: bold; }
+
+/* Solo para registro.css añade esto: */
+.error-texto { color: #dc2626; font-size: 12px; margin-top: 4px; display: block; min-height: 15px; }
+.input-error { border-color: #dc2626 !important; background: #fef2f2; }

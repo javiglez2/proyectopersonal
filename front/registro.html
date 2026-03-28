@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Benaluma</title>
+    <link rel="stylesheet" href="estilos/registro.css">
+</head>
+<body>
+    <div class="contenedor">
+        <h1>Únete a Benaluma 🚗</h1>
+        <p>Encuentra tu viaje a la universidad</p>
+        
+        <form id="registroForm">
+            <div class="grupo-input">
+                <label for="nombre">Nombre completo</label>
+                <input type="text" id="nombre" required placeholder="Ej. Javier G.">
+                <span class="error-texto" id="error-nombre"></span>
+            </div>
+
+            <div class="grupo-input">
+                <label for="telefono">Teléfono</label>
+                <input type="tel" id="telefono" required placeholder="Ej. 600123456">
+                <span class="error-texto" id="error-telefono"></span>
+            </div>
+
+            <div class="grupo-input">
+                <label for="email">Correo electrónico</label>
+                <input type="email" id="email" required placeholder="tuemail@ejemplo.com">
+                <span class="error-texto" id="error-email"></span>
+            </div>
+
+            <div class="grupo-input">
+                <label for="contrasena">Contraseña</label>
+                <input type="password" id="contrasena" required placeholder="8-12 letras, 1 Mayúscula, 1 Número">
+                <span class="error-texto" id="error-contrasena"></span>
+            </div>
+
+            <button type="submit" id="btnRegistro">Registrarme</button>
+        </form>
+
+        <p class="enlace-inferior">
+            ¿Ya tienes cuenta? <a href="login.html">Inicia sesión aquí</a>
+        </p>
+    </div>
+    <script src="jscode/registro.js"></script>
+</body>
+</html>
