@@ -44,7 +44,7 @@ async function enviarViajeAlBack() {
         latitud: parseFloat(document.getElementById('form-lat').value),
         longitud: parseFloat(document.getElementById('form-lng').value)
     };
-    const res = await fetch('http://localhost:3000/api/crear-viaje', {
+    const res = await fetch('https://proyectopersonal-0xcu.onrender.com', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(viaje)
     });
     if (res.ok) location.reload();
@@ -54,7 +54,7 @@ async function enviarViajeAlBack() {
 async function cargarViajes() {
     const lista = document.getElementById('lista-viajes');
     try {
-        const res = await fetch('http://localhost:3000/api/viajes');
+        const res = await fetch('https://proyectopersonal-0xcu.onrender.com');
         const viajes = await res.json();
         lista.innerHTML = '';
         // Dentro de jscode/index.js -> cargarViajes()
