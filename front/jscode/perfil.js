@@ -12,7 +12,7 @@ if (!usuarioID) {
 // --- CARGA DE DATOS ---
 async function cargarDatosPerfil() {
     try {
-        const res = await fetch(`http://localhost:3000/api/usuarios/${usuarioID}`);
+        const res = await fetch(`https://proyectopersonal-0xcu.onrender.com/api/usuarios/${usuarioID}`);
         const usuario = await res.json();
         
         if (res.ok) {
@@ -79,7 +79,7 @@ async function guardarPerfil() {
     btn.disabled = true;
 
     try {
-        const res = await fetch(`http://localhost:3000/api/usuarios/${usuarioID}`, {
+        const res = await fetch(`https://proyectopersonal-0xcu.onrender.com/api/usuarios/${usuarioID}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nombre: nuevoNombre, telefono: nuevoTelefono })
@@ -131,7 +131,7 @@ async function subirFoto(input) {
     formData.append('avatar', archivo);
 
     try {
-        const res = await fetch(`http://localhost:3000/api/usuarios/${usuarioID}/upload-avatar`, {
+        const res = await fetch(`https://proyectopersonal-0xcu.onrender.com/api/usuarios/${usuarioID}/upload-avatar`, {
             method: 'POST',
             body: formData
         });

@@ -27,7 +27,7 @@ async function inicializarMenu() {
 
         try {
             // Intentamos traer los datos actualizados (por si cambió la foto)
-            const res = await fetch(`http://localhost:3000/api/usuarios/${usuarioID}`);
+            const res = await fetch(`https://proyectopersonal-0xcu.onrender.com/api/usuarios/${usuarioID}`);
             const usuario = await res.json();
             if (res.ok && usuario.avatar_url) {
                 fotoUrl = usuario.avatar_url; // Si tiene foto real, la usamos
@@ -112,7 +112,7 @@ async function enviarViajeAlBack() {
         longitud: parseFloat(document.getElementById('form-lng').value)
     };
 
-    const res = await fetch('http://localhost:3000/api/crear-viaje', {
+    const res = await fetch('http:/https://proyectopersonal-0xcu.onrender.com/localhost:3000/api/crear-viaje', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(viaje)
@@ -133,7 +133,7 @@ async function cargarViajes() {
     if (!lista) return;
 
     try {
-        const res = await fetch('http://localhost:3000/api/viajes');
+        const res = await fetch('https://proyectopersonal-0xcu.onrender.com/api/viajes');
         const viajes = await res.json();
 
         lista.innerHTML = '';
@@ -202,7 +202,7 @@ async function unirseViaje(idViaje, evento, botonElemento) {
     botonElemento.innerText = 'Uniéndose...';
 
     try {
-        const res = await fetch('http://localhost:3000/api/reservar', {
+        const res = await fetch('http://https://proyectopersonal-0xcu.onrender.comlocalhost:3000/api/reservar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id_viaje: idViaje, id_pasajero: usuarioID })
@@ -235,7 +235,7 @@ async function cargarMisViajes() {
     const divUnidos = document.getElementById('lista-unidos');
 
     try {
-        const res = await fetch(`http://localhost:3000/api/mis-viajes/${usuarioID}`);
+        const res = await fetch(`https://proyectopersonal-0xcu.onrender.com/api/mis-viajes/${usuarioID}`);
         const viajes = await res.json();
 
         divCreados.innerHTML = '';
@@ -332,7 +332,7 @@ let intervaloChat = null;
 async function cargarMensajes() {
     if (!chatViajeActual) return;
     try {
-        const res = await fetch(`http://localhost:3000/api/mensajes/${chatViajeActual}`);
+        const res = await fetch(`https://proyectopersonal-0xcu.onrender.com/api/mensajes/${chatViajeActual}`);
         const mensajes = await res.json();
         const contenedor = document.getElementById('chat-mensajes');
         const estabaAbajo = contenedor.scrollHeight - contenedor.scrollTop <= contenedor.clientHeight + 50;
@@ -390,7 +390,7 @@ async function enviarMensaje() {
     const texto = input.value.trim();
     if (!texto || !chatViajeActual) return;
     input.value = '';
-    await fetch('http://localhost:3000/api/mensajes', {
+    await fetch('https://proyectopersonal-0xcu.onrender.com/api/mensajes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id_viaje: chatViajeActual, id_usuario: usuarioID, mensaje: texto })
