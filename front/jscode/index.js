@@ -410,3 +410,6 @@ inicializarMenu();
 cargarViajes();
 if (usuarioID) cargarMisViajes();
 hacerArrastrable(document.getElementById("lista-viajes-contenedor"));
+
+// Añade esto al final de tu archivo index.js
+hacerArrastrable(document.getElementById("panel-publicar"), document.getElementById("cabecera-publicar"));

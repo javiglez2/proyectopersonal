@@ -211,3 +211,19 @@ header h1 {
 
     header h1 { font-size: 18px; }
 }
+
+.tarjeta-flotante {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    border: 1px solid #e5e7eb;
+    transition: opacity 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    #panel-publicar {
+        width: 100% !important;
+        right: 0 !important;
+        top: auto !important;
+        bottom: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+    }
+}
