@@ -19,9 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Inicializar el mapa (Estilo Voyager - Término medio)
     mapa = L.map('miMapa').setView([36.65, -4.50], 13);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© OpenStreetMap contributors © CARTO'
+        attribution: '© OpenStreetMap contributors © CARTO'
     }).addTo(mapa);
-    
+
     setTimeout(() => { mapa.invalidateSize(); }, 500);
 
     // 2. Publicar al hacer clic
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('nombre-usuario-menu').innerText = nombreUsuario;
         fetch(`${URL_BACKEND}/api/usuarios/${usuarioID}`)
             .then(r => r.json())
-            .then(u => { if(u.avatar_url) document.getElementById('avatar-menu').src = u.avatar_url; });
+            .then(u => { if (u.avatar_url) document.getElementById('avatar-menu').src = u.avatar_url; });
     }
 
     // 4. Calendario Flatpickr
@@ -64,7 +64,7 @@ function togglePanel(idPanel) {
     const panel = document.getElementById(idPanel);
     if (panel.style.display === 'none') {
         panel.style.display = 'block';
-        if(idPanel === 'panel-mis-viajes') {
+        if (idPanel === 'panel-mis-viajes') {
             if (window.innerWidth > 768) panel.style.width = '700px';
             cargarMisViajes();
         }
@@ -77,7 +77,7 @@ function toggleDropdown() {
     document.getElementById("myDropdown").classList.toggle("show");
 }
 
-window.onclick = function(event) {
+window.onclick = function (event) {
     if (!event.target.matches('#avatar-menu')) {
         const dropdown = document.getElementById("myDropdown");
         if (dropdown && dropdown.classList.contains('show')) dropdown.classList.remove('show');
@@ -106,7 +106,7 @@ async function cargarViajes() {
 
         viajes.forEach(v => {
             L.marker([v.latitud, v.longitud], { icon: iconoCoche }).addTo(mapa)
-             .bindPopup(`<b>${v.usuarios?.nombre || 'Conductor'}</b> va a <b>${v.destino}</b>`);
+                .bindPopup(`<b>${v.usuarios?.nombre || 'Conductor'}</b> va a <b>${v.destino}</b>`);
 
             const yaUnido = v.reservas?.some(r => r.id_pasajero === usuarioID);
             const esConductor = v.id_conductor === usuarioID;
@@ -135,13 +135,13 @@ async function cargarViajes() {
 async function cargarMisViajes() {
     const contenedor = document.getElementById('lista-mis-viajes');
     if (!usuarioID) return;
-    
+
     try {
         const res = await fetch(`${URL_BACKEND}/api/mis-viajes/${usuarioID}`);
         const viajes = await res.json();
         contenedor.innerHTML = '';
 
-        if(viajes.length === 0) {
+        if (viajes.length === 0) {
             contenedor.innerHTML = "<p style='padding:15px; text-align:center;'>No tienes viajes programados.</p>";
             return;
         }
@@ -150,20 +150,52 @@ async function cargarMisViajes() {
         const unidos = viajes.filter(v => v.id_conductor !== usuarioID);
 
         const generarTarjeta = (v, esConductor) => {
-            const fecha = v.fecha_hora ? new Date(v.fecha_hora).toLocaleString('es-ES') : "No definida";
+            const fechaRaw = v.fecha_hora_salida || v.fecha_hora || v.fecha;
+
+            let diaFormateado = "No definida";
+            let horaFormateada = "No definida";
+
+            if (fechaRaw) {
+                const fechaObj = new Date(fechaRaw);
+                if (!isNaN(fechaObj)) {
+                    diaFormateado = fechaObj.toLocaleDateString('es-ES', {
+                        day: '2-digit', month: '2-digit', year: 'numeric'
+                    });
+                    horaFormateada = fechaObj.toLocaleTimeString('es-ES', {
+                        hour: '2-digit', minute: '2-digit'
+                    });
+                }
+            }
+
+            // 2. Obtener lista de pasajeros
+            // Si tu backend devuelve las reservas, sacamos los nombres. Si no, ponemos un contador.
+            let pasajerosArray = v.reservas ? v.reservas.map(r => r.usuarios?.nombre || 'Alguien') : [];
+            const textoPasajeros = pasajerosArray.length > 0 ? pasajerosArray.join(', ') : 'Aún no hay nadie';
+
             return `
-                <div style="background:white; padding:15px; border-radius:10px; margin-bottom:15px; border-left:5px solid ${esConductor ? '#2563eb' : '#8b5cf6'}; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-                    <b>De: ${v.origen}</b><br><b>A: ${v.destino}</b>
-                    <div style="font-size:12px; color:#666; margin:8px 0; background:#f9fafb; padding:8px; border-radius:5px;">
-                        📅 ${fecha} <br> 👤 Conductor: ${v.usuarios?.nombre || 'Alguien'}
+                <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid ${esConductor ? '#2563eb' : '#8b5cf6'}; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #f3f4f6;">
+                    <b style="font-size: 15px;">De: ${v.origen}</b><br>
+                    <b style="font-size: 15px;">A: ${v.destino}</b>
+                    
+                    <div style="font-size: 13px; color: #4b5563; margin: 10px 0; background: #f9fafb; padding: 10px; border-radius: 8px; line-height: 1.6;">
+                        <b>Día:</b> ${diaFormateado} <br>
+                        <b>Hora:</b> ${horaFormateada} <br>
+                        <b>Conductor:</b> ${v.usuarios?.nombre || 'Desconocido'} <br>
+                        <b>Pasajeros:</b> ${textoPasajeros}
                     </div>
+
                     ${esConductor ? `
-                        <div style="display:flex; gap:5px; margin-bottom:8px;">
-                            <button onclick="copiarEnlaceViaje('${v.id}')" style="flex:1; background:#f3f4f6; border:1px solid #d1d5db; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:12px;">📋 Copiar Link</button>
-                            <button onclick="borrarViaje('${v.id}')" style="background:#fee2e2; color:#ef4444; border:1px solid #fecaca; padding:8px; border-radius:8px; cursor:pointer;">🗑️</button>
+                        <div style="display: flex; gap: 5px; margin-bottom: 8px;">
+                            <button onclick="copiarEnlaceViaje('${v.id}')" style="flex: 1; background: #f3f4f6; border: 1px solid #d1d5db; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                                📋 Copiar Link
+                            </button>
+                            <button onclick="borrarViaje('${v.id}')" style="background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; padding: 10px; border-radius: 8px; cursor: pointer;">
+                                🗑️
+                            </button>
                         </div>
                     ` : ''}
-                    <button onclick="abrirChat('${v.id}', '${v.destino}')" style="width:100%; background:#374151; color:white; border:none; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold;">
+
+                    <button onclick="abrirChat('${v.id}', '${v.destino}')" style="width: 100%; background: #374151; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;">
                         Abrir Chat
                     </button>
                 </div>
@@ -171,8 +203,8 @@ async function cargarMisViajes() {
         };
 
         let html = '<div style="display:flex; flex-wrap:wrap; gap:20px; padding:10px;">';
-        html += `<div style="flex:1; min-width:280px;"><h4>Mis Viajes Creados</h4>${creados.length ? creados.map(v=>generarTarjeta(v,true)).join('') : 'Sin viajes'}</div>`;
-        html += `<div style="flex:1; min-width:280px;"><h4>Viajes donde me uní</h4>${unidos.length ? unidos.map(v=>generarTarjeta(v,false)).join('') : 'Sin viajes'}</div>`;
+        html += `<div style="flex:1; min-width:280px;"><h4>Mis Viajes Creados</h4>${creados.length ? creados.map(v => generarTarjeta(v, true)).join('') : 'Sin viajes'}</div>`;
+        html += `<div style="flex:1; min-width:280px;"><h4>Viajes donde me uní</h4>${unidos.length ? unidos.map(v => generarTarjeta(v, false)).join('') : 'Sin viajes'}</div>`;
         html += '</div>';
         contenedor.innerHTML = html;
     } catch (e) { console.error(e); }
@@ -181,14 +213,14 @@ async function cargarMisViajes() {
 // ==========================================
 // 📋 COMPARTIR Y BORRAR
 // ==========================================
-window.copiarEnlaceViaje = function(idViaje) {
+window.copiarEnlaceViaje = function (idViaje) {
     const urlCompartir = `${window.location.origin}${window.location.pathname}?viaje=${idViaje}`;
     navigator.clipboard.writeText(urlCompartir).then(() => {
         alert("¡Enlace de viaje copiado! 🚀");
     });
 };
 
-window.borrarViaje = async function(idViaje) {
+window.borrarViaje = async function (idViaje) {
     if (!confirm("¿Borrar viaje? Se eliminarán también reservas y mensajes.")) return;
     try {
         const res = await fetch(`${URL_BACKEND}/api/viajes/${idViaje}`, { method: 'DELETE' });
@@ -202,7 +234,7 @@ window.borrarViaje = async function(idViaje) {
 let chatViajeActual = null;
 let intervaloChat = null;
 
-window.abrirChat = function(idViaje, destino) {
+window.abrirChat = function (idViaje, destino) {
     let modal = document.getElementById('modal-chat-dinamico');
     if (!modal) {
         modal = document.createElement('div');
@@ -230,14 +262,14 @@ window.abrirChat = function(idViaje, destino) {
     intervaloChat = setInterval(cargarMensajes, 2000);
 };
 
-window.cerrarChat = function() {
+window.cerrarChat = function () {
     const modal = document.getElementById('modal-chat-dinamico');
-    if(modal) modal.style.display = 'none';
+    if (modal) modal.style.display = 'none';
     chatViajeActual = null;
     clearInterval(intervaloChat);
 };
 
-window.cargarMensajes = async function() {
+window.cargarMensajes = async function () {
     if (!chatViajeActual) return;
     try {
         const res = await fetch(`${URL_BACKEND}/api/mensajes/${chatViajeActual}`);
@@ -246,9 +278,9 @@ window.cargarMensajes = async function() {
         contenedor.innerHTML = mensajes.map(m => {
             const esMio = m.id_usuario === usuarioID;
             return `
-                <div style="align-self:${esMio ? 'flex-end':'flex-start'}; max-width:80%;">
-                    <small style="font-size:10px; color:gray;">${esMio ? 'Tú':(m.usuarios?.nombre || 'User')}</small>
-                    <div style="background:${esMio ? '#dcf8c6':'white'}; padding:8px 12px; border-radius:12px; font-size:14px; border:1px solid #eee;">${m.mensaje}</div>
+                <div style="align-self:${esMio ? 'flex-end' : 'flex-start'}; max-width:80%;">
+                    <small style="font-size:10px; color:gray;">${esMio ? 'Tú' : (m.usuarios?.nombre || 'User')}</small>
+                    <div style="background:${esMio ? '#dcf8c6' : 'white'}; padding:8px 12px; border-radius:12px; font-size:14px; border:1px solid #eee;">${m.mensaje}</div>
                 </div>
             `;
         }).join('');
@@ -256,7 +288,7 @@ window.cargarMensajes = async function() {
     } catch (e) { console.error(e); }
 };
 
-window.enviarMensaje = async function() {
+window.enviarMensaje = async function () {
     const input = document.getElementById('input-mensaje-dinamico');
     const texto = input.value.trim();
     if (!texto || !chatViajeActual) return;
@@ -290,21 +322,37 @@ async function unirseViaje(idViaje, evento, boton) {
 }
 
 async function enviarViajeAlBack() {
+    const fechaInput = document.getElementById('form-fecha').value;
+
+    if (!fechaInput) {
+        alert("⚠️ Por favor, elige el día y la hora.");
+        return;
+    }
+
+    // Convertimos la fecha a formato ISO para que no falle nunca
+    const fechaISO = new Date(fechaInput).toISOString();
+
     const viaje = {
         id_conductor: usuarioID,
         origen: document.getElementById('form-origen').value,
         destino: document.getElementById('form-destino').value,
-        fecha_hora: document.getElementById('form-fecha').value,
+        fecha_hora: fechaISO, // Asegúrate de que se llame exactamente así
         plazas: parseInt(document.getElementById('form-plazas').value),
         precio: parseFloat(document.getElementById('form-precio').value),
         latitud: parseFloat(document.getElementById('form-lat').value),
         longitud: parseFloat(document.getElementById('form-lng').value)
     };
+
     const res = await fetch(`${URL_BACKEND}/api/crear-viaje`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(viaje)
     });
-    if (res.ok) { alert("Publicado"); location.reload(); }
+
+    if (res.ok) {
+        alert("¡Viaje publicado!");
+        location.reload();
+    }
 }
 
 function hacerArrastrable(elmnt, handle) {
