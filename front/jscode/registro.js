@@ -1,6 +1,6 @@
 document.getElementById('registroForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     // Limpiar errores previos
     document.querySelectorAll('.error-texto').forEach(s => s.innerText = '');
     document.querySelectorAll('input').forEach(i => i.classList.remove('input-error'));
@@ -32,17 +32,18 @@ document.getElementById('registroForm').addEventListener('submit', async (e) => 
     if (!valido) return;
 
     try {
-        const res = await fetch('https://proyectopersonal-0xcu.onrender.com', {
+        // Asegúrate de que termine en /api/signup
+        const res = await fetch('https://proyectopersonal-0xcu.onrender.com/api/signup', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nombre, telefono, email, contrasena })
-        });
-        if (res.ok) {
-            alert("¡Registrado!");
-            window.location.href = 'login.html';
-        } else {
-            const d = await res.json();
-            alert(d.error);
-        }
+    });
+if (res.ok) {
+    alert("¡Registrado!");
+    window.location.href = 'login.html';
+} else {
+    const d = await res.json();
+    alert(d.error);
+}
     } catch (err) { alert("Error de conexión"); }
 });

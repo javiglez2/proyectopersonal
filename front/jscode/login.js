@@ -4,8 +4,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const contrasena = document.getElementById('contrasenaLogin').value;
 
     try {
-        const res = await fetch('https://proyectopersonal-0xcu.onrender.com', {
-            method: 'POST',
+        const res = await fetch('https://proyectopersonal-0xcu.onrender.com/api/login', {
+    method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, contrasena })
         });

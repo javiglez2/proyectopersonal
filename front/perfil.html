@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Benaluma - Mi Perfil</title>
+    <link rel="stylesheet" href="estilos/perfil.css?v=1">
+</head>
+<body>
+
+    <div class="contenedor-perfil">
+        <div class="cabecera-perfil">
+            <a href="index.html" class="btn-volver">⬅ Volver al Mapa</a>
+            <h2>Mi Perfil 👤</h2>
+        </div>
+
+        <div class="cuerpo-perfil">
+            <div class="avatar-container" onclick="elegirFoto()" title="Haz clic para cambiar tu foto">
+                <img id="avatar-grande" src="" alt="Cargando avatar...">
+                <input type="file" id="input-archivo-foto" style="display: none;" accept="image/*" onchange="subirFoto(this)">
+                <div class="overlay-foto"></div>
+            </div>
+            <p style="color: #6b7280; font-size: 13px; margin-bottom: 25px;">Toca la foto para cambiarla</p>
+
+            <div class="form-group">
+                <label>Nombre y Apellidos</label>
+                <input type="text" id="perfil-nombre" readonly placeholder="Cargando...">
+            </div>
+
+            <div class="form-group">
+                <label>Teléfono</label>
+                <input type="tel" id="perfil-telefono" readonly placeholder="Cargando...">
+            </div>
+
+            <div class="form-group">
+                <label>Correo Electrónico</label>
+                <input type="email" id="perfil-email" disabled title="El email no se puede modificar por seguridad">
+            </div>
+
+            <div class="acciones-perfil">
+                <button id="btn-accion-perfil" onclick="alternarEdicion()">
+                    Editar Perfil
+                </button>
+                
+                <button id="btn-cerrar-sesion" onclick="cerrarSesion()" class="btn-peligro">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="jscode/perfil.js"></script>
+</body>
+</html>

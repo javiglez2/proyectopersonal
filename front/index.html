@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Benaluma - Mapa de Viajes</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -12,7 +12,15 @@
 
 <body>
 
-    <div id="mensaje-central">🗺️ Toca el mapa para publicar tu punto de salida</div>
+    <header>
+        <h1>Benaluma</h1>
+        <div id="menu-usuario">
+            </div>
+    </header>
+
+    <div id="mensaje-central" style="position: absolute; top: 80px; width: 100%; text-align: center; z-index: 1000; pointer-events: none;">
+        <span style="background: white; padding: 5px 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">🗺️ Toca el mapa para publicar tu punto de salida</span>
+    </div>
 
     <div class="top-nav" id="menu-usuario">
     </div>
@@ -49,13 +57,55 @@
     </div>
 
     <div id="lista-viajes-contenedor">
-        <h3>Viajes Disponibles 📍</h3>
+        <div id="cabecera-arrastrable" style="cursor: grab; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f3f4f6; padding-bottom: 10px; margin-bottom: 15px;">
+            <h3 style="margin: 0;">Viajes Disponibles 📍</h3>
+            <span style="color: #9ca3af; font-size: 20px;" title="Arrastrar panel">MOVER</span>
+        </div>
+        
         <div id="lista-viajes">
             <p style="color: #666; font-size: 14px;">Buscando viajes...</p>
         </div>
     </div>
 
     <div id="miMapa"></div>
+
+    <div id="modal-mis-viajes" class="modal-overlay" style="display: none; z-index: 4500;">
+    <div class="modal-content" style="max-width: 800px; width: 90%; max-height: 85vh; overflow-y: auto; padding: 25px; border-radius: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0;">Mis Viajes 🚗</h2>
+            <button onclick="document.getElementById('modal-mis-viajes').style.display='none'" style="background: #f3f4f6; border: none; font-size: 24px; cursor: pointer; padding: 5px 12px; border-radius: 10px;">&times;</button>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;" id="contenedor-grid-viajes">
+            <div>
+                <h3 style="border-bottom: 2px solid #2563eb; padding-bottom: 5px;">Publicados por mí</h3>
+                <div id="lista-creados"></div>
+            </div>
+            <div>
+                <h3 style="border-bottom: 2px solid #10b981; padding-bottom: 5px;">Viajes a los que me uní</h3>
+                <div id="lista-unidos"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div id="modal-chat" class="modal-overlay" style="display: none; z-index: 5000;">
+    <div class="modal-content" style="width: 100%; max-width: 450px; height: 80vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; border-radius: 20px;">
+        
+        <div class="modal-header" style="background: #2563eb; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 id="chat-titulo" style="margin: 0; font-size: 16px;">Chat del Viaje</h3>
+            <button onclick="cerrarChat()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">&times;</button>
+        </div>
+
+        <div id="chat-mensajes" style="flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; background: #e5ddd5;">
+            </div>
+
+        <div style="padding: 15px; background: white; border-top: 1px solid #ddd; display: flex; gap: 10px;">
+            <input type="text" id="input-mensaje" placeholder="Escribe un mensaje..." style="flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ddd; outline: none;">
+            <button onclick="enviarMensaje()" style="background: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 50%; cursor: pointer; font-weight: bold;">➔</button>
+        </div>
+    </div>
+</div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="jscode/index.js"></script>
