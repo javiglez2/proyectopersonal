@@ -202,7 +202,7 @@ async function unirseViaje(idViaje, evento, botonElemento) {
     botonElemento.innerText = 'Uniéndose...';
 
     try {
-        const res = await fetch('https://proyectopersonal-0xcu.onrender.comlocalhost:3000/api/reservar', {
+        const res = await fetch('https://proyectopersonal-0xcu.onrender.com/api/reservar', { // <--- REVISA ESTA URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id_viaje: idViaje, id_pasajero: usuarioID })
