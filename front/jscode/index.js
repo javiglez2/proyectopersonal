@@ -242,7 +242,7 @@ window.abrirChat = function (idViaje, destino) {
         modal.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:999999; justify-content:center; align-items:center;';
         modal.innerHTML = `
             <div style="background:white; width:90%; max-width:400px; height:80vh; border-radius:15px; display:flex; flex-direction:column; overflow:hidden;">
-                <div style="background:#2563eb; color:white; padding:15px; display:flex; justify-content:space-between; align-items:center;">
+                <div style="background:#1d352d; color:white; padding:15px; display:flex; justify-content:space-between; align-items:center;">
                     <b id="chat-titulo-dinamico">Chat</b>
                     <button onclick="cerrarChat()" style="color:white; background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
                 </div>
