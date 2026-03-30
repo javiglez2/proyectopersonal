@@ -1,85 +1,120 @@
 /* --- ESTILOS BASE --- */
 body {
-    background-color: #f3f4f6; /* El gris claro que elegimos */
+    background-color: #f3f4f6;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Para que en móvil empiece arriba */
     min-height: 100vh;
 }
 
 /* --- CONTENEDOR PRINCIPAL --- */
 .contenedor-perfil {
     background: white;
-    width: 90%;
-    max-width: 500px; /* Reducimos un poco el ancho para que sea más elegante */
-    border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    overflow: hidden;
-    margin: 20px auto;
+    width: 100%;
+    max-width: 500px;
+    min-height: 100vh; /* Ocupa toda la pantalla en móvil */
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
 }
 
-/* --- CABECERA (FOTO Y TITULO) --- */
+/* --- CABECERA AZUL --- */
 .cabecera-perfil {
     background: #2563eb;
     color: white;
-    padding: 40px 20px;
+    padding: 30px 20px;
     text-align: center;
     position: relative;
 }
 
-.avatar-container {
-    position: relative;
+/* Arreglo del enlace Volver al Mapa */
+.cabecera-perfil a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 14px;
     display: inline-block;
     margin-bottom: 15px;
+    transition: color 0.2s;
+}
+
+.cabecera-perfil a:hover {
+    color: white;
+}
+
+.cabecera-perfil h2 {
+    margin: 10px 0 0 0;
+    font-size: 24px;
+}
+
+/* --- SECCIÓN FOTO --- */
+.avatar-container {
+    margin-top: -50px; /* Sube la foto para que monte sobre el azul */
+    text-align: center;
 }
 
 #avatar-grande {
-    width: 120px;
-    height: 120px;
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid white;
-    cursor: pointer;
-    transition: transform 0.3s;
+    border: 5px solid white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    background: white;
 }
 
-#avatar-grande:hover {
-    transform: scale(1.05);
+.instruccion-foto {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 8px;
+    display: block;
 }
 
-/* --- FORMULARIO --- */
+/* --- FORMULARIO DE DATOS --- */
 .cuerpo-perfil {
-    padding: 30px;
+    padding: 25px;
+    flex: 1;
 }
 
 .grupo-input {
     margin-bottom: 20px;
 }
 
+/* CAMBIO CLAVE: Etiquetas arriba y inputs abajo */
 .grupo-input label {
     display: block;
-    font-size: 13px;
-    font-weight: bold;
-    color: #4b5563;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
     margin-bottom: 8px;
 }
 
 .grupo-input input {
     width: 100%;
-    padding: 12px;
+    padding: 12px 15px;
     border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 15px;
+    border-radius: 10px;
+    font-size: 16px; /* 16px evita el zoom automático en iPhone */
+    color: #111827;
     background-color: #f9fafb;
+    box-sizing: border-box; /* Asegura que el padding no estire el input */
     outline: none;
+    transition: border-color 0.2s;
 }
 
 .grupo-input input:focus {
     border-color: #2563eb;
     background-color: white;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Inputs deshabilitados (como el email si no se puede editar) */
+.grupo-input input:disabled {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
 }
 
 /* --- BOTONES --- */
@@ -87,61 +122,51 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 #btn-accion-perfil {
     background: #2563eb;
     color: white;
     border: none;
-    padding: 14px;
-    border-radius: 10px;
+    padding: 15px;
+    border-radius: 12px;
     font-weight: bold;
-    cursor: pointer;
-    width: 100%;
     font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#btn-accion-perfil:hover {
+    background: #1d4ed8;
 }
 
 .btn-peligro {
     background: #fff1f2;
     color: #e11d48;
     border: 1px solid #fecdd3;
-    padding: 12px;
-    border-radius: 10px;
+    padding: 15px;
+    border-radius: 12px;
     font-weight: bold;
+    font-size: 16px;
     cursor: pointer;
-    width: 100%;
+    transition: all 0.2s;
 }
 
-/* --- RESPONSIVE (EL ARREGLO PARA EL MÓVIL) --- */
-@media (max-width: 600px) {
+.btn-peligro:hover {
+    background: #ffe4e6;
+}
+
+/* --- AJUSTES PARA PANTALLAS GRANDES --- */
+@media (min-width: 600px) {
     body {
-        align-items: flex-start; /* En móvil que empiece desde arriba */
-        background-color: white; /* En móvil queda mejor todo blanco */
-    }
-
-    .contenedor-perfil {
-        width: 100%;
-        max-width: 100%;
-        margin: 0;
-        border-radius: 0;
-        box-shadow: none;
-    }
-
-    .cabecera-perfil {
-        padding: 30px 15px;
-    }
-
-    #avatar-grande {
-        width: 100px;
-        height: 100px;
-    }
-
-    .cuerpo-perfil {
+        align-items: center;
         padding: 20px;
     }
 
-    .grupo-input input {
-        font-size: 16px; /* Evita que el iPhone haga zoom automático al escribir */
+    .contenedor-perfil {
+        min-height: auto;
+        border-radius: 20px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
     }
 }
