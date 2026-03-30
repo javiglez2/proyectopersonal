@@ -26,7 +26,7 @@ body {
 
 /* --- CABECERA AZUL --- */
 .cabecera-perfil {
-    background: linear-gradient(135deg, #2563eb, #1e40af); /* Degradado moderno */
+    background: linear-gradient(135deg, #104e25, #104e25); /* Degradado moderno */
     color: white;
     text-align: center;
     padding: 30px 20px 60px 20px; /* Más espacio abajo para que la foto monte encima */
