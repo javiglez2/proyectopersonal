@@ -19,9 +19,9 @@ const iconoCoche = L.icon({
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Inicializar el mapa de Leaflet
     mapa = L.map('miMapa').setView([36.65, -4.50], 13);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '© OpenStreetMap contributors © CARTO'
-}).addTo(mapa);
+    }).addTo(mapa);
     setTimeout(() => { mapa.invalidateSize(); }, 500);
 
     // 2. Evento para publicar un viaje al hacer clic en el mapa
