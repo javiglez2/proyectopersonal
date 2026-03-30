@@ -1,157 +1,135 @@
-body, html {
-    margin: 0; padding: 0;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: #f4f7f6;
-    display: flex; justify-content: center; align-items: center;
+/* --- ESTILOS BASE --- */
+body {
+    background-color: #f3f4f6; /* El gris claro que elegimos */
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     min-height: 100vh;
 }
 
-/* Reemplaza la regla de .contenedor-perfil por esta */
+/* --- CONTENEDOR PRINCIPAL --- */
 .contenedor-perfil {
-    background: white; 
-    width: 600px !important; /* Forzamos 800px fijos para ver el cambio */
-    min-width: 600px;
-    border-radius: 20px; 
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    background: white;
+    width: 90%;
+    max-width: 500px; /* Reducimos un poco el ancho para que sea más elegante */
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     overflow: hidden;
-    margin: 40px auto;
-    display: block; /* Aseguramos que se comporte como un bloque */
+    margin: 20px auto;
 }
 
+/* --- CABECERA (FOTO Y TITULO) --- */
 .cabecera-perfil {
-    background: #2563eb; color: white; padding: 20px;
-    display: flex; justify-content: space-between; align-items: center;
+    background: #2563eb;
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+    position: relative;
 }
 
-.cabecera-perfil h2 { margin: 0; font-size: 20px; }
-
-.btn-volver {
-    color: white; text-decoration: none; font-size: 14px;
-    background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 8px;
-    transition: 0.2s;
-}
-
-.btn-volver:hover { background: rgba(255,255,255,0.3); }
-
-/* También vamos a hacer que los inputs ocupen todo ese nuevo ancho */
-.cuerpo-perfil {
-    padding: 40px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-sizing: border-box;
+.avatar-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 15px;
 }
 
 #avatar-grande {
-    width: 100px; height: 100px; border-radius: 50%;
-    border: 4px solid #2563eb; margin-bottom: 25px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    cursor: pointer;
+    transition: transform 0.3s;
 }
 
-.form-group {
-    width: 100% !important;
-    max-width: 100% !important;
+#avatar-grande:hover {
+    transform: scale(1.05);
+}
+
+/* --- FORMULARIO --- */
+.cuerpo-perfil {
+    padding: 30px;
+}
+
+.grupo-input {
     margin-bottom: 20px;
 }
-.form-group label { display: block; font-weight: bold; color: #4b5563; margin-bottom: 5px; font-size: 14px; }
-.form-group input {
-    width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #d1d5db;
-    box-sizing: border-box; font-size: 15px;
+
+.grupo-input label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    color: #4b5563;
+    margin-bottom: 8px;
 }
 
-.form-group input:read-only {
+.grupo-input input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 15px;
     background-color: #f9fafb;
-    color: #6b7280;
-    border-color: #e5e7eb;
-    cursor: default;
+    outline: none;
 }
 
-#btn-guardar {
-    width: 100%; background: #2563eb; color: white; border: none; padding: 12px;
-    border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s;
+.grupo-input input:focus {
+    border-color: #2563eb;
+    background-color: white;
 }
-#btn-guardar:hover { background: #1d4ed8; }
 
+/* --- BOTONES --- */
 .acciones-perfil {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    margin-top: 30px;
-    align-items: center; /* Centra los botones */
+    margin-top: 20px;
 }
 
-/* Estilo para el botón de Editar/Guardar */
 #btn-accion-perfil {
-    background-color: #2563eb;
+    background: #2563eb;
     color: white;
     border: none;
-    padding: 12px 30px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
+    padding: 14px;
+    border-radius: 10px;
+    font-weight: bold;
     cursor: pointer;
-    transition: all 0.3s ease;
     width: 100%;
-    max-width: 200px;
-}
-
-#btn-accion-perfil:hover {
-    background-color: #1d4ed8;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    font-size: 16px;
 }
 
 .btn-peligro {
-    background-color: #fff1f2;
+    background: #fff1f2;
     color: #e11d48;
     border: 1px solid #fecdd3;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 600;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: bold;
     cursor: pointer;
-    transition: 0.2s;
     width: 100%;
-    max-width: 200px;
 }
 
-.btn-peligro:hover {
-    background-color: #ffe4e6;
-    border-color: #e11d48;
-}
-
-/* --- ESTILOS NUEVOS PARA LA FOTO --- */
-.avatar-container {
-    position: relative;
-    cursor: pointer;
-    margin-bottom: 5px; /* Un poco menos de margen abajo */
-}
-
-#avatar-grande {
-    width: 128px; /* Un pelín más grande */
-    height: 128px;
-    border-radius: 50%;
-    border: 4px solid #2563eb;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    transition: 0.3s ease; /* Animación suave */
-}
-
-/* Efecto al pasar el ratón */
-.avatar-container:hover #avatar-grande {
-    filter: brightness(0.8); /* Se oscurece un poco */
-    transform: scale(1.03); /* Se agranda un pelín */
-}
-
-@media (max-width: 768px) {
-    .contenedor-perfil {
-        width: 100% !important;
-        max-width: 100% !important;
-        height: 100vh; /* Ocupa toda la pantalla */
-        border-radius: 0; /* Quitamos bordes redondeados en móvil */
-        margin: 0;
+/* --- RESPONSIVE (EL ARREGLO PARA EL MÓVIL) --- */
+@media (max-width: 600px) {
+    body {
+        align-items: flex-start; /* En móvil que empiece desde arriba */
+        background-color: white; /* En móvil queda mejor todo blanco */
     }
 
-    .cuerpo-perfil {
-        padding: 20px !important;
+    .contenedor-perfil {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .cabecera-perfil {
+        padding: 30px 15px;
     }
 
     #avatar-grande {
@@ -159,8 +137,11 @@ body, html {
         height: 100px;
     }
 
-    .cabecera-perfil h2 {
-        font-size: 18px;
+    .cuerpo-perfil {
+        padding: 20px;
+    }
+
+    .grupo-input input {
+        font-size: 16px; /* Evita que el iPhone haga zoom automático al escribir */
     }
 }
-
