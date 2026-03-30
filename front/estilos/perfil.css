@@ -72,11 +72,52 @@ body, html {
 }
 #btn-guardar:hover { background: #1d4ed8; }
 
-.btn-peligro {
-    width: 100%; background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5;
-    padding: 12px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.2s;
+.acciones-perfil {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 30px;
+    align-items: center; /* Centra los botones */
 }
-.btn-peligro:hover { background: #fee2e2; }
+
+/* Estilo para el botón de Editar/Guardar */
+#btn-accion-perfil {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 200px;
+}
+
+#btn-accion-perfil:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.btn-peligro {
+    background-color: #fff1f2;
+    color: #e11d48;
+    border: 1px solid #fecdd3;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    width: 100%;
+    max-width: 200px;
+}
+
+.btn-peligro:hover {
+    background-color: #ffe4e6;
+    border-color: #e11d48;
+}
 
 /* --- ESTILOS NUEVOS PARA LA FOTO --- */
 .avatar-container {
