@@ -34,26 +34,29 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => { mapa.invalidateSize(); }, 500);
 
     // 2. Perfil de usuario e Imágenes (CORREGIDO PARA GITHUB PAGES)
+    // 3. Perfil de usuario
     if (usuarioID) {
         const nombreDisplay = document.getElementById('nombre-usuario-menu');
         const avatarDisplay = document.getElementById('avatar-menu');
 
+        // Ponemos el nombre
         if (nombreDisplay) nombreDisplay.innerText = nombreUsuario;
 
+        // Ponemos la imagen
         if (avatarDisplay) {
-            // 🌟 SOLUCIÓN DEFINITIVA: 
-            // Usamos este servicio gratuito que crea una imagen con las iniciales del usuario.
-            // Así, si 'assets/default-avatar.png' falla, esta SIEMPRE se verá.
-            const avatarPorDefecto = `https://ui-avatars.com/api/?name=${encodeURIComponent(nombreUsuario)}&background=2563eb&color=fff&size=128`;
+            // 1. Ponemos un avatar con tu inicial mientras carga
+            avatarDisplay.src = `https://ui-avatars.com/api/?name=${nombreUsuario}&background=1d352d&color=fff`;
 
-            // Ponemos la imagen por defecto primero
-            avatarDisplay.src = avatarPorDefecto;
-
-            // Opcional: Si tienes una carpeta assets y quieres intentar cargarla,
-            // pero con un "plan B" si falla:
-            avatarDisplay.onerror = function () {
-                this.src = avatarPorDefecto; // Si la imagen local falla, pone el de las iniciales
-            };
+            // 2. ¡LA CLAVE! Le pedimos tu foto real a la base de datos
+            fetch(`${URL_BACKEND}/api/usuarios/${usuarioID}`)
+                .then(res => res.json())
+                .then(usuario => {
+                    // Si el usuario tiene una foto guardada (avatar_url), sustituimos la inicial
+                    if (usuario.avatar_url) {
+                        avatarDisplay.src = usuario.avatar_url;
+                    }
+                })
+                .catch(err => console.log("Usando imagen de iniciales por defecto."));
         }
     }
 
