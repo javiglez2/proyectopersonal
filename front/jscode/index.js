@@ -7,8 +7,17 @@ let mapa;
 let marcadorTemp = null;
 const URL_BACKEND = 'https://proyectopersonal-0xcu.onrender.com';
 
+// Configuración rápida de SweetAlert para avisos pequeños
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true
+});
+
 const iconoCoche = L.icon({
-    iconUrl: 'https://api.iconify.design/fa6-solid/car-side.svg?color=red',
+    iconUrl: 'https://api.iconify.design/fa6-solid/car-side.svg?color=yellow',
     iconSize: [24, 24], iconAnchor: [12, 24], popupAnchor: [0, -24]
 });
 
@@ -16,20 +25,20 @@ const iconoCoche = L.icon({
 // 🗺️ INICIALIZAR APP (DOM CONTENT LOADED)
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Inicializar el mapa (Estilo Voyager - Término medio)
+    // 1. Inicializar el mapa
     mapa = L.map('miMapa').setView([36.65, -4.50], 13);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '© OpenStreetMap contributors © CARTO'
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '© CARTO'
     }).addTo(mapa);
 
     setTimeout(() => { mapa.invalidateSize(); }, 500);
 
     // 2. Publicar al hacer clic
     mapa.on('click', (e) => {
-        if (!usuarioID) return alert("Debes iniciar sesión para publicar");
+        if (!usuarioID) return Swal.fire("Inicia sesión", "Debes estar conectado para publicar", "info");
         if (marcadorTemp) mapa.removeLayer(marcadorTemp);
         marcadorTemp = L.marker(e.latlng).addTo(mapa).bindPopup(`
-            <button onclick="prepararViaje(${e.latlng.lat}, ${e.latlng.lng})" style="background:#2563eb; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">
+            <button onclick="prepararViaje(${e.latlng.lat}, ${e.latlng.lng})" style="background:#2563eb; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer; font-weight:bold;">
                 Publicar aquí 🚗
             </button>
         `).openPopup();
@@ -37,15 +46,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3. Perfil de usuario
     if (usuarioID) {
-        document.getElementById('nombre-usuario-menu').innerText = nombreUsuario;
-        fetch(`${URL_BACKEND}/api/usuarios/${usuarioID}`)
-            .then(r => r.json())
-            .then(u => { if (u.avatar_url) document.getElementById('avatar-menu').src = u.avatar_url; });
+        const nombreDisplay = document.getElementById('nombre-usuario-menu');
+        if (nombreDisplay) nombreDisplay.innerText = nombreUsuario;
     }
 
     // 4. Calendario Flatpickr
     flatpickr("#form-fecha", {
-        enableTime: true, dateFormat: "Y-m-d\\TH:i", minDate: "today", time_24hr: true, locale: "es"
+        enableTime: true, dateFormat: "Y-m-d H:i", minDate: "today", time_24hr: true
     });
 
     cargarViajes();
@@ -62,14 +69,12 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 function togglePanel(idPanel) {
     const panel = document.getElementById(idPanel);
-    if (panel.style.display === 'none') {
-        panel.style.display = 'block';
-        if (idPanel === 'panel-mis-viajes') {
-            if (window.innerWidth > 768) panel.style.width = '700px';
-            cargarMisViajes();
-        }
-    } else {
-        panel.style.display = 'none';
+    if (!panel) return;
+    panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
+
+    if (idPanel === 'panel-mis-viajes' && panel.style.display === 'block') {
+        if (window.innerWidth > 768) panel.style.width = '700px';
+        cargarMisViajes();
     }
 }
 
@@ -100,7 +105,7 @@ async function cargarViajes() {
         contenedor.innerHTML = '';
 
         if (viajes.length === 0) {
-            contenedor.innerHTML = `<div style="padding:20px; text-align:center; color:#6b7280;">📍 No hay viajes disponibles. ¡Sé el primero!</div>`;
+            contenedor.innerHTML = `<div style="padding:20px; text-align:center; color:#6b7280;">📍 No hay viajes disponibles.</div>`;
             return;
         }
 
@@ -134,7 +139,7 @@ async function cargarViajes() {
 
 async function cargarMisViajes() {
     const contenedor = document.getElementById('lista-mis-viajes');
-    if (!usuarioID) return;
+    if (!usuarioID || !contenedor) return;
 
     try {
         const res = await fetch(`${URL_BACKEND}/api/mis-viajes/${usuarioID}`);
@@ -151,85 +156,78 @@ async function cargarMisViajes() {
 
         const generarTarjeta = (v, esConductor) => {
             const fechaRaw = v.fecha_hora_salida || v.fecha_hora || v.fecha;
-
-            let diaFormateado = "No definida";
-            let horaFormateada = "No definida";
+            let dia = "No definida", hora = "No definida";
 
             if (fechaRaw) {
-                const fechaObj = new Date(fechaRaw);
-                if (!isNaN(fechaObj)) {
-                    diaFormateado = fechaObj.toLocaleDateString('es-ES', {
-                        day: '2-digit', month: '2-digit', year: 'numeric'
-                    });
-                    horaFormateada = fechaObj.toLocaleTimeString('es-ES', {
-                        hour: '2-digit', minute: '2-digit'
-                    });
+                const f = new Date(fechaRaw);
+                if (!isNaN(f)) {
+                    dia = f.toLocaleDateString('es-ES');
+                    hora = f.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
                 }
             }
 
-            // 2. Obtener lista de pasajeros
-            // Si tu backend devuelve las reservas, sacamos los nombres. Si no, ponemos un contador.
-            let pasajerosArray = v.reservas ? v.reservas.map(r => r.usuarios?.nombre || 'Alguien') : [];
-            const textoPasajeros = pasajerosArray.length > 0 ? pasajerosArray.join(', ') : 'Aún no hay nadie';
+            const pasajerosArray = v.reservas ? v.reservas.map(r => r.usuarios?.nombre || 'Pasajero') : [];
+            const textoPasajeros = pasajerosArray.length > 0 ? pasajerosArray.join(', ') : 'Nadie aún';
 
             return `
-                <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid ${esConductor ? '#2563eb' : '#8b5cf6'}; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #f3f4f6;">
-                    <b style="font-size: 15px;">De: ${v.origen}</b><br>
-                    <b style="font-size: 15px;">A: ${v.destino}</b>
-                    
-                    <div style="font-size: 13px; color: #4b5563; margin: 10px 0; background: #f9fafb; padding: 10px; border-radius: 8px; line-height: 1.6;">
-                        <b>Día:</b> ${diaFormateado} <br>
-                        <b>Hora:</b> ${horaFormateada} <br>
-                        <b>Conductor:</b> ${v.usuarios?.nombre || 'Desconocido'} <br>
-                        <b>Pasajeros:</b> ${textoPasajeros}
+                <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid ${esConductor ? '#2563eb' : '#8b5cf6'}; border: 1px solid #eee;">
+                    <b>De: ${v.origen}</b><br><b>A: ${v.destino}</b>
+                    <div style="font-size: 13px; color: #4b5563; margin: 10px 0; background: #f9fafb; padding: 10px; border-radius: 8px;">
+                        📅 <b>Día:</b> ${dia} | ⏰ <b>Hora:</b> ${hora} <br>
+                        👥 <b>Pasajeros:</b> ${textoPasajeros}
                     </div>
-
                     ${esConductor ? `
                         <div style="display: flex; gap: 5px; margin-bottom: 8px;">
-                            <button onclick="copiarEnlaceViaje('${v.id}')" style="flex: 1; background: #f3f4f6; border: 1px solid #d1d5db; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 5px;">
-                                📋 Copiar Link
-                            </button>
-                            <button onclick="borrarViaje('${v.id}')" style="background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; padding: 10px; border-radius: 8px; cursor: pointer;">
-                                🗑️
-                            </button>
+                            <button onclick="copiarEnlaceViaje('${v.id}')" style="flex: 1; background: #f3f4f6; border: 1px solid #d1d5db; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px;">📋 Copiar Link</button>
+                            <button onclick="borrarViaje('${v.id}')" style="background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; padding: 10px; border-radius: 8px; cursor: pointer;">🗑️</button>
                         </div>
                     ` : ''}
-
-                    <button onclick="abrirChat('${v.id}', '${v.destino}')" style="width: 100%; background: #374151; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;">
-                        Abrir Chat
-                    </button>
-                </div>
-            `;
+                    <button onclick="abrirChat('${v.id}', '${v.destino}')" style="width: 100%; background: #374151; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold;">Abrir Chat</button>
+                </div>`;
         };
 
-        let html = '<div style="display:flex; flex-wrap:wrap; gap:20px; padding:10px;">';
-        html += `<div style="flex:1; min-width:280px;"><h4>Mis Viajes Creados</h4>${creados.length ? creados.map(v => generarTarjeta(v, true)).join('') : 'Sin viajes'}</div>`;
-        html += `<div style="flex:1; min-width:280px;"><h4>Viajes donde me uní</h4>${unidos.length ? unidos.map(v => generarTarjeta(v, false)).join('') : 'Sin viajes'}</div>`;
-        html += '</div>';
-        contenedor.innerHTML = html;
+        contenedor.innerHTML = `
+            <div style="display:flex; flex-wrap:wrap; gap:20px; padding:10px;">
+                <div style="flex:1; min-width:280px;"><h4>Mis Viajes Creados</h4>${creados.map(v => generarTarjeta(v, true)).join('') || 'Sin viajes'}</div>
+                <div style="flex:1; min-width:280px;"><h4>Viajes donde me uní</h4>${unidos.map(v => generarTarjeta(v, false)).join('') || 'Sin viajes'}</div>
+            </div>`;
     } catch (e) { console.error(e); }
 }
 
 // ==========================================
-// 📋 COMPARTIR Y BORRAR
+// 📋 ACCIONES
 // ==========================================
 window.copiarEnlaceViaje = function (idViaje) {
-    const urlCompartir = `${window.location.origin}${window.location.pathname}?viaje=${idViaje}`;
-    navigator.clipboard.writeText(urlCompartir).then(() => {
-        alert("¡Enlace de viaje copiado! 🚀");
+    const url = `${window.location.origin}${window.location.pathname}?viaje=${idViaje}`;
+    navigator.clipboard.writeText(url).then(() => {
+        Toast.fire({ icon: 'success', title: '¡Enlace copiado!' });
     });
 };
 
 window.borrarViaje = async function (idViaje) {
-    if (!confirm("¿Borrar viaje? Se eliminarán también reservas y mensajes.")) return;
-    try {
-        const res = await fetch(`${URL_BACKEND}/api/viajes/${idViaje}`, { method: 'DELETE' });
-        if (res.ok) { alert("Eliminado"); location.reload(); }
-    } catch (e) { alert("Error al borrar"); }
+    const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: "Se borrarán también los mensajes y reservas.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#374151',
+        confirmButtonText: 'Sí, borrar',
+        cancelButtonText: 'Cancelar'
+    });
+
+    if (result.isConfirmed) {
+        try {
+            const res = await fetch(`${URL_BACKEND}/api/viajes/${idViaje}`, { method: 'DELETE' });
+            if (res.ok) {
+                Swal.fire("Eliminado", "El viaje ha sido borrado.", "success").then(() => location.reload());
+            }
+        } catch (e) { Swal.fire("Error", "No se pudo borrar", "error"); }
+    }
 };
 
 // ==========================================
-// 💬 CHAT DINÁMICO (SISTEMA SEGURO)
+// 💬 CHAT DINÁMICO
 // ==========================================
 let chatViajeActual = null;
 let intervaloChat = null;
@@ -239,57 +237,51 @@ window.abrirChat = function (idViaje, destino) {
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'modal-chat-dinamico';
-        modal.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:999999; justify-content:center; align-items:center;';
+        modal.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;';
         modal.innerHTML = `
-            <div style="background:white; width:90%; max-width:400px; height:80vh; border-radius:15px; display:flex; flex-direction:column; overflow:hidden;">
+            <div style="background:white; width:90%; max-width:400px; height:75vh; border-radius:20px; display:flex; flex-direction:column; overflow:hidden;">
                 <div style="background:#1d352d; color:white; padding:15px; display:flex; justify-content:space-between; align-items:center;">
-                    <b id="chat-titulo-dinamico">Chat</b>
+                    <b id="chat-titulo">Chat</b>
                     <button onclick="cerrarChat()" style="color:white; background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
                 </div>
-                <div id="chat-mensajes-dinamico" style="flex:1; padding:15px; overflow-y:auto; background:#f3f4f6; display:flex; flex-direction:column; gap:10px;"></div>
-                <div style="padding:15px; display:flex; gap:10px;">
-                    <input type="text" id="input-mensaje-dinamico" placeholder="Mensaje..." style="flex:1; padding:10px; border-radius:8px; border:1px solid #ccc;">
-                    <button onclick="enviarMensaje()" style="background:#10b981; color:white; border:none; padding:10px 15px; border-radius:8px; cursor:pointer;">Enviar</button>
+                <div id="chat-mensajes" style="flex:1; padding:15px; overflow-y:auto; background:#f3f4f6; display:flex; flex-direction:column; gap:10px;"></div>
+                <div style="padding:15px; display:flex; gap:10px; border-top:1px solid #eee;">
+                    <input type="text" id="input-chat" placeholder="Mensaje..." style="flex:1; padding:10px; border-radius:10px; border:1px solid #ccc;">
+                    <button onclick="enviarMensaje()" style="background:#10b981; color:white; border:none; padding:10px 15px; border-radius:10px; cursor:pointer; font-weight:bold;">Enviar</button>
                 </div>
-            </div>
-        `;
+            </div>`;
         document.body.appendChild(modal);
     }
     modal.style.display = 'flex';
     chatViajeActual = idViaje;
-    document.getElementById('chat-titulo-dinamico').innerText = `💬 ${destino}`;
+    document.getElementById('chat-titulo').innerText = `💬 ${destino}`;
     cargarMensajes();
     intervaloChat = setInterval(cargarMensajes, 2000);
 };
 
 window.cerrarChat = function () {
-    const modal = document.getElementById('modal-chat-dinamico');
-    if (modal) modal.style.display = 'none';
+    document.getElementById('modal-chat-dinamico').style.display = 'none';
     chatViajeActual = null;
     clearInterval(intervaloChat);
 };
 
-window.cargarMensajes = async function () {
+async function cargarMensajes() {
     if (!chatViajeActual) return;
-    try {
-        const res = await fetch(`${URL_BACKEND}/api/mensajes/${chatViajeActual}`);
-        const mensajes = await res.json();
-        const contenedor = document.getElementById('chat-mensajes-dinamico');
-        contenedor.innerHTML = mensajes.map(m => {
-            const esMio = m.id_usuario === usuarioID;
-            return `
-                <div style="align-self:${esMio ? 'flex-end' : 'flex-start'}; max-width:80%;">
-                    <small style="font-size:10px; color:gray;">${esMio ? 'Tú' : (m.usuarios?.nombre || 'User')}</small>
-                    <div style="background:${esMio ? '#dcf8c6' : 'white'}; padding:8px 12px; border-radius:12px; font-size:14px; border:1px solid #eee;">${m.mensaje}</div>
-                </div>
-            `;
-        }).join('');
-        contenedor.scrollTop = contenedor.scrollHeight;
-    } catch (e) { console.error(e); }
-};
+    const res = await fetch(`${URL_BACKEND}/api/mensajes/${chatViajeActual}`);
+    const mensajes = await res.json();
+    const contenedor = document.getElementById('chat-mensajes');
+    contenedor.innerHTML = mensajes.map(m => {
+        const esMio = m.id_usuario === usuarioID;
+        return `<div style="align-self:${esMio ? 'flex-end' : 'flex-start'}; max-width:80%;">
+            <small style="font-size:10px; color:gray;">${esMio ? 'Tú' : (m.usuarios?.nombre || 'User')}</small>
+            <div style="background:${esMio ? '#dcf8c6' : 'white'}; padding:8px 12px; border-radius:12px; font-size:14px; border:1px solid #eee;">${m.mensaje}</div>
+        </div>`;
+    }).join('');
+    contenedor.scrollTop = contenedor.scrollHeight;
+}
 
-window.enviarMensaje = async function () {
-    const input = document.getElementById('input-mensaje-dinamico');
+async function enviarMensaje() {
+    const input = document.getElementById('input-chat');
     const texto = input.value.trim();
     if (!texto || !chatViajeActual) return;
     input.value = '';
@@ -298,10 +290,10 @@ window.enviarMensaje = async function () {
         body: JSON.stringify({ id_viaje: chatViajeActual, id_usuario: usuarioID, mensaje: texto })
     });
     cargarMensajes();
-};
+}
 
 // ==========================================
-// 🚗 PUBLICAR Y ARRASTRAR (UTILIDADES)
+// 🚗 PUBLICAR Y ARRASTRAR
 // ==========================================
 function prepararViaje(lat, lng) {
     document.getElementById('form-lat').value = lat;
@@ -312,58 +304,81 @@ function prepararViaje(lat, lng) {
 
 async function unirseViaje(idViaje, evento, boton) {
     evento.stopPropagation();
-    try {
-        const res = await fetch(`${URL_BACKEND}/api/reservar`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id_viaje: idViaje, id_pasajero: usuarioID })
-        });
-        if (res.ok) { alert("¡Te has unido!"); location.reload(); }
-    } catch (e) { alert("Error al unirse"); }
+    const res = await fetch(`${URL_BACKEND}/api/reservar`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_viaje: idViaje, id_pasajero: usuarioID })
+    });
+    if (res.ok) {
+        Swal.fire("¡Genial!", "Te has unido al viaje", "success").then(() => location.reload());
+    }
 }
 
 async function enviarViajeAlBack() {
-    const fechaInput = document.getElementById('form-fecha').value;
+    // 1. Primero definimos la variable
+    const inputFecha = document.getElementById('form-fecha');
+    let fechaFinal = inputFecha.value; // <--- Aquí se define
 
-    if (!fechaInput) {
-        alert("⚠️ Por favor, elige el día y la hora.");
-        return;
+    // 2. Si usas Flatpickr, intentamos sacarlo de su instancia interna
+    if (!fechaFinal && inputFecha._flatpickr) {
+        fechaFinal = inputFecha._flatpickr.input.value;
     }
 
-    // Convertimos la fecha a formato ISO para que no falle nunca
-    const fechaISO = new Date(fechaInput).toISOString();
+    // 3. Comprobación de seguridad
+    if (!fechaFinal || fechaFinal.trim() === "") {
+        return Swal.fire("Falta la fecha", "Selecciona día y hora en el calendario", "warning");
+    }
 
-    const viaje = {
-        id_conductor: usuarioID,
-        origen: document.getElementById('form-origen').value,
-        destino: document.getElementById('form-destino').value,
-        fecha_hora: fechaISO, // Asegúrate de que se llame exactamente así
-        plazas: parseInt(document.getElementById('form-plazas').value),
-        precio: parseFloat(document.getElementById('form-precio').value),
-        latitud: parseFloat(document.getElementById('form-lat').value),
-        longitud: parseFloat(document.getElementById('form-lng').value)
-    };
+    // 4. EL RESTO DEL CÓDIGO (Ya puede usar fechaFinal sin errores)
+    try {
+        const fechaISO = new Date(fechaFinal.replace(' ', 'T')).toISOString();
 
-    const res = await fetch(`${URL_BACKEND}/api/crear-viaje`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(viaje)
-    });
+        const viaje = {
+            id_conductor: usuarioID,
+            origen: document.getElementById('form-origen').value || "Origen",
+            destino: document.getElementById('form-destino').value || "Destino",
+            // Enviamos la fecha con los dos nombres posibles para asegurar el tiro
+            fecha_hora_salida: fechaISO, 
+            fecha_hora: fechaISO,        
+            plazas: parseInt(document.getElementById('form-plazas').value) || 1,
+            precio: parseFloat(document.getElementById('form-precio').value.toString().replace(',', '.')) || 0,
+            latitud: parseFloat(document.getElementById('form-lat').value),
+            longitud: parseFloat(document.getElementById('form-lng').value)
+        };
 
-    if (res.ok) {
-        alert("¡Viaje publicado!");
-        location.reload();
+        console.log("🚀 OBJETO FINAL QUE SALE AL SERVIDOR:", viaje);
+
+        const res = await fetch(`${URL_BACKEND}/api/crear-viaje`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(viaje)
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            Swal.fire("¡Éxito!", "Viaje publicado correctamente", "success").then(() => location.reload());
+        } else {
+            console.error("❌ Error del servidor:", data);
+            Swal.fire("Error 400", data.message || "Revisa los datos", "error");
+        }
+
+    } catch (error) {
+        console.error("❌ Error de red:", error);
+        Swal.fire("Error", "No se pudo conectar con el servidor", "error");
     }
 }
 
 function hacerArrastrable(elmnt, handle) {
     let p1 = 0, p2 = 0, p3 = 0, p4 = 0;
-    if (handle) handle.onmousedown = dragMouseDown;
-    function dragMouseDown(e) {
+    if (handle) handle.onmousedown = (e) => {
         e.preventDefault(); p3 = e.clientX; p4 = e.clientY;
         document.onmouseup = () => { document.onmouseup = null; document.onmousemove = null; };
         document.onmousemove = (e) => {
             e.preventDefault(); p1 = p3 - e.clientX; p2 = p4 - e.clientY; p3 = e.clientX; p4 = e.clientY;
             elmnt.style.top = (elmnt.offsetTop - p2) + "px"; elmnt.style.left = (elmnt.offsetLeft - p1) + "px";
         };
-    }
+    };
 }
