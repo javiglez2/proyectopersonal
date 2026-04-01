@@ -33,32 +33,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setTimeout(() => { mapa.invalidateSize(); }, 500);
 
-    // 2. Publicar al hacer clic
-    mapa.on('click', (e) => {
-        if (!usuarioID) return Swal.fire("Inicia sesión", "Debes estar conectado para publicar", "info");
-        if (marcadorTemp) mapa.removeLayer(marcadorTemp);
-        marcadorTemp = L.marker(e.latlng).addTo(mapa).bindPopup(`
-            <button onclick="prepararViaje(${e.latlng.lat}, ${e.latlng.lng})" style="background:#2563eb; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer; font-weight:bold;">
-                Publicar aquí 🚗
-            </button>
-        `).openPopup();
-    });
-
-    // 3. Perfil de usuario
+    // 2. Perfil de usuario e Imágenes (CORREGIDO PARA GITHUB PAGES)
     if (usuarioID) {
         const nombreDisplay = document.getElementById('nombre-usuario-menu');
+        const avatarDisplay = document.getElementById('avatar-menu');
+
         if (nombreDisplay) nombreDisplay.innerText = nombreUsuario;
+
+        if (avatarDisplay) {
+            // 🌟 SOLUCIÓN DEFINITIVA: 
+            // Usamos este servicio gratuito que crea una imagen con las iniciales del usuario.
+            // Así, si 'assets/default-avatar.png' falla, esta SIEMPRE se verá.
+            const avatarPorDefecto = `https://ui-avatars.com/api/?name=${encodeURIComponent(nombreUsuario)}&background=2563eb&color=fff&size=128`;
+
+            // Ponemos la imagen por defecto primero
+            avatarDisplay.src = avatarPorDefecto;
+
+            // Opcional: Si tienes una carpeta assets y quieres intentar cargarla,
+            // pero con un "plan B" si falla:
+            avatarDisplay.onerror = function () {
+                this.src = avatarPorDefecto; // Si la imagen local falla, pone el de las iniciales
+            };
+        }
     }
 
-    // 4. Calendario Flatpickr
+    // 3. Calendario
     flatpickr("#form-fecha", {
-        enableTime: true, dateFormat: "Y-m-d H:i", minDate: "today", time_24hr: true
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        minDate: "today",
+        time_24hr: true,
+        locale: "es" // Asegúrate de incluir el script de español de flatpickr si quieres
     });
 
     cargarViajes();
     cargarMisViajes();
 
-    // 5. Paneles Arrastrables
+    // 4. Paneles Arrastrables
     hacerArrastrable(document.getElementById("panel-disponibles"), document.getElementById("cabecera-disponibles"));
     hacerArrastrable(document.getElementById("panel-mis-viajes"), document.getElementById("cabecera-mis-viajes"));
     hacerArrastrable(document.getElementById("panel-publicar"), document.getElementById("cabecera-publicar"));
@@ -337,8 +348,8 @@ async function enviarViajeAlBack() {
             origen: document.getElementById('form-origen').value || "Origen",
             destino: document.getElementById('form-destino').value || "Destino",
             // Enviamos la fecha con los dos nombres posibles para asegurar el tiro
-            fecha_hora_salida: fechaISO, 
-            fecha_hora: fechaISO,        
+            fecha_hora_salida: fechaISO,
+            fecha_hora: fechaISO,
             plazas: parseInt(document.getElementById('form-plazas').value) || 1,
             precio: parseFloat(document.getElementById('form-precio').value.toString().replace(',', '.')) || 0,
             latitud: parseFloat(document.getElementById('form-lat').value),

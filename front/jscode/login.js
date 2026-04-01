@@ -9,27 +9,36 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, contrasena })
         });
+        
         const datos = await res.json();
 
         if (res.ok) {
+            // Guardamos datos en sesión
             localStorage.setItem('benaluma_user_id', datos.usuario_id);
             localStorage.setItem('benaluma_user_nombre', datos.nombre);
-            window.location.href = 'index.html';
+
+            // Alerta de éxito profesional
+            Swal.fire({
+                title: '¡Bienvenido de nuevo!',
+                text: `Hola ${datos.nombre}, has iniciado sesión correctamente.`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false,
+                background: '#fff'
+            }).then(() => {
+                window.location.href = 'index.html';
+            });
+
         } else {
-            alert(datos.error);
+            // Alerta de error si la contraseña/email fallan
+            Swal.fire({
+                title: 'Error de acceso',
+                text: datos.error || 'Credenciales incorrectas',
+                icon: 'error',
+                confirmButtonColor: '#2563eb'
+            });
         }
     } catch (err) {
-        alert("Error de conexión");
+        Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
     }
-
-    Swal.fire({
-        title: '¡Bienvenido de nuevo!',
-        text: 'Has iniciado sesión correctamente.',
-        icon: 'success',
-        confirmButtonColor: '#2563eb',
-        timer: 2000,
-        showConfirmButton: false
-    }).then(() => {
-        window.location.href = 'index.html';
-    });
 });
