@@ -56,7 +56,6 @@ app.put('/api/usuarios/:id', async (req, res) => {
 
 // --- RUTAS DE VIAJES ---
 app.get('/api/viajes', async (req, res) => {
-    // Hemos simplificado la relación para evitar errores de nombres
     const { data, error } = await supabase
         .from('viajes')
         .select(`
@@ -68,10 +67,7 @@ app.get('/api/viajes', async (req, res) => {
         .gt('plazas_disponibles', 0)
         .order('fecha_hora_salida', { ascending: true });
 
-    if (error) {
-        console.error("❌ Error en GET /api/viajes:", error);
-        return res.status(400).json({ error: error.message });
-    }
+    if (error) return res.status(400).json({ error: error.message });
     res.json(data);
 });
 
@@ -101,69 +97,41 @@ app.get('/api/mis-viajes/:id_usuario', async (req, res) => {
 });
 
 app.post('/api/crear-viaje', async (req, res) => {
-    // 🌟 AÑADIMOS "categoria" AQUÍ AL PRINCIPIO
-    const { id_conductor, origen, destino, fecha_hora, plazas, precio, latitud, longitud, categoria } = req.body;
-    
-    const { error } = await supabase.from('viajes').insert([{
-        id_conductor, 
-        origen, 
-        destino, 
-        fecha_hora_salida: fecha_hora,
-        plazas_totales: plazas, 
-        plazas_disponibles: plazas,
-        precio, 
-        latitud, 
-        longitud, 
-        estado: 'Activo',
-        // 🌟 Y LE DECIMOS A LA BASE DE DATOS QUE LO GUARDE
-        categoria: categoria || 'General' 
-    }]);
-    
-    if (error) return res.status(400).json({ error: error.message });
-    res.status(200).json({ mensaje: 'Viaje creado' });
-});
-
-// --- RUTA PARA BORRAR VIAJES (Por si también se borró antes) ---
-app.delete('/api/viajes/:id', async (req, res) => {
-    const { id } = req.params;
     try {
-        await supabase.from('reservas').delete().eq('id_viaje', id);
-        await supabase.from('mensajes_viajes').delete().eq('id_viaje', id);
-        const { error } = await supabase.from('viajes').delete().eq('id', id);
+        // Extraemos los datos exactos que envía el index.js
+        const { id_conductor, origen, destino, fecha_hora, plazas, precio, latitud, longitud, categoria } = req.body;
+
+        const { error } = await supabase.from('viajes').insert([{
+            id_conductor,
+            origen,
+            destino,
+            fecha_hora_salida: fecha_hora, // Aseguramos que la fecha entre aquí
+            plazas_totales: plazas,
+            plazas_disponibles: plazas,
+            precio: parseFloat(precio),
+            latitud: parseFloat(latitud),
+            longitud: parseFloat(longitud),
+            estado: 'Activo',
+            categoria: categoria || 'General' // Si llega vacío, pone General
+        }]);
+
         if (error) throw error;
-        res.status(200).json({ mensaje: 'Viaje eliminado correctamente' });
+        res.status(200).json({ mensaje: 'Viaje creado con éxito' });
     } catch (error) {
-        res.status(400).json({ error: 'No se pudo eliminar el viaje' });
+        console.error("❌ Error en crear-viaje:", error);
+        res.status(400).json({ error: error.message });
     }
 });
 
-app.post('/api/reservar', async (req, res) => {
-    const { id_viaje, id_pasajero } = req.body;
-    const { error: errReserva } = await supabase.from('reservas').insert([{ id_viaje, id_pasajero }]);
-    if (errReserva) return res.status(400).json({ error: 'Ya estás unido a este viaje.' });
-
-    const { data: v } = await supabase.from('viajes').select('plazas_disponibles').eq('id', id_viaje).single();
-    const { error: errUpdate } = await supabase.from('viajes').update({ plazas_disponibles: v.plazas_disponibles - 1 }).eq('id', id_viaje);
-    if (errUpdate) return res.status(400).json({ error: 'Error al actualizar plazas' });
-    res.json({ mensaje: '¡Te has unido con éxito!' });
-});
-
-// --- RUTA PARA BORRAR VIAJES ---
 app.delete('/api/viajes/:id', async (req, res) => {
     const { id } = req.params;
-
     try {
-        // 1. Primero borramos las reservas asociadas a este viaje
+        // El orden de borrado es vital por las claves foráneas
         await supabase.from('reservas').delete().eq('id_viaje', id);
-
-        // 2. Borramos los mensajes del chat asociados a este viaje
         await supabase.from('mensajes_viajes').delete().eq('id_viaje', id);
-
-        // 3. Finalmente, borramos el viaje
         const { error } = await supabase.from('viajes').delete().eq('id', id);
-
+        
         if (error) throw error;
-
         res.status(200).json({ mensaje: 'Viaje eliminado correctamente' });
     } catch (error) {
         console.error("❌ Error al borrar viaje:", error);

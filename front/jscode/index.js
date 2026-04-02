@@ -330,21 +330,19 @@ window.borrarViaje = async function (idViaje) {
     });
 
     if (result.isConfirmed) {
+        // Mostramos un "Cargando" mientras el servidor responde
+        Swal.fire({ title: 'Borrando...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
         try {
             const res = await fetch(`${URL_BACKEND}/api/viajes/${idViaje}`, { method: 'DELETE' });
-
-            // 🌟 NUEVO: Capturamos la respuesta exacta del servidor
             const data = await res.json();
 
             if (res.ok) {
                 Swal.fire("Eliminado", "El viaje ha sido borrado.", "success").then(() => location.reload());
             } else {
-                // 🌟 NUEVO: Si falla, nos mostrará el motivo real
-                console.error("Error del servidor:", data);
                 Swal.fire("No se pudo borrar", data.error || "Ruta no encontrada", "error");
             }
         } catch (e) {
-            console.error("Error de red:", e);
             Swal.fire("Error", "No se pudo conectar con el servidor", "error");
         }
     }
@@ -374,43 +372,40 @@ async function enviarViajeAlBack() {
         fechaFinal = inputFecha._flatpickr.input.value;
     }
 
-    if (!fechaFinal || fechaFinal.trim() === "") {
-        return Swal.fire("Falta la fecha", "Selecciona día y hora en el calendario", "warning");
+    if (!fechaFinal) {
+        return Swal.fire("Falta la fecha", "Selecciona día y hora", "warning");
     }
 
     try {
         const fechaISO = new Date(fechaFinal.replace(' ', 'T')).toISOString();
-
-        const viaje = {
+        
+        // Creamos el paquete de datos EXACTO que espera el server.js
+        const datosViaje = {
             id_conductor: usuarioID,
-            origen: document.getElementById('form-origen').value || "Origen",
-            destino: document.getElementById('form-destino').value || "Destino",
-            fecha_hora_salida: fechaISO,
+            origen: document.getElementById('form-origen').value,
+            destino: document.getElementById('form-destino').value,
             fecha_hora: fechaISO,
-            plazas: parseInt(document.getElementById('form-plazas').value) || 1,
-            precio: parseFloat(document.getElementById('form-precio').value.toString().replace(',', '.')) || 0,
-            latitud: parseFloat(document.getElementById('form-lat').value),
-            longitud: parseFloat(document.getElementById('form-lng').value),
-            // 🌟 ESTA ES LA LÍNEA MÁGICA QUE FALTABA:
-            categoria: document.getElementById('form-categoria').value 
+            plazas: document.getElementById('form-plazas').value,
+            precio: document.getElementById('form-precio').value,
+            latitud: document.getElementById('form-lat').value,
+            longitud: document.getElementById('form-lng').value,
+            categoria: document.getElementById('form-categoria').value // 🌟 LA CLAVE
         };
 
         const res = await fetch(`${URL_BACKEND}/api/crear-viaje`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(viaje)
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datosViaje)
         });
 
-        const data = await res.json();
-
         if (res.ok) {
-            Swal.fire("¡Éxito!", "Viaje publicado correctamente", "success").then(() => location.reload());
+            Swal.fire("¡Éxito!", "Viaje categorizado correctamente", "success").then(() => location.reload());
         } else {
-            Swal.fire("Error 400", data.message || "Revisa los datos", "error");
+            const err = await res.json();
+            Swal.fire("Error", err.error, "error");
         }
-
     } catch (error) {
-        Swal.fire("Error", "No se pudo conectar con el servidor", "error");
+        Swal.fire("Error", "Fallo de conexión", "error");
     }
 }
 
