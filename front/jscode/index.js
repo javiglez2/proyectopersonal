@@ -315,69 +315,148 @@ async function enviarViajeAlBack() {
 }
 
 // ==========================================
-// 💬 CHAT DINÁMICO
+// 💬 CHAT DINÁMICO (VERSIÓN PRO)
 // ==========================================
 let chatViajeActual = null;
 let intervaloChat = null;
 
 window.abrirChat = function (idViaje, destino) {
     let modal = document.getElementById('modal-chat-dinamico');
+    
+    // Si no existe, creamos la ventana desde cero
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'modal-chat-dinamico';
-        modal.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;';
+        modal.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:99999; justify-content:center; align-items:center;';
+        
         modal.innerHTML = `
-            <div style="background:white; width:90%; max-width:400px; height:75vh; border-radius:20px; display:flex; flex-direction:column; overflow:hidden;">
-                <div style="background:#1d352d; color:white; padding:15px; display:flex; justify-content:space-between; align-items:center;">
-                    <b id="chat-titulo">Chat</b>
-                    <button onclick="cerrarChat()" style="color:white; background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
+            <div style="background:white; width:95%; max-width:450px; height:80vh; max-height:600px; border-radius:16px; display:flex; flex-direction:column; overflow:hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                <div style="background:#1d352d; color:white; padding:15px 20px; display:flex; justify-content:space-between; align-items:center;">
+                    <b id="chat-titulo-d" style="font-size:18px;">💬 Chat</b>
+                    <button onclick="cerrarChat()" style="color:white; background:none; border:none; font-size:28px; cursor:pointer; line-height:1;">&times;</button>
                 </div>
-                <div id="chat-mensajes" style="flex:1; padding:15px; overflow-y:auto; background:#f3f4f6; display:flex; flex-direction:column; gap:10px;"></div>
-                <div style="padding:15px; display:flex; gap:10px; border-top:1px solid #eee;">
-                    <input type="text" id="input-chat" placeholder="Mensaje..." style="flex:1; padding:10px; border-radius:10px; border:1px solid #ccc;">
-                    <button onclick="enviarMensaje()" style="background:#10b981; color:white; border:none; padding:10px 15px; border-radius:10px; cursor:pointer; font-weight:bold;">Enviar</button>
+                
+                <div id="chat-mensajes-d" style="flex:1; padding:20px; overflow-y:auto; background:#e5e5f7; background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 20px 20px; display:flex; flex-direction:column; gap:15px;">
+                    <div style="text-align:center; color:#6b7280; font-size:13px;">Cargando mensajes...</div>
+                </div>
+                
+                <div style="padding:15px; background:white; border-top:1px solid #e5e7eb; display:flex; gap:10px;">
+                    <input type="text" id="input-chat-d" placeholder="Escribe un mensaje..." style="flex:1; padding:12px 15px; border-radius:20px; border:1px solid #d1d5db; outline:none; font-size:14px; transition:0.2s;">
+                    <button onclick="enviarMensaje()" style="background:#2563eb; color:white; border:none; padding:0 20px; border-radius:20px; cursor:pointer; font-weight:bold; font-size:14px; transition:0.2s;">Enviar</button>
                 </div>
             </div>`;
         document.body.appendChild(modal);
+
+        // Permitir enviar el mensaje pulsando la tecla "Enter"
+        document.getElementById('input-chat-d').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') enviarMensaje();
+        });
     }
+    
     modal.style.display = 'flex';
     chatViajeActual = idViaje;
-    document.getElementById('chat-titulo').innerText = `💬 ${destino}`;
+    document.getElementById('chat-titulo-d').innerText = `💬 Viaje a ${destino}`;
+    
+    // Limpiamos intervalos anteriores para que no se dupliquen
+    if (intervaloChat) clearInterval(intervaloChat);
+    
     cargarMensajes();
-    intervaloChat = setInterval(cargarMensajes, 2000);
+    intervaloChat = setInterval(cargarMensajes, 2000); // Recarga cada 2 segundos
 };
 
 window.cerrarChat = function () {
-    document.getElementById('modal-chat-dinamico').style.display = 'none';
+    const modal = document.getElementById('modal-chat-dinamico');
+    if (modal) modal.style.display = 'none';
     chatViajeActual = null;
-    clearInterval(intervaloChat);
+    if (intervaloChat) clearInterval(intervaloChat);
 };
 
 async function cargarMensajes() {
     if (!chatViajeActual) return;
-    const res = await fetch(`${URL_BACKEND}/api/mensajes/${chatViajeActual}`);
-    const mensajes = await res.json();
-    const contenedor = document.getElementById('chat-mensajes');
-    contenedor.innerHTML = mensajes.map(m => {
-        const esMio = m.id_usuario === usuarioID;
-        return `<div style="align-self:${esMio ? 'flex-end' : 'flex-start'}; max-width:80%;">
-            <small style="font-size:10px; color:gray;">${esMio ? 'Tú' : (m.usuarios?.nombre || 'User')}</small>
-            <div style="background:${esMio ? '#dcf8c6' : 'white'}; padding:8px 12px; border-radius:12px; font-size:14px; border:1px solid #eee;">${m.mensaje}</div>
-        </div>`;
-    }).join('');
-    contenedor.scrollTop = contenedor.scrollHeight;
+    try {
+        const res = await fetch(`${URL_BACKEND}/api/mensajes/${chatViajeActual}`);
+        if (!res.ok) throw new Error("Error al cargar");
+        const mensajes = await res.json();
+        
+        const contenedor = document.getElementById('chat-mensajes-d');
+        if (!contenedor) return;
+
+        if (mensajes.length === 0) {
+            contenedor.innerHTML = `<div style="text-align:center; color:#6b7280; font-size:13px; margin-top:20px; background:white; padding:10px; border-radius:10px;">No hay mensajes aún. ¡Di hola! 👋</div>`;
+            return;
+        }
+
+        // Magia: Comprobar si el usuario estaba abajo del todo para hacer auto-scroll
+        const estaAlFinal = contenedor.scrollHeight - contenedor.scrollTop <= contenedor.clientHeight + 50;
+
+        contenedor.innerHTML = mensajes.map(m => {
+            const esMio = m.id_usuario === usuarioID;
+            // Sacamos la hora exacta del mensaje
+            const hora = new Date(m.creado_en).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+            const nombre = m.usuarios?.nombre || 'Usuario';
+            const avatar = m.usuarios?.avatar_url || `https://ui-avatars.com/api/?name=${nombre}&background=1d352d&color=fff`;
+
+            if (esMio) {
+                // Mensaje Verde (A la derecha, sin foto)
+                return `
+                <div style="align-self:flex-end; max-width:85%; display:flex; flex-direction:column; align-items:flex-end;">
+                    <div style="background:#dcf8c6; padding:10px 14px; border-radius:15px 15px 0 15px; font-size:14px; color:#111827; box-shadow:0 1px 2px rgba(0,0,0,0.1); word-break:break-word;">
+                        ${m.mensaje}
+                    </div>
+                    <small style="font-size:10px; color:#6b7280; margin-top:4px;">${hora}</small>
+                </div>`;
+            } else {
+                // Mensaje Blanco (A la izquierda, con foto de perfil)
+                return `
+                <div style="align-self:flex-start; max-width:85%; display:flex; gap:8px;">
+                    <img src="${avatar}" style="width:28px; height:28px; border-radius:50%; align-self:flex-end; border:1px solid #ddd; object-fit:cover;">
+                    <div style="display:flex; flex-direction:column; align-items:flex-start;">
+                        <small style="font-size:11px; color:#4b5563; margin-bottom:4px; font-weight:bold;">${nombre}</small>
+                        <div style="background:white; padding:10px 14px; border-radius:15px 15px 15px 0; font-size:14px; color:#111827; box-shadow:0 1px 2px rgba(0,0,0,0.1); border:1px solid #e5e7eb; word-break:break-word;">
+                            ${m.mensaje}
+                        </div>
+                        <small style="font-size:10px; color:#6b7280; margin-top:4px;">${hora}</small>
+                    </div>
+                </div>`;
+            }
+        }).join('');
+
+        // Si estaba abajo, lo mantenemos abajo
+        if (estaAlFinal) contenedor.scrollTop = contenedor.scrollHeight;
+        
+    } catch (error) {
+        console.error("Error cargando mensajes:", error);
+    }
 }
 
 async function enviarMensaje() {
-    const input = document.getElementById('input-chat');
+    const input = document.getElementById('input-chat-d');
+    if (!input) return;
+    
     const texto = input.value.trim();
     if (!texto || !chatViajeActual) return;
-    input.value = '';
-    await fetch(`${URL_BACKEND}/api/mensajes`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id_viaje: chatViajeActual, id_usuario: usuarioID, mensaje: texto })
-    });
-    cargarMensajes();
+    
+    input.value = ''; // Vaciamos la caja rápido para que se sienta fluido
+    
+    try {
+        await fetch(`${URL_BACKEND}/api/mensajes`, {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_viaje: chatViajeActual, id_usuario: usuarioID, mensaje: texto })
+        });
+        
+        // Recargar inmediatamente después de enviar
+        cargarMensajes();
+        
+        // Forzar que baje el scroll
+        setTimeout(() => {
+            const contenedor = document.getElementById('chat-mensajes-d');
+            if (contenedor) contenedor.scrollTop = contenedor.scrollHeight;
+        }, 100);
+        
+    } catch (e) {
+        Swal.fire("Error", "No se pudo enviar el mensaje", "error");
+    }
 }
 
 function hacerArrastrable(elmnt, handle) {
