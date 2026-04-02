@@ -368,28 +368,31 @@ async function unirseViaje(idViaje, evento, boton) {
 
 async function enviarViajeAlBack() {
     const inputFecha = document.getElementById('form-fecha');
-    let fechaFinal = inputFecha.value;
+    let fechaFinal = inputFecha.value; 
 
     if (!fechaFinal && inputFecha._flatpickr) {
         fechaFinal = inputFecha._flatpickr.input.value;
     }
 
     if (!fechaFinal || fechaFinal.trim() === "") {
-        return Swal.fire("Falta la fecha", "Toca el recuadro para elegir día y hora", "warning");
+        return Swal.fire("Falta la fecha", "Selecciona día y hora en el calendario", "warning");
     }
 
     try {
         const fechaISO = new Date(fechaFinal.replace(' ', 'T')).toISOString();
+
         const viaje = {
             id_conductor: usuarioID,
-            origen: document.getElementById('form-origen').value || "Origen marcado en mapa",
-            destino: document.getElementById('form-destino').value || "Destino pendiente",
+            origen: document.getElementById('form-origen').value || "Origen",
+            destino: document.getElementById('form-destino').value || "Destino",
+            fecha_hora_salida: fechaISO,
             fecha_hora: fechaISO,
             plazas: parseInt(document.getElementById('form-plazas').value) || 1,
             precio: parseFloat(document.getElementById('form-precio').value.toString().replace(',', '.')) || 0,
             latitud: parseFloat(document.getElementById('form-lat').value),
             longitud: parseFloat(document.getElementById('form-lng').value),
-            categoria: document.getElementById('form-categoria').value
+            // 🌟 ESTA ES LA LÍNEA MÁGICA QUE FALTABA:
+            categoria: document.getElementById('form-categoria').value 
         };
 
         const res = await fetch(`${URL_BACKEND}/api/crear-viaje`, {
@@ -399,12 +402,13 @@ async function enviarViajeAlBack() {
         });
 
         const data = await res.json();
+
         if (res.ok) {
-            Swal.fire({ title: "¡Viaje Publicado!", text: "Aparece en Viajes Disponibles", icon: "success", confirmButtonColor: '#10b981' })
-                .then(() => location.reload());
+            Swal.fire("¡Éxito!", "Viaje publicado correctamente", "success").then(() => location.reload());
         } else {
-            Swal.fire("Error 400", data.error || data.message, "error");
+            Swal.fire("Error 400", data.message || "Revisa los datos", "error");
         }
+
     } catch (error) {
         Swal.fire("Error", "No se pudo conectar con el servidor", "error");
     }

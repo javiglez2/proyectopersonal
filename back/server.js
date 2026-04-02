@@ -101,25 +101,40 @@ app.get('/api/mis-viajes/:id_usuario', async (req, res) => {
 });
 
 app.post('/api/crear-viaje', async (req, res) => {
-    // 🌟 AHORA SÍ RECIBIMOS LA CATEGORÍA
+    // 🌟 AÑADIMOS "categoria" AQUÍ AL PRINCIPIO
     const { id_conductor, origen, destino, fecha_hora, plazas, precio, latitud, longitud, categoria } = req.body;
-
+    
     const { error } = await supabase.from('viajes').insert([{
-        id_conductor,
-        origen,
-        destino,
+        id_conductor, 
+        origen, 
+        destino, 
         fecha_hora_salida: fecha_hora,
-        plazas_totales: plazas,
+        plazas_totales: plazas, 
         plazas_disponibles: plazas,
-        precio,
-        latitud,
-        longitud,
+        precio, 
+        latitud, 
+        longitud, 
         estado: 'Activo',
-        categoria: categoria || 'General' // Si falla, pone General
+        // 🌟 Y LE DECIMOS A LA BASE DE DATOS QUE LO GUARDE
+        categoria: categoria || 'General' 
     }]);
-
+    
     if (error) return res.status(400).json({ error: error.message });
     res.status(200).json({ mensaje: 'Viaje creado' });
+});
+
+// --- RUTA PARA BORRAR VIAJES (Por si también se borró antes) ---
+app.delete('/api/viajes/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await supabase.from('reservas').delete().eq('id_viaje', id);
+        await supabase.from('mensajes_viajes').delete().eq('id_viaje', id);
+        const { error } = await supabase.from('viajes').delete().eq('id', id);
+        if (error) throw error;
+        res.status(200).json({ mensaje: 'Viaje eliminado correctamente' });
+    } catch (error) {
+        res.status(400).json({ error: 'No se pudo eliminar el viaje' });
+    }
 });
 
 app.post('/api/reservar', async (req, res) => {
