@@ -101,12 +101,16 @@ app.get('/api/mis-viajes/:id_usuario', async (req, res) => {
 });
 
 app.post('/api/crear-viaje', async (req, res) => {
-    const { id_conductor, origen, destino, fecha_hora, plazas, precio, latitud, longitud } = req.body;
+    // 🌟 AÑADIDO: Recibimos la categoria del body
+    const { id_conductor, origen, destino, fecha_hora, plazas, precio, latitud, longitud, categoria } = req.body;
+    
     const { error } = await supabase.from('viajes').insert([{
         id_conductor, origen, destino, fecha_hora_salida: fecha_hora,
         plazas_totales: plazas, plazas_disponibles: plazas,
-        precio, latitud, longitud, estado: 'Activo'
+        precio, latitud, longitud, estado: 'Activo', 
+        categoria: categoria || 'General' // 🌟 AÑADIDO: Si no mandan nada, es General
     }]);
+    
     if (error) return res.status(400).json({ error: error.message });
     res.status(200).json({ mensaje: 'Viaje creado' });
 });

@@ -7,17 +7,16 @@ let mapa;
 let marcadorTemp = null;
 const URL_BACKEND = 'https://proyectopersonal-0xcu.onrender.com';
 
+// Variables para el sistema de filtros
+let todosLosViajes = []; 
+let marcadoresMapa = []; 
+
 const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
     showConfirmButton: false,
     timer: 3000,
     timerProgressBar: true
-});
-
-const iconoCoche = L.icon({
-    iconUrl: 'https://api.iconify.design/fa6-solid/car-side.svg?color=yellow',
-    iconSize: [24, 24], iconAnchor: [12, 24], popupAnchor: [0, -24]
 });
 
 // ==========================================
@@ -112,69 +111,117 @@ function cerrarSesion() {
 }
 
 // ==========================================
-// 📍 GESTIÓN DE VIAJES (NUEVAS TARJETAS)
+// 📍 GESTIÓN DE VIAJES Y FILTROS
 // ==========================================
+function obtenerEstilosCategoria(categoria) {
+    let colorIcono = 'yellow'; // General por defecto
+    let colorFondo = '#f3f4f6'; // Gris
+    let colorTexto = '#4b5563'; 
+
+    if (categoria === 'UMA Teatinos') { colorIcono = 'green'; colorFondo = '#dcf8c6'; colorTexto = '#166534'; }
+    else if (categoria === 'UMA El Ejido') { colorIcono = 'purple'; colorFondo = '#f3e8ff'; colorTexto = '#6b21a8'; }
+    else if (categoria === 'Grado Superior') { colorIcono = 'blue'; colorFondo = '#dbeafe'; colorTexto = '#1e40af'; }
+    else if (categoria === 'Otros estudios') { colorIcono = 'orange'; colorFondo = '#ffedd5'; colorTexto = '#c2410c'; }
+
+    return {
+        icono: L.icon({
+            iconUrl: `https://api.iconify.design/fa6-solid/car-side.svg?color=${colorIcono}`,
+            iconSize: [28, 28], iconAnchor: [14, 28], popupAnchor: [0, -28]
+        }),
+        etiqueta: `<span style="background:${colorFondo}; color:${colorTexto}; padding:3px 8px; border-radius:12px; font-size:11px; font-weight:bold;">${categoria}</span>`
+    };
+}
+
 async function cargarViajes() {
-    const contenedor = document.getElementById('lista-viajes');
     try {
         const res = await fetch(`${URL_BACKEND}/api/viajes`);
-        let viajes = await res.json();
-        contenedor.innerHTML = '';
-
-        if (viajes.length === 0) {
-            contenedor.innerHTML = `<div style="padding:20px; text-align:center; color:#6b7280;">📍 No hay viajes disponibles por ahora.</div>`;
-            return;
-        }
-
-        viajes.sort((a, b) => new Date(a.fecha_hora_salida) - new Date(b.fecha_hora_salida));
-
-        viajes.forEach(v => {
-            L.marker([v.latitud, v.longitud], { icon: iconoCoche }).addTo(mapa)
-                .bindPopup(`<b>${v.usuarios?.nombre || 'Conductor'}</b> va a <b>${v.destino}</b>`);
-
-            const yaUnido = v.reservas?.some(r => r.id_pasajero === usuarioID);
-            const esConductor = v.id_conductor === usuarioID;
-
-            let btnHTML = `<button onclick="unirseViaje('${v.id}', event, this)" style="background:#10b981; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-weight:bold;">Unirme</button>`;
-            if (esConductor) btnHTML = `<span style="background:#f3f4f6; padding:5px 10px; border-radius:5px; color:#4b5563; font-size:12px; font-weight:bold;">🚗 Tu viaje</span>`;
-            else if (yaUnido) btnHTML = `<span style="background:#dcf8c6; padding:5px 10px; border-radius:5px; color:#166534; font-size:12px; font-weight:bold;">✔ Ya estás dentro</span>`;
-
-            const fechaObj = new Date(v.fecha_hora_salida);
-            const diaFormateado = isNaN(fechaObj) ? "Fecha pdte." : fechaObj.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: '2-digit' });
-            const horaFormateada = isNaN(fechaObj) ? "--:--" : fechaObj.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-            
-            const avatarConductor = v.usuarios?.avatar_url || `https://ui-avatars.com/api/?name=${v.usuarios?.nombre || 'C'}&background=1d352d&color=fff`;
-
-            const div = document.createElement('div');
-            div.className = "viaje-item";
-            div.style = "background:white; padding:15px; border-radius:12px; margin-bottom:15px; border:1px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor:pointer;";
-            
-            div.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <b style="font-size:16px; color:#111827;">🏁 ${v.destino}</b> 
-                    <b style="color:#2563eb; font-size:18px;">${v.precio}€</b>
-                </div>
-                <div style="font-size:13px; color:#6b7280; margin-top:4px;">📍 De: ${v.origen}</div>
-                
-                <div style="background:#f9fafb; border-radius:8px; padding:10px; margin-top:12px; display:flex; justify-content:space-between; font-size:13px; color:#374151; font-weight:500;">
-                    <span>📅 ${diaFormateado} - ⏰ ${horaFormateada}</span>
-                    <span>💺 ${v.plazas_disponibles} plazas</span>
-                </div>
-
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <img src="${avatarConductor}" style="width:28px; height:28px; border-radius:50%; border:1px solid #ddd;">
-                        <small style="font-weight:bold; color:#374151;">${v.usuarios?.nombre || 'Usuario'}</small>
-                    </div>
-                    ${btnHTML}
-                </div>
-            `;
-            
-            div.onclick = () => mapa.flyTo([v.latitud, v.longitud], 16);
-            contenedor.appendChild(div);
-        });
+        todosLosViajes = await res.json();
+        
+        // Ordenamos por fecha
+        todosLosViajes.sort((a, b) => new Date(a.fecha_hora_salida) - new Date(b.fecha_hora_salida));
+        
+        // Renderizamos inicialmente todos
+        aplicarFiltros();
     } catch (e) { console.error(e); }
 }
+
+window.aplicarFiltros = function() {
+    const contenedor = document.getElementById('lista-viajes');
+    const filtroObjeto = document.getElementById('filtro-categoria');
+    const filtro = filtroObjeto ? filtroObjeto.value : 'Todos';
+    
+    contenedor.innerHTML = '';
+
+    // 1. Limpiar los coches antiguos del mapa
+    marcadoresMapa.forEach(m => mapa.removeLayer(m));
+    marcadoresMapa = [];
+
+    // 2. Filtrar los viajes según el desplegable
+    let viajesFiltrados = todosLosViajes;
+    if (filtro !== 'Todos') {
+        viajesFiltrados = todosLosViajes.filter(v => (v.categoria || 'General') === filtro);
+    }
+
+    if (viajesFiltrados.length === 0) {
+        contenedor.innerHTML = `<div style="padding:20px; text-align:center; color:#6b7280;">📍 No hay viajes en esta categoría.</div>`;
+        return;
+    }
+
+    // 3. Pintar los viajes filtrados
+    viajesFiltrados.forEach(v => {
+        const cat = v.categoria || 'General';
+        const estilos = obtenerEstilosCategoria(cat);
+
+        // Ponemos el coche en el mapa con su nuevo color y lo guardamos
+        const marker = L.marker([v.latitud, v.longitud], { icon: estilos.icono }).addTo(mapa)
+            .bindPopup(`<b>${v.usuarios?.nombre || 'Conductor'}</b> va a <b>${v.destino}</b><br>${estilos.etiqueta}`);
+        marcadoresMapa.push(marker);
+
+        const yaUnido = v.reservas?.some(r => r.id_pasajero === usuarioID);
+        const esConductor = v.id_conductor === usuarioID;
+
+        let btnHTML = `<button onclick="unirseViaje('${v.id}', event, this)" style="background:#10b981; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-weight:bold;">Unirme</button>`;
+        if (esConductor) btnHTML = `<span style="background:#f3f4f6; padding:5px 10px; border-radius:5px; color:#4b5563; font-size:12px; font-weight:bold;">🚗 Tu viaje</span>`;
+        else if (yaUnido) btnHTML = `<span style="background:#dcf8c6; padding:5px 10px; border-radius:5px; color:#166534; font-size:12px; font-weight:bold;">✔ Ya estás dentro</span>`;
+
+        const fechaObj = new Date(v.fecha_hora_salida);
+        const diaFormateado = isNaN(fechaObj) ? "Fecha pdte." : fechaObj.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: '2-digit' });
+        const horaFormateada = isNaN(fechaObj) ? "--:--" : fechaObj.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+        
+        const avatarConductor = v.usuarios?.avatar_url || `https://ui-avatars.com/api/?name=${v.usuarios?.nombre || 'C'}&background=1d352d&color=fff`;
+
+        const div = document.createElement('div');
+        div.className = "viaje-item";
+        div.style = "background:white; padding:15px; border-radius:12px; margin-bottom:15px; border:1px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor:pointer;";
+        
+        div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                    <b style="font-size:16px; color:#111827;">🏁 ${v.destino}</b> 
+                    <div style="margin-top:5px;">${estilos.etiqueta}</div>
+                </div>
+                <b style="color:#2563eb; font-size:18px;">${v.precio}€</b>
+            </div>
+            <div style="font-size:13px; color:#6b7280; margin-top:8px;">📍 De: ${v.origen}</div>
+            
+            <div style="background:#f9fafb; border-radius:8px; padding:10px; margin-top:12px; display:flex; justify-content:space-between; font-size:13px; color:#374151; font-weight:500;">
+                <span>📅 ${diaFormateado} - ⏰ ${horaFormateada}</span>
+                <span>💺 ${v.plazas_disponibles} plazas</span>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <img src="${avatarConductor}" style="width:28px; height:28px; border-radius:50%; border:1px solid #ddd; object-fit:cover;">
+                    <small style="font-weight:bold; color:#374151;">${v.usuarios?.nombre || 'Usuario'}</small>
+                </div>
+                ${btnHTML}
+            </div>
+        `;
+        
+        div.onclick = () => mapa.flyTo([v.latitud, v.longitud], 16);
+        contenedor.appendChild(div);
+    });
+};
 
 async function cargarMisViajes() {
     const contenedor = document.getElementById('lista-mis-viajes');
@@ -208,9 +255,14 @@ async function cargarMisViajes() {
             const pasajerosArray = v.reservas ? v.reservas.map(r => r.usuarios?.nombre || 'Pasajero') : [];
             const textoPasajeros = pasajerosArray.length > 0 ? pasajerosArray.join(', ') : 'Nadie aún';
 
+            const cat = v.categoria || 'General';
+            const estilos = obtenerEstilosCategoria(cat);
+
             return `
                 <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid ${esConductor ? '#2563eb' : '#8b5cf6'}; border: 1px solid #eee;">
-                    <b>De: ${v.origen}</b><br><b>A: ${v.destino}</b>
+                    <b>De: ${v.origen}</b><br>
+                    <b>A: ${v.destino}</b>
+                    <div style="margin-top:5px;">${estilos.etiqueta}</div>
                     <div style="font-size: 13px; color: #4b5563; margin: 10px 0; background: #f9fafb; padding: 10px; border-radius: 8px;">
                         📅 <b>Día:</b> ${dia} | ⏰ <b>Hora:</b> ${hora} <br>
                         👥 <b>Pasajeros:</b> ${textoPasajeros}
@@ -293,7 +345,8 @@ async function enviarViajeAlBack() {
             plazas: parseInt(document.getElementById('form-plazas').value) || 1,
             precio: parseFloat(document.getElementById('form-precio').value.toString().replace(',', '.')) || 0,
             latitud: parseFloat(document.getElementById('form-lat').value),
-            longitud: parseFloat(document.getElementById('form-lng').value)
+            longitud: parseFloat(document.getElementById('form-lng').value),
+            categoria: document.getElementById('form-categoria').value
         };
 
         const res = await fetch(`${URL_BACKEND}/api/crear-viaje`, {
@@ -323,7 +376,6 @@ let intervaloChat = null;
 window.abrirChat = function (idViaje, destino) {
     let modal = document.getElementById('modal-chat-dinamico');
     
-    // Si no existe, creamos la ventana desde cero
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'modal-chat-dinamico';
@@ -347,7 +399,6 @@ window.abrirChat = function (idViaje, destino) {
             </div>`;
         document.body.appendChild(modal);
 
-        // Permitir enviar el mensaje pulsando la tecla "Enter"
         document.getElementById('input-chat-d').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') enviarMensaje();
         });
@@ -357,11 +408,10 @@ window.abrirChat = function (idViaje, destino) {
     chatViajeActual = idViaje;
     document.getElementById('chat-titulo-d').innerText = `💬 Viaje a ${destino}`;
     
-    // Limpiamos intervalos anteriores para que no se dupliquen
     if (intervaloChat) clearInterval(intervaloChat);
     
     cargarMensajes();
-    intervaloChat = setInterval(cargarMensajes, 2000); // Recarga cada 2 segundos
+    intervaloChat = setInterval(cargarMensajes, 2000); 
 };
 
 window.cerrarChat = function () {
@@ -386,18 +436,15 @@ async function cargarMensajes() {
             return;
         }
 
-        // Magia: Comprobar si el usuario estaba abajo del todo para hacer auto-scroll
         const estaAlFinal = contenedor.scrollHeight - contenedor.scrollTop <= contenedor.clientHeight + 50;
 
         contenedor.innerHTML = mensajes.map(m => {
             const esMio = m.id_usuario === usuarioID;
-            // Sacamos la hora exacta del mensaje
             const hora = new Date(m.creado_en).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
             const nombre = m.usuarios?.nombre || 'Usuario';
             const avatar = m.usuarios?.avatar_url || `https://ui-avatars.com/api/?name=${nombre}&background=1d352d&color=fff`;
 
             if (esMio) {
-                // Mensaje Verde (A la derecha, sin foto)
                 return `
                 <div style="align-self:flex-end; max-width:85%; display:flex; flex-direction:column; align-items:flex-end;">
                     <div style="background:#dcf8c6; padding:10px 14px; border-radius:15px 15px 0 15px; font-size:14px; color:#111827; box-shadow:0 1px 2px rgba(0,0,0,0.1); word-break:break-word;">
@@ -406,7 +453,6 @@ async function cargarMensajes() {
                     <small style="font-size:10px; color:#6b7280; margin-top:4px;">${hora}</small>
                 </div>`;
             } else {
-                // Mensaje Blanco (A la izquierda, con foto de perfil)
                 return `
                 <div style="align-self:flex-start; max-width:85%; display:flex; gap:8px;">
                     <img src="${avatar}" style="width:28px; height:28px; border-radius:50%; align-self:flex-end; border:1px solid #ddd; object-fit:cover;">
@@ -421,7 +467,6 @@ async function cargarMensajes() {
             }
         }).join('');
 
-        // Si estaba abajo, lo mantenemos abajo
         if (estaAlFinal) contenedor.scrollTop = contenedor.scrollHeight;
         
     } catch (error) {
@@ -436,7 +481,7 @@ async function enviarMensaje() {
     const texto = input.value.trim();
     if (!texto || !chatViajeActual) return;
     
-    input.value = ''; // Vaciamos la caja rápido para que se sienta fluido
+    input.value = ''; 
     
     try {
         await fetch(`${URL_BACKEND}/api/mensajes`, {
@@ -445,10 +490,8 @@ async function enviarMensaje() {
             body: JSON.stringify({ id_viaje: chatViajeActual, id_usuario: usuarioID, mensaje: texto })
         });
         
-        // Recargar inmediatamente después de enviar
         cargarMensajes();
         
-        // Forzar que baje el scroll
         setTimeout(() => {
             const contenedor = document.getElementById('chat-mensajes-d');
             if (contenedor) contenedor.scrollTop = contenedor.scrollHeight;
