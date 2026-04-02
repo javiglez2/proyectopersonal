@@ -545,14 +545,60 @@ async function enviarMensaje() {
     }
 }
 
+// ==========================================
+// 🖱️ LÓGICA PARA ARRASTRAR PANELES CON LÍMITES
+// ==========================================
 function hacerArrastrable(elmnt, handle) {
     let p1 = 0, p2 = 0, p3 = 0, p4 = 0;
-    if (handle) handle.onmousedown = (e) => {
-        e.preventDefault(); p3 = e.clientX; p4 = e.clientY;
-        document.onmouseup = () => { document.onmouseup = null; document.onmousemove = null; };
-        document.onmousemove = (e) => {
-            e.preventDefault(); p1 = p3 - e.clientX; p2 = p4 - e.clientY; p3 = e.clientX; p4 = e.clientY;
-            elmnt.style.top = (elmnt.offsetTop - p2) + "px"; elmnt.style.left = (elmnt.offsetLeft - p1) + "px";
-        };
-    };
+    
+    if (handle) {
+        handle.onmousedown = dragMouseDown;
+    } else {
+        elmnt.onmousedown = dragMouseDown;
+    }
+
+    function dragMouseDown(e) {
+        e.preventDefault();
+        p3 = e.clientX;
+        p4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e) {
+        e.preventDefault();
+        p1 = p3 - e.clientX;
+        p2 = p4 - e.clientY;
+        p3 = e.clientX;
+        p4 = e.clientY;
+
+        let nuevaPosicionTop = elmnt.offsetTop - p2;
+        let nuevaPosicionLeft = elmnt.offsetLeft - p1;
+
+        // 🛑 LÍMITES DE LA PANTALLA
+        const alturaHeader = document.getElementById('menu-superior').offsetHeight || 60;
+        
+        // Límite Arriba (No dejar que se meta bajo el menú)
+        if (nuevaPosicionTop < alturaHeader + 10) nuevaPosicionTop = alturaHeader + 10;
+        
+        // Límite Abajo (No dejar que desaparezca por el suelo)
+        const maxTop = window.innerHeight - 50; 
+        if (nuevaPosicionTop > maxTop) nuevaPosicionTop = maxTop;
+        
+        // Límite Izquierda
+        if (nuevaPosicionLeft < 0) nuevaPosicionLeft = 0;
+        
+        // Límite Derecha (Ancho de la pantalla menos el ancho de la tarjeta)
+        const maxLeft = window.innerWidth - elmnt.offsetWidth;
+        if (nuevaPosicionLeft > maxLeft) nuevaPosicionLeft = maxLeft;
+
+        // Aplicar la posición calculada
+        elmnt.style.top = nuevaPosicionTop + "px";
+        elmnt.style.left = nuevaPosicionLeft + "px";
+    }
+
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+    }
 }
