@@ -362,20 +362,27 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
 .link-perfil { color: #374151 !important; }
 .link-cerrar { color: #e11d48 !important; }
 
-/* --- MEJORAS DE TAMAÑO Y FECHA --- */
-#panel-publicar, #panel-disponibles, #panel-mis-viajes {
+/* --- MEJORAS DE TAMAÑO --- */
+/* Los paneles laterales miden 400px */
+#panel-publicar, #panel-disponibles {
     width: 400px !important; 
 }
 
-/* Resaltar el botón de Flatpickr */
+/* El panel de Mis Viajes es extra ancho para alojar las 2 columnas */
+#panel-mis-viajes {
+    width: 750px !important;
+}
+
+/* Resaltar el botón de Flatpickr (Fecha) */
 #form-fecha {
-    background-color: #ecfdf5 !important; /* Verde clarito */
-    border: 2px solid #10b981 !important; /* Borde verde fuerte */
+    background-color: #ecfdf5 !important; 
+    border: 2px solid #10b981 !important; 
     color: #047857 !important;
     font-weight: bold;
     text-align: center;
     cursor: pointer;
     font-size: 15px;
+    padding: 12px !important; /* Más altura para que sea fácil de tocar */
 }
 
 #form-fecha::placeholder {
