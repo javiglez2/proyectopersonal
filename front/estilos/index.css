@@ -362,3 +362,22 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
 .link-perfil { color: #374151 !important; }
 .link-cerrar { color: #e11d48 !important; }
 
+/* --- MEJORAS DE TAMAÑO Y FECHA --- */
+#panel-publicar, #panel-disponibles, #panel-mis-viajes {
+    width: 400px !important; 
+}
+
+/* Resaltar el botón de Flatpickr */
+#form-fecha {
+    background-color: #ecfdf5 !important; /* Verde clarito */
+    border: 2px solid #10b981 !important; /* Borde verde fuerte */
+    color: #047857 !important;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+#form-fecha::placeholder {
+    color: #059669;
+}
