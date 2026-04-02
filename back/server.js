@@ -98,27 +98,33 @@ app.get('/api/mis-viajes/:id_usuario', async (req, res) => {
 
 app.post('/api/crear-viaje', async (req, res) => {
     try {
-        // Extraemos los datos exactos que envía el index.js
+        // 1. Imprimimos en la consola de Render lo que nos llega del frontend
+        console.log("📥 Datos recibidos:", req.body);
+
         const { id_conductor, origen, destino, fecha_hora, plazas, precio, latitud, longitud, categoria } = req.body;
 
+        // 2. Insertamos en Supabase asegurando que la columna 'categoria' reciba el dato
         const { error } = await supabase.from('viajes').insert([{
             id_conductor,
             origen,
             destino,
-            fecha_hora_salida: fecha_hora, // Aseguramos que la fecha entre aquí
-            plazas_totales: plazas,
-            plazas_disponibles: plazas,
+            fecha_hora_salida: fecha_hora, 
+            plazas_totales: parseInt(plazas),
+            plazas_disponibles: parseInt(plazas),
             precio: parseFloat(precio),
             latitud: parseFloat(latitud),
             longitud: parseFloat(longitud),
             estado: 'Activo',
-            categoria: categoria || 'General' // Si llega vacío, pone General
+            categoria: categoria || 'General' // Si categoria viene vacía, pondrá General
         }]);
 
         if (error) throw error;
-        res.status(200).json({ mensaje: 'Viaje creado con éxito' });
+        
+        console.log("✅ Viaje guardado correctamente con categoría:", categoria);
+        res.status(200).json({ mensaje: 'Viaje creado' });
+
     } catch (error) {
-        console.error("❌ Error en crear-viaje:", error);
+        console.error("❌ Error al crear viaje:", error.message);
         res.status(400).json({ error: error.message });
     }
 });

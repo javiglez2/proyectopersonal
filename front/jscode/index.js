@@ -171,7 +171,7 @@ async function cargarViajes() {
 
 window.aplicarFiltros = function () {
     const contenedor = document.getElementById('lista-viajes');
-    const filtroObjeto = document.getElementById('filtro-categoria');
+    const filtroObjeto = document.getElementById('filtro-categoria-busqueda');
     const filtro = filtroObjeto ? filtroObjeto.value : 'Todos';
 
     contenedor.innerHTML = '';
