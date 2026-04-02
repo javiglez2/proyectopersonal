@@ -12,7 +12,7 @@ app.use(express.json());
 // --- CONFIGURACIÓN SUPABASE ---
 const supabaseUrl = 'https://lmhtkbrpforiohsxxlzh.supabase.co';
 // Reemplaza esto con tu clave "service_role" (la secreta larga)
-const supabaseKey = 'sb_publishable_-GvUgrKPGPLXpuZfms-AoA_tDQmyvp6'; 
+const supabaseKey = 'sb_publishable_-GvUgrKPGPLXpuZfms-AoA_tDQmyvp6';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // --- RUTAS DE USUARIOS ---
@@ -101,16 +101,23 @@ app.get('/api/mis-viajes/:id_usuario', async (req, res) => {
 });
 
 app.post('/api/crear-viaje', async (req, res) => {
-    // 🌟 AÑADIDO: Recibimos la categoria del body
+    // 🌟 AHORA SÍ RECIBIMOS LA CATEGORÍA
     const { id_conductor, origen, destino, fecha_hora, plazas, precio, latitud, longitud, categoria } = req.body;
-    
+
     const { error } = await supabase.from('viajes').insert([{
-        id_conductor, origen, destino, fecha_hora_salida: fecha_hora,
-        plazas_totales: plazas, plazas_disponibles: plazas,
-        precio, latitud, longitud, estado: 'Activo', 
-        categoria: categoria || 'General' // 🌟 AÑADIDO: Si no mandan nada, es General
+        id_conductor,
+        origen,
+        destino,
+        fecha_hora_salida: fecha_hora,
+        plazas_totales: plazas,
+        plazas_disponibles: plazas,
+        precio,
+        latitud,
+        longitud,
+        estado: 'Activo',
+        categoria: categoria || 'General' // Si falla, pone General
     }]);
-    
+
     if (error) return res.status(400).json({ error: error.message });
     res.status(200).json({ mensaje: 'Viaje creado' });
 });
@@ -124,6 +131,29 @@ app.post('/api/reservar', async (req, res) => {
     const { error: errUpdate } = await supabase.from('viajes').update({ plazas_disponibles: v.plazas_disponibles - 1 }).eq('id', id_viaje);
     if (errUpdate) return res.status(400).json({ error: 'Error al actualizar plazas' });
     res.json({ mensaje: '¡Te has unido con éxito!' });
+});
+
+// --- RUTA PARA BORRAR VIAJES ---
+app.delete('/api/viajes/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // 1. Primero borramos las reservas asociadas a este viaje
+        await supabase.from('reservas').delete().eq('id_viaje', id);
+
+        // 2. Borramos los mensajes del chat asociados a este viaje
+        await supabase.from('mensajes_viajes').delete().eq('id_viaje', id);
+
+        // 3. Finalmente, borramos el viaje
+        const { error } = await supabase.from('viajes').delete().eq('id', id);
+
+        if (error) throw error;
+
+        res.status(200).json({ mensaje: 'Viaje eliminado correctamente' });
+    } catch (error) {
+        console.error("❌ Error al borrar viaje:", error);
+        res.status(400).json({ error: 'No se pudo eliminar el viaje' });
+    }
 });
 
 // --- RUTAS DEL CHAT ---

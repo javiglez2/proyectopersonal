@@ -23,8 +23,11 @@
             <button onclick="togglePanel('panel-mis-viajes')" class="btn-nav">Mis Viajes</button>
 
             <div class="perfil-dropdown-container">
-                <img id="avatar-menu" onclick="toggleDropdown()" src="https://ui-avatars.com/api/?name=P&background=1d352d&color=fff" style="border-radius: 50%; width: 35px; height: 35px; cursor: pointer; border: 2px solid white;" alt="Perfil">
-                
+                <img id="avatar-menu" onclick="toggleDropdown()"
+                    src="https://ui-avatars.com/api/?name=P&background=1d352d&color=fff"
+                    style="border-radius: 50%; width: 35px; height: 35px; cursor: pointer; border: 2px solid white;"
+                    alt="Perfil">
+
                 <div id="myDropdown" class="dropdown-content">
                     <div class="dropdown-header">
                         <b id="nombre-usuario-menu">Cargando...</b>
@@ -45,21 +48,24 @@
         </div>
     </main>
 
-    <div id="panel-disponibles" class="tarjeta-flotante" style="display: block; left: 20px; top: 80px; width: 400px; max-width: 90vw;">
+    <div id="panel-disponibles" class="tarjeta-flotante"
+        style="display: block; left: 20px; top: 80px; width: 400px; max-width: 90vw;">
         <div class="cabecera-tarjeta" id="cabecera-disponibles" style="cursor: move;">
             <span>Viajes Disponibles</span>
             <button onclick="togglePanel('panel-disponibles')" class="btn-cerrar-mini"
                 style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">&times;</button>
         </div>
-        
+
         <div style="padding: 10px; background: #f9fafb; border-bottom: 1px solid #e5e7eb;">
-            <select id="filtro-categoria" onchange="aplicarFiltros()" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; font-weight: bold; color: #374151; cursor: pointer; outline: none;">
-                <option value="Todos">🌍 Ver todos los viajes</option>
-                <option value="UMA Teatinos">🎓 Solo UMA Teatinos</option>
-                <option value="UMA El Ejido">🏛️ Solo UMA El Ejido</option>
-                <option value="Grado Superior">📘 Solo Grado Superior</option>
-                <option value="Otros estudios">📚 Solo Otros estudios</option>
-                <option value="General">🚗 Solo General</option>
+            <select id="form-categoria"
+                style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; outline: none; background: white; cursor: pointer;">
+                <option value="General">General (Cualquier destino)</option>
+                <option value="UMA Teatinos">UMA Teatinos</option>
+                <option value="UMA El Ejido">UMA El Ejido</option>
+                <option value="Centros Antequera/Ronda">Centros Antequera/Ronda</option>
+                <option value="PTA (Parque Tecnológico)">PTA (Parque Tecnológico)</option>
+                <option value="Grado Superior">Grado Superior (Medac/Cesur/IES)</option>
+                <option value="Otros estudios">Otros estudios (Oposiciones/Academias)</option>
             </select>
         </div>
 
@@ -67,7 +73,8 @@
         </div>
     </div>
 
-    <div id="panel-mis-viajes" class="tarjeta-flotante" style="display: none; left: 360px; top: 80px; width: 750px; max-width: 90vw;">
+    <div id="panel-mis-viajes" class="tarjeta-flotante"
+        style="display: none; left: 360px; top: 80px; width: 750px; max-width: 90vw;">
         <div class="cabecera-tarjeta" id="cabecera-mis-viajes" style="cursor: move;">
             <span>Mis Viajes</span>
             <button onclick="togglePanel('panel-mis-viajes')" class="btn-cerrar-mini"
@@ -77,7 +84,8 @@
         </div>
     </div>
 
-    <div id="panel-publicar" class="tarjeta-flotante" style="display: none; right: 20px; top: 80px; width: 400px; max-width: 90vw;">
+    <div id="panel-publicar" class="tarjeta-flotante"
+        style="display: none; right: 20px; top: 80px; width: 400px; max-width: 90vw;">
         <div class="cabecera-tarjeta" id="cabecera-publicar" style="cursor: move;">
             <span>Publicar Viaje</span>
             <button onclick="togglePanel('panel-publicar')" class="btn-cerrar-mini"
@@ -85,42 +93,50 @@
         </div>
         <div class="cuerpo-tarjeta">
             <input type="hidden" id="form-lat"><input type="hidden" id="form-lng">
-            
-            <div class="campo" style="margin-bottom: 12px;"><label>Origen:</label><input type="text" id="form-origen" style="width: 100%;"></div>
-            <div class="campo" style="margin-bottom: 15px;"><label>Destino:</label><input type="text" id="form-destino" style="width: 100%;"></div>
-            
+
+            <div class="campo" style="margin-bottom: 12px;"><label>Origen:</label><input type="text" id="form-origen"
+                    style="width: 100%;"></div>
+            <div class="campo" style="margin-bottom: 15px;"><label>Destino:</label><input type="text" id="form-destino"
+                    style="width: 100%;"></div>
+
             <div class="campo" style="margin-bottom: 15px;">
                 <label>Tipo de Viaje:</label>
-                <select id="form-categoria" style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; outline: none; background: white; cursor: pointer;">
-                    <option value="General">🚗 General (Cualquier destino)</option>
-                    <option value="UMA Teatinos">🎓 UMA Teatinos</option>
-                    <option value="UMA El Ejido">🏛️ UMA El Ejido</option>
-                    <option value="Grado Superior">📘 Grado Superior (Medac/Cesur/IES)</option>
-                    <option value="Otros estudios">📚 Otros estudios (Oposiciones/Academias)</option>
+                <select id="form-categoria"
+                    style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; outline: none; background: white; cursor: pointer;">
+                    <option value="General">General (Cualquier destino)</option>
+                    <option value="UMA Teatinos">UMA Teatinos</option>
+                    <option value="UMA El Ejido">UMA El Ejido</option>
+                    <option value="Centros Antequera/Ronda">Centros Antequera/Ronda</option>
+                    <option value="PTA (Parque Tecnológico)">PTA (Parque Tecnológico)</option>
+                    <option value="Grado Superior">Grado Superior (Medac/Cesur/IES)</option>
+                    <option value="Otros estudios">Otros estudios (Oposiciones/Academias)</option>
                 </select>
             </div>
-            
+
             <div class="campo" style="margin-bottom: 15px;">
                 <label>Fecha y Hora:</label>
-                <input type="text" id="form-fecha" placeholder="Toca aquí para elegir" 
+                <input type="text" id="form-fecha" placeholder="Toca aquí para elegir"
                     style="width: 100%; padding: 12px; background: #ecfdf5; border: 2px solid #10b981; border-radius: 8px; font-weight: bold; text-align: center; color: #047857; cursor: pointer; font-size: 15px;">
             </div>
-            
+
             <div style="display: flex; gap: 15px; margin-bottom: 20px;">
-                <div class="campo" style="flex: 1;"><label>Plazas:</label><input type="number" id="form-plazas" value="3" min="1" max="8" style="width: 100%;"></div>
-                <div class="campo" style="flex: 1;"><label>Precio (€):</label><input type="number" id="form-precio" value="1.50" step="0.50" style="width: 100%;"></div>
+                <div class="campo" style="flex: 1;"><label>Plazas:</label><input type="number" id="form-plazas"
+                        value="3" min="1" max="8" style="width: 100%;"></div>
+                <div class="campo" style="flex: 1;"><label>Precio (€):</label><input type="number" id="form-precio"
+                        value="1.50" step="0.50" style="width: 100%;"></div>
             </div>
-            
-            <button onclick="enviarViajeAlBack()" class="btn-confirmar" 
-                style="background: #10b981; color: white; width: 100%; padding: 14px; border-radius: 8px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);">Publicar Viaje</button>
+
+            <button onclick="enviarViajeAlBack()" class="btn-confirmar"
+                style="background: #10b981; color: white; width: 100%; padding: 14px; border-radius: 8px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);">Publicar
+                Viaje</button>
         </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
-    
-    <script src="jscode/index.js?v=4"></script>
+
+    <script src="jscode/index.js?v=5"></script>
 </body>
 
 </html>

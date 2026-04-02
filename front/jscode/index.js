@@ -8,8 +8,8 @@ let marcadorTemp = null;
 const URL_BACKEND = 'https://proyectopersonal-0xcu.onrender.com';
 
 // Variables para el sistema de filtros
-let todosLosViajes = []; 
-let marcadoresMapa = []; 
+let todosLosViajes = [];
+let marcadoresMapa = [];
 
 const Toast = Swal.mixin({
     toast: true,
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (avatarDisplay) {
             avatarDisplay.src = `https://ui-avatars.com/api/?name=${nombreUsuario}&background=1d352d&color=fff`;
-            
+
             fetch(`${URL_BACKEND}/api/usuarios/${usuarioID}`)
                 .then(res => res.json())
                 .then(usuario => {
@@ -114,19 +114,43 @@ function cerrarSesion() {
 // 📍 GESTIÓN DE VIAJES Y FILTROS
 // ==========================================
 function obtenerEstilosCategoria(categoria) {
-    let colorIcono = 'yellow'; // General por defecto
-    let colorFondo = '#f3f4f6'; // Gris
-    let colorTexto = '#4b5563'; 
+    // 🚗 General por defecto (Azul)
+    let colorIcono = 'blue';
+    let colorFondo = '#dbeafe';
+    let colorTexto = '#1e40af';
 
-    if (categoria === 'UMA Teatinos') { colorIcono = 'green'; colorFondo = '#dcf8c6'; colorTexto = '#166534'; }
-    else if (categoria === 'UMA El Ejido') { colorIcono = 'purple'; colorFondo = '#f3e8ff'; colorTexto = '#6b21a8'; }
-    else if (categoria === 'Grado Superior') { colorIcono = 'blue'; colorFondo = '#dbeafe'; colorTexto = '#1e40af'; }
-    else if (categoria === 'Otros estudios') { colorIcono = 'orange'; colorFondo = '#ffedd5'; colorTexto = '#c2410c'; }
+    // 🎓 UMA Teatinos (Rojo)
+    if (categoria === 'UMA Teatinos') {
+        colorIcono = 'red'; colorFondo = '#fee2e2'; colorTexto = '#991b1b';
+    }
+    // 🏛️ UMA El Ejido (Verde)
+    else if (categoria === 'UMA El Ejido') {
+        colorIcono = 'green'; colorFondo = '#dcf8c6'; colorTexto = '#166534';
+    }
+    // 📘 Grado Superior (Naranja)
+    else if (categoria === 'Grado Superior') {
+        colorIcono = 'orange'; colorFondo = '#ffedd5'; colorTexto = '#c2410c';
+    }
+    // 📚 Otros estudios (Negro)
+    else if (categoria === 'Otros estudios') {
+        colorIcono = 'black'; colorFondo = '#e5e7eb'; colorTexto = '#000000';
+    }
+    // 🏫 Antequera/Ronda (Morado)
+    else if (categoria === 'Centros Antequera/Ronda') {
+        colorIcono = 'purple'; colorFondo = '#f3e8ff'; colorTexto = '#6b21a8';
+    }
+    // 🏢 PTA (Rosa)
+    else if (categoria === 'PTA (Parque Tecnológico)') {
+        colorIcono = 'deeppink'; colorFondo = '#fce7f3'; colorTexto = '#9d174d';
+    }
 
     return {
+        // 🌟 AQUÍ ESTÁ LA MAGIA: Cambiamos "car-side" por "location-dot"
         icono: L.icon({
-            iconUrl: `https://api.iconify.design/fa6-solid/car-side.svg?color=${colorIcono}`,
-            iconSize: [28, 28], iconAnchor: [14, 28], popupAnchor: [0, -28]
+            iconUrl: `https://api.iconify.design/fa6-solid/location-dot.svg?color=${colorIcono}`,
+            iconSize: [28, 28],
+            iconAnchor: [14, 28],
+            popupAnchor: [0, -28]
         }),
         etiqueta: `<span style="background:${colorFondo}; color:${colorTexto}; padding:3px 8px; border-radius:12px; font-size:11px; font-weight:bold;">${categoria}</span>`
     };
@@ -136,20 +160,20 @@ async function cargarViajes() {
     try {
         const res = await fetch(`${URL_BACKEND}/api/viajes`);
         todosLosViajes = await res.json();
-        
+
         // Ordenamos por fecha
         todosLosViajes.sort((a, b) => new Date(a.fecha_hora_salida) - new Date(b.fecha_hora_salida));
-        
+
         // Renderizamos inicialmente todos
         aplicarFiltros();
     } catch (e) { console.error(e); }
 }
 
-window.aplicarFiltros = function() {
+window.aplicarFiltros = function () {
     const contenedor = document.getElementById('lista-viajes');
     const filtroObjeto = document.getElementById('filtro-categoria');
     const filtro = filtroObjeto ? filtroObjeto.value : 'Todos';
-    
+
     contenedor.innerHTML = '';
 
     // 1. Limpiar los coches antiguos del mapa
@@ -187,13 +211,13 @@ window.aplicarFiltros = function() {
         const fechaObj = new Date(v.fecha_hora_salida);
         const diaFormateado = isNaN(fechaObj) ? "Fecha pdte." : fechaObj.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: '2-digit' });
         const horaFormateada = isNaN(fechaObj) ? "--:--" : fechaObj.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-        
+
         const avatarConductor = v.usuarios?.avatar_url || `https://ui-avatars.com/api/?name=${v.usuarios?.nombre || 'C'}&background=1d352d&color=fff`;
 
         const div = document.createElement('div');
         div.className = "viaje-item";
         div.style = "background:white; padding:15px; border-radius:12px; margin-bottom:15px; border:1px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor:pointer;";
-        
+
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <div>
@@ -217,7 +241,7 @@ window.aplicarFiltros = function() {
                 ${btnHTML}
             </div>
         `;
-        
+
         div.onclick = () => mapa.flyTo([v.latitud, v.longitud], 16);
         contenedor.appendChild(div);
     });
@@ -295,15 +319,34 @@ window.copiarEnlaceViaje = function (idViaje) {
 
 window.borrarViaje = async function (idViaje) {
     const result = await Swal.fire({
-        title: '¿Estás seguro?', text: "Se borrarán mensajes y reservas.", icon: 'warning',
-        showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#374151',
-        confirmButtonText: 'Sí, borrar'
+        title: '¿Estás seguro?',
+        text: "Se borrarán también los mensajes y reservas.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#374151',
+        confirmButtonText: 'Sí, borrar',
+        cancelButtonText: 'Cancelar'
     });
+
     if (result.isConfirmed) {
         try {
             const res = await fetch(`${URL_BACKEND}/api/viajes/${idViaje}`, { method: 'DELETE' });
-            if (res.ok) Swal.fire("Eliminado", "", "success").then(() => location.reload());
-        } catch (e) { Swal.fire("Error", "No se pudo borrar", "error"); }
+
+            // 🌟 NUEVO: Capturamos la respuesta exacta del servidor
+            const data = await res.json();
+
+            if (res.ok) {
+                Swal.fire("Eliminado", "El viaje ha sido borrado.", "success").then(() => location.reload());
+            } else {
+                // 🌟 NUEVO: Si falla, nos mostrará el motivo real
+                console.error("Error del servidor:", data);
+                Swal.fire("No se pudo borrar", data.error || "Ruta no encontrada", "error");
+            }
+        } catch (e) {
+            console.error("Error de red:", e);
+            Swal.fire("Error", "No se pudo conectar con el servidor", "error");
+        }
     }
 };
 
@@ -325,7 +368,7 @@ async function unirseViaje(idViaje, evento, boton) {
 
 async function enviarViajeAlBack() {
     const inputFecha = document.getElementById('form-fecha');
-    let fechaFinal = inputFecha.value; 
+    let fechaFinal = inputFecha.value;
 
     if (!fechaFinal && inputFecha._flatpickr) {
         fechaFinal = inputFecha._flatpickr.input.value;
@@ -341,7 +384,7 @@ async function enviarViajeAlBack() {
             id_conductor: usuarioID,
             origen: document.getElementById('form-origen').value || "Origen marcado en mapa",
             destino: document.getElementById('form-destino').value || "Destino pendiente",
-            fecha_hora: fechaISO, 
+            fecha_hora: fechaISO,
             plazas: parseInt(document.getElementById('form-plazas').value) || 1,
             precio: parseFloat(document.getElementById('form-precio').value.toString().replace(',', '.')) || 0,
             latitud: parseFloat(document.getElementById('form-lat').value),
@@ -375,12 +418,12 @@ let intervaloChat = null;
 
 window.abrirChat = function (idViaje, destino) {
     let modal = document.getElementById('modal-chat-dinamico');
-    
+
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'modal-chat-dinamico';
         modal.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:99999; justify-content:center; align-items:center;';
-        
+
         modal.innerHTML = `
             <div style="background:white; width:95%; max-width:450px; height:80vh; max-height:600px; border-radius:16px; display:flex; flex-direction:column; overflow:hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
                 <div style="background:#1d352d; color:white; padding:15px 20px; display:flex; justify-content:space-between; align-items:center;">
@@ -403,15 +446,15 @@ window.abrirChat = function (idViaje, destino) {
             if (e.key === 'Enter') enviarMensaje();
         });
     }
-    
+
     modal.style.display = 'flex';
     chatViajeActual = idViaje;
     document.getElementById('chat-titulo-d').innerText = `💬 Viaje a ${destino}`;
-    
+
     if (intervaloChat) clearInterval(intervaloChat);
-    
+
     cargarMensajes();
-    intervaloChat = setInterval(cargarMensajes, 2000); 
+    intervaloChat = setInterval(cargarMensajes, 2000);
 };
 
 window.cerrarChat = function () {
@@ -427,7 +470,7 @@ async function cargarMensajes() {
         const res = await fetch(`${URL_BACKEND}/api/mensajes/${chatViajeActual}`);
         if (!res.ok) throw new Error("Error al cargar");
         const mensajes = await res.json();
-        
+
         const contenedor = document.getElementById('chat-mensajes-d');
         if (!contenedor) return;
 
@@ -468,7 +511,7 @@ async function cargarMensajes() {
         }).join('');
 
         if (estaAlFinal) contenedor.scrollTop = contenedor.scrollHeight;
-        
+
     } catch (error) {
         console.error("Error cargando mensajes:", error);
     }
@@ -477,26 +520,26 @@ async function cargarMensajes() {
 async function enviarMensaje() {
     const input = document.getElementById('input-chat-d');
     if (!input) return;
-    
+
     const texto = input.value.trim();
     if (!texto || !chatViajeActual) return;
-    
-    input.value = ''; 
-    
+
+    input.value = '';
+
     try {
         await fetch(`${URL_BACKEND}/api/mensajes`, {
-            method: 'POST', 
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id_viaje: chatViajeActual, id_usuario: usuarioID, mensaje: texto })
         });
-        
+
         cargarMensajes();
-        
+
         setTimeout(() => {
             const contenedor = document.getElementById('chat-mensajes-d');
             if (contenedor) contenedor.scrollTop = contenedor.scrollHeight;
         }, 100);
-        
+
     } catch (e) {
         Swal.fire("Error", "No se pudo enviar el mensaje", "error");
     }
