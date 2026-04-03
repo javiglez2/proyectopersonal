@@ -87,9 +87,21 @@ document.addEventListener('DOMContentLoaded', () => {
 function togglePanel(idPanel) {
     const panel = document.getElementById(idPanel);
     if (!panel) return;
-    panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
 
-    if (idPanel === 'panel-mis-viajes' && panel.style.display === 'block') {
+    const esMobil = window.innerWidth <= 768;
+
+    if (esMobil) {
+        const estaAbierto = panel.classList.contains('abierta');
+        // Cerrar todos los paneles primero
+        document.querySelectorAll('.tarjeta-flotante').forEach(p => p.classList.remove('abierta'));
+        // Si estaba cerrado, abrirlo
+        if (!estaAbierto) panel.classList.add('abierta');
+    } else {
+        // Escritorio: comportamiento original
+        panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
+    }
+
+    if (idPanel === 'panel-mis-viajes' && (panel.classList.contains('abierta') || panel.style.display === 'block')) {
         cargarMisViajes();
     }
 }
@@ -197,8 +209,43 @@ window.aplicarFiltros = function () {
         const estilos = obtenerEstilosCategoria(cat);
 
         // Ponemos el coche en el mapa con su nuevo color y lo guardamos
-        const marker = L.marker([v.latitud, v.longitud], { icon: estilos.icono }).addTo(mapa)
-            .bindPopup(`<b>${v.usuarios?.nombre || 'Conductor'}</b> va a <b>${v.destino}</b><br>${estilos.etiqueta}`);
+        const esConductorPin = v.id_conductor === usuarioID;
+        const yaUnidoPin = v.reservas?.some(r => r.id_pasajero === usuarioID);
+        const avatarPin = v.usuarios?.avatar_url || `https://ui-avatars.com/api/?name=${v.usuarios?.nombre || 'C'}&background=1a2e25&color=4ade80`;
+        const fechaPin = new Date(v.fecha_hora_salida);
+        const diaPin = isNaN(fechaPin) ? 'Fecha pdte.' : fechaPin.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
+        const horaPin = isNaN(fechaPin) ? '--:--' : fechaPin.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+        let botonPin = `<button class="popup-btn-unirse" onclick="unirseViaje('${v.id}', event, this)">Unirme</button>`;
+        if (esConductorPin) botonPin = `<span class="popup-badge-tuyo">🚗 Tu viaje</span>`;
+        else if (yaUnidoPin) botonPin = `<span class="popup-badge-unido">✔ Ya estás</span>`;
+
+        const popupHTML = `
+<div class="popup-viaje">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
+        <div>
+            <div class="popup-dest">🏁 ${v.destino}</div>
+            <div class="popup-origen">📍 ${v.origen}</div>
+        </div>
+        <div class="popup-precio">${v.precio}€</div>
+    </div>
+    ${estilos.etiqueta}
+    <div class="popup-meta" style="margin-top:8px;">
+        <span>📅 ${diaPin} · ${horaPin}</span>
+        <span>💺 ${v.plazas_disponibles} plazas</span>
+    </div>
+    <div class="popup-footer">
+        <div class="popup-conductor">
+            <img class="popup-avatar" src="${avatarPin}" alt="">
+            <span class="popup-nombre">${v.usuarios?.nombre || 'Conductor'}</span>
+        </div>
+        ${botonPin}
+    </div>
+</div>`;
+
+        const marker = L.marker([v.latitud, v.longitud], { icon: estilos.icono })
+            .addTo(mapa)
+            .bindPopup(popupHTML, { maxWidth: 260, className: 'popup-benaluma' });
         marcadoresMapa.push(marker);
 
         const yaUnido = v.reservas?.some(r => r.id_pasajero === usuarioID);
@@ -366,7 +413,7 @@ async function unirseViaje(idViaje, evento, boton) {
 
 async function enviarViajeAlBack() {
     const inputFecha = document.getElementById('form-fecha');
-    let fechaFinal = inputFecha.value; 
+    let fechaFinal = inputFecha.value;
 
     if (!fechaFinal && inputFecha._flatpickr) {
         fechaFinal = inputFecha._flatpickr.input.value;
@@ -378,7 +425,7 @@ async function enviarViajeAlBack() {
 
     try {
         const fechaISO = new Date(fechaFinal.replace(' ', 'T')).toISOString();
-        
+
         // Creamos el paquete de datos EXACTO que espera el server.js
         const datosViaje = {
             id_conductor: usuarioID,
@@ -549,13 +596,16 @@ async function enviarMensaje() {
 // ==========================================
 function hacerArrastrable(elmnt, handle) {
     let p1 = 0, p2 = 0, p3 = 0, p4 = 0;
-    
-    if (handle) {
-        handle.onmousedown = dragMouseDown;
-    } else {
-        elmnt.onmousedown = dragMouseDown;
-    }
 
+    const disparador = handle || elmnt;
+
+    // --- RATÓN ---
+    disparador.onmousedown = dragMouseDown;
+
+    // --- TÁCTIL ---
+    disparador.addEventListener('touchstart', dragTouchStart, { passive: false });
+
+    // RATÓN
     function dragMouseDown(e) {
         e.preventDefault();
         p3 = e.clientX;
@@ -570,34 +620,54 @@ function hacerArrastrable(elmnt, handle) {
         p2 = p4 - e.clientY;
         p3 = e.clientX;
         p4 = e.clientY;
-
-        let nuevaPosicionTop = elmnt.offsetTop - p2;
-        let nuevaPosicionLeft = elmnt.offsetLeft - p1;
-
-        // 🛑 LÍMITES DE LA PANTALLA
-        const alturaHeader = document.getElementById('menu-superior').offsetHeight || 60;
-        
-        // Límite Arriba (No dejar que se meta bajo el menú)
-        if (nuevaPosicionTop < alturaHeader + 10) nuevaPosicionTop = alturaHeader + 10;
-        
-        // Límite Abajo (No dejar que desaparezca por el suelo)
-        const maxTop = window.innerHeight - 50; 
-        if (nuevaPosicionTop > maxTop) nuevaPosicionTop = maxTop;
-        
-        // Límite Izquierda
-        if (nuevaPosicionLeft < 0) nuevaPosicionLeft = 0;
-        
-        // Límite Derecha (Ancho de la pantalla menos el ancho de la tarjeta)
-        const maxLeft = window.innerWidth - elmnt.offsetWidth;
-        if (nuevaPosicionLeft > maxLeft) nuevaPosicionLeft = maxLeft;
-
-        // Aplicar la posición calculada
-        elmnt.style.top = nuevaPosicionTop + "px";
-        elmnt.style.left = nuevaPosicionLeft + "px";
+        aplicarMovimiento();
     }
 
     function closeDragElement() {
         document.onmouseup = null;
         document.onmousemove = null;
+    }
+
+    // TÁCTIL
+    function dragTouchStart(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        p3 = touch.clientX;
+        p4 = touch.clientY;
+        document.addEventListener('touchmove', dragTouchMove, { passive: false });
+        document.addEventListener('touchend', closeTouchDrag);
+    }
+
+    function dragTouchMove(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        p1 = p3 - touch.clientX;
+        p2 = p4 - touch.clientY;
+        p3 = touch.clientX;
+        p4 = touch.clientY;
+        aplicarMovimiento();
+    }
+
+    function closeTouchDrag() {
+        document.removeEventListener('touchmove', dragTouchMove);
+        document.removeEventListener('touchend', closeTouchDrag);
+    }
+
+    // LÓGICA COMÚN DE MOVIMIENTO CON LÍMITES
+    function aplicarMovimiento() {
+        let nuevaPosicionTop = elmnt.offsetTop - p2;
+        let nuevaPosicionLeft = elmnt.offsetLeft - p1;
+
+        const alturaHeader = document.getElementById('menu-superior').offsetHeight || 60;
+
+        if (nuevaPosicionTop < alturaHeader + 10) nuevaPosicionTop = alturaHeader + 10;
+        const maxTop = window.innerHeight - 50;
+        if (nuevaPosicionTop > maxTop) nuevaPosicionTop = maxTop;
+        if (nuevaPosicionLeft < 0) nuevaPosicionLeft = 0;
+        const maxLeft = window.innerWidth - elmnt.offsetWidth;
+        if (nuevaPosicionLeft > maxLeft) nuevaPosicionLeft = maxLeft;
+
+        elmnt.style.top = nuevaPosicionTop + "px";
+        elmnt.style.left = nuevaPosicionLeft + "px";
     }
 }
