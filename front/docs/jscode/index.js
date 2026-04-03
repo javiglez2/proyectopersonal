@@ -29,11 +29,14 @@ document.addEventListener('DOMContentLoaded', () => {
         attribution: '© CARTO'
     }).addTo(mapa);
 
-    setTimeout(() => { mapa.invalidateSize(); }, 500);
+    // 2. Un simple reajuste medio segundo después de cargar
+    setTimeout(() => {
+        mapa.invalidateSize();
+    }, 500);
 
-    // 2. Publicar al hacer clic
+    // 3. Publicar al hacer clic
     mapa.on('click', (e) => {
-        if (!usuarioID) return Swal.fire("Inicia sesión", "Debes estar conectado para publicar", "info");
+        if (!usuarioID) return Swal.fire("Inicia sesión", "", "info");
         if (marcadorTemp) mapa.removeLayer(marcadorTemp);
         marcadorTemp = L.marker(e.latlng).addTo(mapa).bindPopup(`
             <button onclick="prepararViaje(${e.latlng.lat}, ${e.latlng.lng})" style="background:#2563eb; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer; font-weight:bold;">
