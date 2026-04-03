@@ -7,18 +7,20 @@ body {
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     background-color: #111;
     height: 100vh;
-    width: 100vw; /* Aseguramos que ocupe el 100% del ancho */
+    width: 100vw;
     overflow: hidden;
-    /* 🌟 HEMOS BORRADO EL DISPLAY: FLEX AQUÍ */
+    /* 🌟 EL TRUCO: Bloquea el scroll fantasma del móvil */
+    position: fixed; 
 }
 
 /* --- NAVBAR --- */
 #menu-superior {
-    position: absolute; /* 🌟 FIJAMOS EL MENÚ ARRIBA */
+    /* 🌟 PEGADO AL CRISTAL DE LA PANTALLA */
+    position: fixed !important; 
     top: 0; 
     left: 0;
     width: 100%;
-    height: 60px; /* 🌟 ALTURA EXACTA */
+    height: 60px; 
     background-color: #1a2e25;
     color: white;
     padding: 10px 18px;
@@ -57,9 +59,9 @@ body {
 }
 
 /* --- MAPA --- */
-/* --- MAPA --- */
 #contenedor-principal {
-    position: absolute !important;
+    /* 🌟 PEGADO AL CRISTAL DE LA PANTALLA DEBAJO DEL MENÚ */
+    position: fixed !important;
     top: 60px !important;
     left: 0 !important;
     right: 0 !important;
@@ -81,10 +83,13 @@ body {
     z-index: 1 !important;
 }
 
+/* (El escudo de las baldosas que pusimos antes sigue aquí debajo) */
 .leaflet-container img.leaflet-tile {
     max-width: none !important;
+    max-height: none !important;
     margin: 0 !important;
     padding: 0 !important;
+    border: none !important;
 }
 
 #indicador-mapa {
