@@ -29,14 +29,12 @@ document.addEventListener('DOMContentLoaded', () => {
         attribution: '© CARTO'
     }).addTo(mapa);
 
-    // 2. Un simple reajuste medio segundo después de cargar
-    setTimeout(() => {
-        mapa.invalidateSize();
-    }, 500);
+    // Ajuste de seguridad para que Leaflet no deje cuadros rotos
+    setTimeout(() => { mapa.invalidateSize(); }, 500);
 
-    // 3. Publicar al hacer clic
+    // 2. Publicar al hacer clic
     mapa.on('click', (e) => {
-        if (!usuarioID) return Swal.fire("Inicia sesión", "", "info");
+        if (!usuarioID) return Swal.fire("Inicia sesión", "Debes estar conectado para publicar", "info");
         if (marcadorTemp) mapa.removeLayer(marcadorTemp);
         marcadorTemp = L.marker(e.latlng).addTo(mapa).bindPopup(`
             <button onclick="prepararViaje(${e.latlng.lat}, ${e.latlng.lng})" style="background:#2563eb; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer; font-weight:bold;">
@@ -78,36 +76,58 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarViajes();
     cargarMisViajes();
 
-    // 5. Paneles Arrastrables
+    // 5. Paneles Arrastrables (PC y Táctil)
     hacerArrastrable(document.getElementById("panel-disponibles"), document.getElementById("cabecera-disponibles"));
     hacerArrastrable(document.getElementById("panel-mis-viajes"), document.getElementById("cabecera-mis-viajes"));
     hacerArrastrable(document.getElementById("panel-publicar"), document.getElementById("cabecera-publicar"));
 });
 
 // ==========================================
-// 📱 FUNCIONES DE INTERFAZ
+// 📱 APERTURA DE PANELES (MÓVIL / TABLET / PC)
 // ==========================================
-function togglePanel(idPanel) {
+window.togglePanel = function(idPanel) {
     const panel = document.getElementById(idPanel);
     if (!panel) return;
 
-    const esMobil = window.innerWidth <= 768;
+    // Detectamos si es Móvil o Tablet (hasta 1024px)
+    const esMovilOTablet = window.innerWidth <= 1024;
 
-    if (esMobil) {
+    if (esMovilOTablet) {
         const estaAbierto = panel.classList.contains('abierta');
-        // Cerrar todos los paneles primero
-        document.querySelectorAll('.tarjeta-flotante').forEach(p => p.classList.remove('abierta'));
-        // Si estaba cerrado, abrirlo
-        if (!estaAbierto) panel.classList.add('abierta');
+        
+        // 1. Cerramos todos los paneles bajándolos
+        document.querySelectorAll('.tarjeta-flotante').forEach(p => {
+            p.classList.remove('abierta');
+            // Ocultamos del todo la caja después de que termine la animación de bajar (350ms)
+            setTimeout(() => { if (!p.classList.contains('abierta')) p.style.display = 'none'; }, 350);
+        });
+
+        // 2. Si el que hemos tocado estaba cerrado, lo abrimos
+        if (!estaAbierto) {
+            panel.style.display = 'flex'; // Le devolvemos la vida en el HTML
+            // Un micro-segundo de espera para que el navegador procese el display antes de animar
+            setTimeout(() => panel.classList.add('abierta'), 10);
+        }
     } else {
-        // Escritorio: comportamiento original
-        panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
+        // --- MODO ESCRITORIO ---
+        if (panel.style.display === 'none' || panel.style.display === '') {
+            panel.style.display = 'flex';
+            
+            // Centramos Mis Viajes para que no choque en pantallas medianas
+            if (idPanel === 'panel-mis-viajes' && window.innerWidth < 1200) {
+                panel.style.left = '50%';
+                panel.style.transform = 'translateX(-50%)';
+            }
+        } else {
+            panel.style.display = 'none';
+        }
     }
 
-    if (idPanel === 'panel-mis-viajes' && (panel.classList.contains('abierta') || panel.style.display === 'block')) {
+    // Refrescar los viajes siempre que se abra ese panel
+    if (idPanel === 'panel-mis-viajes') {
         cargarMisViajes();
     }
-}
+};
 
 function toggleDropdown() {
     document.getElementById("myDropdown").classList.toggle("show");
@@ -129,43 +149,19 @@ function cerrarSesion() {
 // 📍 GESTIÓN DE VIAJES Y FILTROS
 // ==========================================
 function obtenerEstilosCategoria(categoria) {
-    // 🚗 General por defecto (Azul)
-    let colorIcono = 'blue';
-    let colorFondo = '#dbeafe';
-    let colorTexto = '#1e40af';
-
-    // 🎓 UMA Teatinos (Rojo)
-    if (categoria === 'UMA Teatinos') {
-        colorIcono = 'red'; colorFondo = '#fee2e2'; colorTexto = '#991b1b';
-    }
-    // 🏛️ UMA El Ejido (Verde)
-    else if (categoria === 'UMA El Ejido') {
-        colorIcono = 'green'; colorFondo = '#dcf8c6'; colorTexto = '#166534';
-    }
-    // 📘 Grado Superior (Naranja)
-    else if (categoria === 'Grado Superior') {
-        colorIcono = 'orange'; colorFondo = '#ffedd5'; colorTexto = '#c2410c';
-    }
-    // 📚 Otros estudios (Negro)
-    else if (categoria === 'Otros estudios') {
-        colorIcono = 'black'; colorFondo = '#e5e7eb'; colorTexto = '#000000';
-    }
-    // 🏫 Antequera/Ronda (Morado)
-    else if (categoria === 'Centros Antequera/Ronda') {
-        colorIcono = 'purple'; colorFondo = '#f3e8ff'; colorTexto = '#6b21a8';
-    }
-    // 🏢 PTA (Rosa)
-    else if (categoria === 'PTA (Parque Tecnológico)') {
-        colorIcono = 'deeppink'; colorFondo = '#fce7f3'; colorTexto = '#9d174d';
-    }
+    let colorIcono = 'blue'; let colorFondo = '#dbeafe'; let colorTexto = '#1e40af';
+    
+    if (categoria === 'UMA Teatinos') { colorIcono = 'red'; colorFondo = '#fee2e2'; colorTexto = '#991b1b'; }
+    else if (categoria === 'UMA El Ejido') { colorIcono = 'green'; colorFondo = '#dcf8c6'; colorTexto = '#166534'; }
+    else if (categoria === 'Grado Superior') { colorIcono = 'orange'; colorFondo = '#ffedd5'; colorTexto = '#c2410c'; }
+    else if (categoria === 'Otros estudios') { colorIcono = 'black'; colorFondo = '#e5e7eb'; colorTexto = '#000000'; }
+    else if (categoria === 'Centros Antequera/Ronda') { colorIcono = 'purple'; colorFondo = '#f3e8ff'; colorTexto = '#6b21a8'; }
+    else if (categoria === 'PTA (Parque Tecnológico)') { colorIcono = 'deeppink'; colorFondo = '#fce7f3'; colorTexto = '#9d174d'; }
 
     return {
-        // 🌟 AQUÍ ESTÁ LA MAGIA: Cambiamos "car-side" por "location-dot"
         icono: L.icon({
             iconUrl: `https://api.iconify.design/fa6-solid/location-dot.svg?color=${colorIcono}`,
-            iconSize: [28, 28],
-            iconAnchor: [14, 28],
-            popupAnchor: [0, -28]
+            iconSize: [28, 28], iconAnchor: [14, 28], popupAnchor: [0, -28]
         }),
         etiqueta: `<span style="background:${colorFondo}; color:${colorTexto}; padding:3px 8px; border-radius:12px; font-size:11px; font-weight:bold;">${categoria}</span>`
     };
@@ -175,11 +171,7 @@ async function cargarViajes() {
     try {
         const res = await fetch(`${URL_BACKEND}/api/viajes`);
         todosLosViajes = await res.json();
-
-        // Ordenamos por fecha
         todosLosViajes.sort((a, b) => new Date(a.fecha_hora_salida) - new Date(b.fecha_hora_salida));
-
-        // Renderizamos inicialmente todos
         aplicarFiltros();
     } catch (e) { console.error(e); }
 }
@@ -190,12 +182,9 @@ window.aplicarFiltros = function () {
     const filtro = filtroObjeto ? filtroObjeto.value : 'Todos';
 
     contenedor.innerHTML = '';
-
-    // 1. Limpiar los coches antiguos del mapa
     marcadoresMapa.forEach(m => mapa.removeLayer(m));
     marcadoresMapa = [];
 
-    // 2. Filtrar los viajes según el desplegable
     let viajesFiltrados = todosLosViajes;
     if (filtro !== 'Todos') {
         viajesFiltrados = todosLosViajes.filter(v => (v.categoria || 'General') === filtro);
@@ -206,49 +195,12 @@ window.aplicarFiltros = function () {
         return;
     }
 
-    // 3. Pintar los viajes filtrados
     viajesFiltrados.forEach(v => {
         const cat = v.categoria || 'General';
         const estilos = obtenerEstilosCategoria(cat);
 
-        // Ponemos el coche en el mapa con su nuevo color y lo guardamos
-        const esConductorPin = v.id_conductor === usuarioID;
-        const yaUnidoPin = v.reservas?.some(r => r.id_pasajero === usuarioID);
-        const avatarPin = v.usuarios?.avatar_url || `https://ui-avatars.com/api/?name=${v.usuarios?.nombre || 'C'}&background=1a2e25&color=4ade80`;
-        const fechaPin = new Date(v.fecha_hora_salida);
-        const diaPin = isNaN(fechaPin) ? 'Fecha pdte.' : fechaPin.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
-        const horaPin = isNaN(fechaPin) ? '--:--' : fechaPin.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-
-        let botonPin = `<button class="popup-btn-unirse" onclick="unirseViaje('${v.id}', event, this)">Unirme</button>`;
-        if (esConductorPin) botonPin = `<span class="popup-badge-tuyo">🚗 Tu viaje</span>`;
-        else if (yaUnidoPin) botonPin = `<span class="popup-badge-unido">✔ Ya estás</span>`;
-
-        const popupHTML = `
-<div class="popup-viaje">
-    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
-        <div>
-            <div class="popup-dest">🏁 ${v.destino}</div>
-            <div class="popup-origen">📍 ${v.origen}</div>
-        </div>
-        <div class="popup-precio">${v.precio}€</div>
-    </div>
-    ${estilos.etiqueta}
-    <div class="popup-meta" style="margin-top:8px;">
-        <span>📅 ${diaPin} · ${horaPin}</span>
-        <span>💺 ${v.plazas_disponibles} plazas</span>
-    </div>
-    <div class="popup-footer">
-        <div class="popup-conductor">
-            <img class="popup-avatar" src="${avatarPin}" alt="">
-            <span class="popup-nombre">${v.usuarios?.nombre || 'Conductor'}</span>
-        </div>
-        ${botonPin}
-    </div>
-</div>`;
-
-        const marker = L.marker([v.latitud, v.longitud], { icon: estilos.icono })
-            .addTo(mapa)
-            .bindPopup(popupHTML, { maxWidth: 260, className: 'popup-benaluma' });
+        const marker = L.marker([v.latitud, v.longitud], { icon: estilos.icono }).addTo(mapa)
+            .bindPopup(`<b>${v.usuarios?.nombre || 'Conductor'}</b> va a <b>${v.destino}</b><br>${estilos.etiqueta}`);
         marcadoresMapa.push(marker);
 
         const yaUnido = v.reservas?.some(r => r.id_pasajero === usuarioID);
@@ -380,13 +332,10 @@ window.borrarViaje = async function (idViaje) {
     });
 
     if (result.isConfirmed) {
-        // Mostramos un "Cargando" mientras el servidor responde
         Swal.fire({ title: 'Borrando...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-
         try {
             const res = await fetch(`${URL_BACKEND}/api/viajes/${idViaje}`, { method: 'DELETE' });
             const data = await res.json();
-
             if (res.ok) {
                 Swal.fire("Eliminado", "El viaje ha sido borrado.", "success").then(() => location.reload());
             } else {
@@ -401,7 +350,8 @@ window.borrarViaje = async function (idViaje) {
 function prepararViaje(lat, lng) {
     document.getElementById('form-lat').value = lat;
     document.getElementById('form-lng').value = lng;
-    document.getElementById('panel-publicar').style.display = 'block';
+    // Forzamos abrir el panel de publicar
+    togglePanel('panel-publicar');
     mapa.closePopup();
 }
 
@@ -429,7 +379,6 @@ async function enviarViajeAlBack() {
     try {
         const fechaISO = new Date(fechaFinal.replace(' ', 'T')).toISOString();
 
-        // Creamos el paquete de datos EXACTO que espera el server.js
         const datosViaje = {
             id_conductor: usuarioID,
             origen: document.getElementById('form-origen').value,
@@ -439,7 +388,7 @@ async function enviarViajeAlBack() {
             precio: document.getElementById('form-precio').value,
             latitud: document.getElementById('form-lat').value,
             longitud: document.getElementById('form-lng').value,
-            categoria: document.getElementById('form-categoria').value // 🌟 LA CLAVE
+            categoria: document.getElementById('form-categoria').value // 🌟 LA CLAVE DE LAS CATEGORÍAS
         };
 
         const res = await fetch(`${URL_BACKEND}/api/crear-viaje`, {
@@ -449,7 +398,7 @@ async function enviarViajeAlBack() {
         });
 
         if (res.ok) {
-            Swal.fire("¡Éxito!", "Viaje categorizado correctamente", "success").then(() => location.reload());
+            Swal.fire("¡Éxito!", "Viaje publicado correctamente", "success").then(() => location.reload());
         } else {
             const err = await res.json();
             Swal.fire("Error", err.error, "error");
@@ -460,7 +409,7 @@ async function enviarViajeAlBack() {
 }
 
 // ==========================================
-// 💬 CHAT DINÁMICO (VERSIÓN PRO)
+// 💬 CHAT DINÁMICO
 // ==========================================
 let chatViajeActual = null;
 let intervaloChat = null;
@@ -610,6 +559,8 @@ function hacerArrastrable(elmnt, handle) {
 
     // RATÓN
     function dragMouseDown(e) {
+        // Ignorar clics en botones de cierre en la cabecera
+        if(e.target.tagName === 'BUTTON') return;
         e.preventDefault();
         p3 = e.clientX;
         p4 = e.clientY;
@@ -633,7 +584,7 @@ function hacerArrastrable(elmnt, handle) {
 
     // TÁCTIL
     function dragTouchStart(e) {
-        e.preventDefault();
+        if(e.target.tagName === 'BUTTON') return;
         const touch = e.touches[0];
         p3 = touch.clientX;
         p4 = touch.clientY;
@@ -642,7 +593,6 @@ function hacerArrastrable(elmnt, handle) {
     }
 
     function dragTouchMove(e) {
-        e.preventDefault();
         const touch = e.touches[0];
         p1 = p3 - touch.clientX;
         p2 = p4 - touch.clientY;
@@ -658,6 +608,10 @@ function hacerArrastrable(elmnt, handle) {
 
     // LÓGICA COMÚN DE MOVIMIENTO CON LÍMITES
     function aplicarMovimiento() {
+        // Si estamos en modo móvil/tablet, el panel es un "bottom sheet" y no se arrastra libremente en X/Y.
+        // Se controla solo con el CSS de "bottom" al pulsar abrir/cerrar.
+        if (window.innerWidth <= 1024) return;
+
         let nuevaPosicionTop = elmnt.offsetTop - p2;
         let nuevaPosicionLeft = elmnt.offsetLeft - p1;
 

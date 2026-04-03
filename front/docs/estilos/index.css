@@ -387,29 +387,33 @@ body {
 /* --- SWEETALERT --- */
 .swal2-container { z-index: 9999999 !important; }
 
-/* --- MÓVIL: BOTTOM SHEETS --- */
-@media (max-width: 768px) {
+/* --- MÓVIL Y TABLET: BOTTOM SHEETS --- */
+/* 🌟 Subimos a 1024px para que las tablets entren en este modo seguro */
+@media (max-width: 1024px) { 
     #menu-superior h1 { font-size: 17px; }
 
     .btn-nav { font-size: 11px; padding: 6px 11px; }
 
     .tarjeta-flotante {
         position: fixed !important;
-        width: 100% !important;
-        left: 0 !important; right: 0 !important;
+        width: 100vw !important; /* 100% de la pantalla para que no desborde */
+        left: 0 !important; 
+        right: 0 !important;
         top: auto !important;
-        bottom: -100% !important;
+        bottom: -100% !important; /* Escondido por debajo de la pantalla */
         border-radius: 24px 24px 0 0 !important;
-        max-height: 72vh;
+        max-height: 80vh !important;
         transition: bottom 0.35s cubic-bezier(0.32, 0.72, 0, 1);
         box-shadow: 0 -4px 30px rgba(0,0,0,0.2) !important;
+        transform: none !important; /* Anulamos cualquier centrado de escritorio */
     }
 
+    /* Clase mágica que el JS usa para subir el panel */
     .tarjeta-flotante.abierta {
         bottom: 0 !important;
     }
 
-    /* Pastilla de agarre */
+    /* Rayita blanca decorativa para "tirar" hacia abajo */
     .cabecera-tarjeta::before {
         content: '';
         display: block;
@@ -430,6 +434,4 @@ body {
     #panel-publicar, #panel-disponibles, #panel-mis-viajes {
         width: 100% !important;
     }
-
-    #panel-mis-viajes { max-height: 82vh; }
 }
