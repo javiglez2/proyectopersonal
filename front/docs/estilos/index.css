@@ -440,3 +440,20 @@ body {
         width: 100% !important;
     }
 }
+
+.popup-publicar-limpio .leaflet-popup-content-wrapper {
+    min-width: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.popup-publicar-limpio .leaflet-popup-content {
+    width: max-content !important;
+    margin: 0 !important;
+}
+
+/* Ocultamos el piquito de abajo y la X */
+.popup-publicar-limpio .leaflet-popup-tip-container {
+    display: none !important; 
+}

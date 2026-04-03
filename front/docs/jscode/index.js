@@ -33,14 +33,30 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => { mapa.invalidateSize(); }, 500);
 
     // 2. Publicar al hacer clic
+    // 2. Publicar al hacer clic
     mapa.on('click', (e) => {
         if (!usuarioID) return Swal.fire("Inicia sesión", "Debes estar conectado para publicar", "info");
+
+        // Si ya había uno, lo quitamos
         if (marcadorTemp) mapa.removeLayer(marcadorTemp);
+
+        // Creamos el nuevo marcador
         marcadorTemp = L.marker(e.latlng).addTo(mapa).bindPopup(`
-            <button onclick="prepararViaje(${e.latlng.lat}, ${e.latlng.lng})" style="background:#2563eb; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer; font-weight:bold;">
+            <button onclick="prepararViaje(${e.latlng.lat}, ${e.latlng.lng})" style="background:#2563eb; color:white; border:none; padding:10px 18px; border-radius:20px; cursor:pointer; font-weight:bold; font-size:14px; box-shadow:0 4px 12px rgba(37,99,235,0.4);">
                 Publicar aquí 🚗
             </button>
-        `).openPopup();
+        `, {
+            closeButton: false,
+            className: 'popup-publicar-limpio'
+        }).openPopup();
+
+        // 🌟 EL TRUCO: Cuando el popup se cierra (al tocar cualquier otra parte del mapa), borramos el pincho
+        marcadorTemp.on('popupclose', () => {
+            if (marcadorTemp) {
+                mapa.removeLayer(marcadorTemp);
+                marcadorTemp = null;
+            }
+        });
     });
 
     // 3. Perfil de usuario e Imágenes
@@ -85,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 // 📱 APERTURA DE PANELES (MÓVIL / TABLET / PC)
 // ==========================================
-window.togglePanel = function(idPanel) {
+window.togglePanel = function (idPanel) {
     const panel = document.getElementById(idPanel);
     if (!panel) return;
 
@@ -94,7 +110,7 @@ window.togglePanel = function(idPanel) {
 
     if (esMovilOTablet) {
         const estaAbierto = panel.classList.contains('abierta');
-        
+
         // 1. Cerramos todos los paneles bajándolos
         document.querySelectorAll('.tarjeta-flotante').forEach(p => {
             p.classList.remove('abierta');
@@ -112,7 +128,7 @@ window.togglePanel = function(idPanel) {
         // --- MODO ESCRITORIO ---
         if (panel.style.display === 'none' || panel.style.display === '') {
             panel.style.display = 'flex';
-            
+
             // Centramos Mis Viajes para que no choque en pantallas medianas
             if (idPanel === 'panel-mis-viajes' && window.innerWidth < 1200) {
                 panel.style.left = '50%';
@@ -150,7 +166,7 @@ function cerrarSesion() {
 // ==========================================
 function obtenerEstilosCategoria(categoria) {
     let colorIcono = 'blue'; let colorFondo = '#dbeafe'; let colorTexto = '#1e40af';
-    
+
     if (categoria === 'UMA Teatinos') { colorIcono = 'red'; colorFondo = '#fee2e2'; colorTexto = '#991b1b'; }
     else if (categoria === 'UMA El Ejido') { colorIcono = 'green'; colorFondo = '#dcf8c6'; colorTexto = '#166534'; }
     else if (categoria === 'Grado Superior') { colorIcono = 'orange'; colorFondo = '#ffedd5'; colorTexto = '#c2410c'; }
@@ -560,7 +576,7 @@ function hacerArrastrable(elmnt, handle) {
     // RATÓN
     function dragMouseDown(e) {
         // Ignorar clics en botones de cierre en la cabecera
-        if(e.target.tagName === 'BUTTON') return;
+        if (e.target.tagName === 'BUTTON') return;
         e.preventDefault();
         p3 = e.clientX;
         p4 = e.clientY;
@@ -584,7 +600,7 @@ function hacerArrastrable(elmnt, handle) {
 
     // TÁCTIL
     function dragTouchStart(e) {
-        if(e.target.tagName === 'BUTTON') return;
+        if (e.target.tagName === 'BUTTON') return;
         const touch = e.touches[0];
         p3 = touch.clientX;
         p4 = touch.clientY;
