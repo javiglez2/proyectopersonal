@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Creamos el nuevo marcador
         marcadorTemp = L.marker(e.latlng).addTo(mapa).bindPopup(`
             <button onclick="prepararViaje(${e.latlng.lat}, ${e.latlng.lng})" style="background:#2563eb; color:white; border:none; padding:10px 18px; border-radius:20px; cursor:pointer; font-weight:bold; font-size:14px; box-shadow:0 4px 12px rgba(37,99,235,0.4);">
-                Publicar aquí 🚗
+                Publicar aquí
             </button>
         `, {
             closeButton: false,
@@ -207,7 +207,7 @@ window.aplicarFiltros = function () {
     }
 
     if (viajesFiltrados.length === 0) {
-        contenedor.innerHTML = `<div style="padding:20px; text-align:center; color:#6b7280;">📍 No hay viajes en esta categoría.</div>`;
+        contenedor.innerHTML = `<div style="padding:20px; text-align:center; color:#6b7280;">No hay viajes en esta categoría.</div>`;
         return;
     }
 
@@ -223,7 +223,7 @@ window.aplicarFiltros = function () {
         const esConductor = v.id_conductor === usuarioID;
 
         let btnHTML = `<button onclick="unirseViaje('${v.id}', event, this)" style="background:#10b981; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-weight:bold;">Unirme</button>`;
-        if (esConductor) btnHTML = `<span style="background:#f3f4f6; padding:5px 10px; border-radius:5px; color:#4b5563; font-size:12px; font-weight:bold;">🚗 Tu viaje</span>`;
+        if (esConductor) btnHTML = `<span style="background:#f3f4f6; padding:5px 10px; border-radius:5px; color:#4b5563; font-size:12px; font-weight:bold;">Tu viaje</span>`;
         else if (yaUnido) btnHTML = `<span style="background:#dcf8c6; padding:5px 10px; border-radius:5px; color:#166534; font-size:12px; font-weight:bold;">✔ Ya estás dentro</span>`;
 
         const fechaObj = new Date(v.fecha_hora_salida);
@@ -239,16 +239,16 @@ window.aplicarFiltros = function () {
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <div>
-                    <b style="font-size:16px; color:#111827;">🏁 ${v.destino}</b> 
+                    <b style="font-size:16px; color:#111827;">${v.destino}</b> 
                     <div style="margin-top:5px;">${estilos.etiqueta}</div>
                 </div>
                 <b style="color:#2563eb; font-size:18px;">${v.precio}€</b>
             </div>
-            <div style="font-size:13px; color:#6b7280; margin-top:8px;">📍 De: ${v.origen}</div>
+            <div style="font-size:13px; color:#6b7280; margin-top:8px;">De: ${v.origen}</div>
             
             <div style="background:#f9fafb; border-radius:8px; padding:10px; margin-top:12px; display:flex; justify-content:space-between; font-size:13px; color:#374151; font-weight:500;">
-                <span>📅 ${diaFormateado} - ⏰ ${horaFormateada}</span>
-                <span>💺 ${v.plazas_disponibles} plazas</span>
+                <span>${diaFormateado} - ${horaFormateada}</span>
+                <span>${v.plazas_disponibles} plazas</span>
             </div>
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
@@ -306,13 +306,13 @@ async function cargarMisViajes() {
                     <b>A: ${v.destino}</b>
                     <div style="margin-top:5px;">${estilos.etiqueta}</div>
                     <div style="font-size: 13px; color: #4b5563; margin: 10px 0; background: #f9fafb; padding: 10px; border-radius: 8px;">
-                        📅 <b>Día:</b> ${dia} | ⏰ <b>Hora:</b> ${hora} <br>
-                        👥 <b>Pasajeros:</b> ${textoPasajeros}
+                        <b>Día:</b> ${dia} | <b>Hora:</b> ${hora} <br>
+                        <b>Pasajeros:</b> ${textoPasajeros}
                     </div>
                     ${esConductor ? `
                         <div style="display: flex; gap: 5px; margin-bottom: 8px;">
-                            <button onclick="copiarEnlaceViaje('${v.id}')" style="flex: 1; background: #f3f4f6; border: 1px solid #d1d5db; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px;">📋 Copiar Link</button>
-                            <button onclick="borrarViaje('${v.id}')" style="background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; padding: 10px; border-radius: 8px; cursor: pointer;">🗑️</button>
+                            <button onclick="copiarEnlaceViaje('${v.id}')" style="flex: 1; background: #f3f4f6; border: 1px solid #d1d5db; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px;">Copiar Link</button>
+                            <button onclick="borrarViaje('${v.id}')" style="background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; padding: 10px; border-radius: 8px; cursor: pointer;">Borrar</button>
                         </div>
                     ` : ''}
                     <button onclick="abrirChat('${v.id}', '${v.destino}')" style="width: 100%; background: #374151; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold;">Abrir Chat</button>
@@ -322,7 +322,7 @@ async function cargarMisViajes() {
         contenedor.innerHTML = `
             <div style="display:flex; flex-wrap:wrap; gap:20px; padding:10px;">
                 <div style="flex:1; min-width:280px;"><h4>Mis Viajes Creados</h4>${creados.map(v => generarTarjeta(v, true)).join('') || 'Sin viajes'}</div>
-                <div style="flex:1; min-width:280px;"><h4>Viajes donde me uní</h4>${unidos.map(v => generarTarjeta(v, false)).join('') || 'Sin viajes'}</div>
+                <div style="flex:1; min-width:280px;"><h4>Viajes a los que me he unido</h4>${unidos.map(v => generarTarjeta(v, false)).join('') || 'Sin viajes'}</div>
             </div>`;
     } catch (e) { console.error(e); }
 }
@@ -441,7 +441,7 @@ window.abrirChat = function (idViaje, destino) {
         modal.innerHTML = `
             <div style="background:white; width:95%; max-width:450px; height:80vh; max-height:600px; border-radius:16px; display:flex; flex-direction:column; overflow:hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
                 <div style="background:#1d352d; color:white; padding:15px 20px; display:flex; justify-content:space-between; align-items:center;">
-                    <b id="chat-titulo-d" style="font-size:18px;">💬 Chat</b>
+                    <b id="chat-titulo-d" style="font-size:18px;">Chat</b>
                     <button onclick="cerrarChat()" style="color:white; background:none; border:none; font-size:28px; cursor:pointer; line-height:1;">&times;</button>
                 </div>
                 
@@ -463,7 +463,7 @@ window.abrirChat = function (idViaje, destino) {
 
     modal.style.display = 'flex';
     chatViajeActual = idViaje;
-    document.getElementById('chat-titulo-d').innerText = `💬 Viaje a ${destino}`;
+    document.getElementById('chat-titulo-d').innerText = `Viaje a ${destino}`;
 
     if (intervaloChat) clearInterval(intervaloChat);
 
@@ -489,7 +489,7 @@ async function cargarMensajes() {
         if (!contenedor) return;
 
         if (mensajes.length === 0) {
-            contenedor.innerHTML = `<div style="text-align:center; color:#6b7280; font-size:13px; margin-top:20px; background:white; padding:10px; border-radius:10px;">No hay mensajes aún. ¡Di hola! 👋</div>`;
+            contenedor.innerHTML = `<div style="text-align:center; color:#6b7280; font-size:13px; margin-top:20px; background:white; padding:10px; border-radius:10px;">No hay mensajes aún. ¡Di hola!</div>`;
             return;
         }
 
