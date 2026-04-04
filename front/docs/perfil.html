@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Benaluma - Mi Perfil</title>
-    <link rel="stylesheet" href="estilos/perfil.css?v=1.1">
+    <link rel="stylesheet" href="estilos/perfil.css?v=2.0">
 </head>
 <body>
-
     <div class="contenedor-perfil">
         <div class="cabecera-perfil">
             <a href="index.html" class="btn-volver">⬅ Volver al Mapa</a>
@@ -18,17 +17,46 @@
             <div class="avatar-container" onclick="elegirFoto()" title="Haz clic para cambiar tu foto">
                 <img id="avatar-grande" src="" alt="Cargando avatar...">
                 <input type="file" id="input-archivo-foto" style="display: none;" accept="image/*" onchange="subirFoto(this)">
-                <div class="overlay-foto"></div>
             </div>
 
-            <div class="form-group">
-                <label>Nombre y Apellidos</label>
-                <input type="text" id="perfil-nombre" readonly placeholder="Cargando...">
+            <div class="fila-dos">
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" id="perfil-nombre" readonly placeholder="Cargando...">
+                </div>
+                <div class="form-group">
+                    <label>Apellidos</label>
+                    <input type="text" id="perfil-apellidos" readonly placeholder="Cargando...">
+                </div>
             </div>
 
             <div class="form-group">
                 <label>Teléfono</label>
-                <input type="tel" id="perfil-telefono" readonly placeholder="Cargando...">
+                <div class="telefono-row">
+                    <select id="perfil-prefijo" disabled>
+                        <option value="+34">🇪🇸 +34</option>
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+44">🇬🇧 +44</option>
+                        <option value="+33">🇫🇷 +33</option>
+                        <option value="+49">🇩🇪 +49</option>
+                        <option value="+39">🇮🇹 +39</option>
+                        <option value="+351">🇵🇹 +351</option>
+                        <option value="+52">🇲🇽 +52</option>
+                        <option value="+54">🇦🇷 +54</option>
+                        <option value="+57">🇨🇴 +57</option>
+                        <option value="+212">🇲🇦 +212</option>
+                        <option value="+32">🇧🇪 +32</option>
+                        <option value="+31">🇳🇱 +31</option>
+                        <option value="+41">🇨🇭 +41</option>
+                        <option value="+48">🇵🇱 +48</option>
+                        <option value="+86">🇨🇳 +86</option>
+                        <option value="+91">🇮🇳 +91</option>
+                        <option value="+55">🇧🇷 +55</option>
+                        <option value="+56">🇨🇱 +56</option>
+                        <option value="+58">🇻🇪 +58</option>
+                    </select>
+                    <input type="tel" id="perfil-telefono" readonly placeholder="Cargando...">
+                </div>
             </div>
 
             <div class="form-group">
@@ -36,18 +64,26 @@
                 <input type="email" id="perfil-email" disabled title="El email no se puede modificar por seguridad">
             </div>
 
+            <div class="form-group" id="grupo-nueva-contrasena" style="display:none;">
+                <label>Nueva Contraseña</label>
+                <input type="password" id="perfil-nueva-contrasena" placeholder="Nueva contraseña (opcional)">
+            </div>
+
+            <div class="form-group" id="grupo-confirmar-contrasena" style="display:none;">
+                <label>Confirmar Nueva Contraseña</label>
+                <input type="password" id="perfil-confirmar-contrasena" placeholder="Repite la nueva contraseña">
+            </div>
+
             <div class="acciones-perfil">
                 <button id="btn-accion-perfil" onclick="alternarEdicion()">
                     Editar Perfil
                 </button>
-                
                 <button id="btn-cerrar-sesion" onclick="cerrarSesion()" class="btn-peligro">
                     Cerrar Sesión
                 </button>
             </div>
         </div>
     </div>
-
     <script src="jscode/perfil.js"></script>
 </body>
 </html>

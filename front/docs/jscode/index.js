@@ -184,12 +184,21 @@ function obtenerEstilosCategoria(categoria) {
 }
 
 async function cargarViajes() {
+    const contenedor = document.getElementById('lista-viajes');
+    if (contenedor) contenedor.innerHTML = `<div style="padding:20px; text-align:center; color:#6b7280;">Despertando al servidor y cargando viajes...</div>`;
+
     try {
         const res = await fetch(`${URL_BACKEND}/api/viajes`);
         todosLosViajes = await res.json();
+        
+        // Ordenar por fecha
         todosLosViajes.sort((a, b) => new Date(a.fecha_hora_salida) - new Date(b.fecha_hora_salida));
+        
         aplicarFiltros();
-    } catch (e) { console.error(e); }
+    } catch (e) { 
+        console.error(e);
+        if (contenedor) contenedor.innerHTML = `<div style="padding:20px; text-align:center; color:#ef4444;">Error de conexión. Reintenta en unos segundos.</div>`;
+    }
 }
 
 window.aplicarFiltros = function () {

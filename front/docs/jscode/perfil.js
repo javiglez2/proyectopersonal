@@ -1,31 +1,35 @@
-// --- CONFIGURACIÓN INICIAL ---
 const usuarioID = localStorage.getItem('benaluma_user_id');
 let nombreUsuario = localStorage.getItem('benaluma_user_nombre');
-let urlFotoReal = null; // Almacenará la URL de Supabase si existe
+let urlFotoReal = null;
 let modoEdicion = false;
 
-// Protección: Si no hay sesión, al login
-if (!usuarioID) {
-    window.location.href = 'login.html';
-}
+if (!usuarioID) window.location.href = 'login.html';
 
-// --- CARGA DE DATOS ---
 async function cargarDatosPerfil() {
     try {
         const res = await fetch(`https://proyectopersonal-0xcu.onrender.com/api/usuarios/${usuarioID}`);
         const usuario = await res.json();
-        
+
         if (res.ok) {
-            // Rellenamos los campos
+            // 1. INYECTAR LOS DATOS (Esto es lo que se había borrado sin querer)
             document.getElementById('perfil-nombre').value = usuario.nombre || '';
+            document.getElementById('perfil-apellidos').value = usuario.apellidos || '';
             document.getElementById('perfil-telefono').value = usuario.telefono || '';
             document.getElementById('perfil-email').value = usuario.email || '';
-            
-            // Guardamos la URL de la foto si existe en la DB
+
+            // 2. TEXTOS DE FONDO (Para cuando esté realmente vacío)
+            document.getElementById('perfil-nombre').placeholder = 'Sin nombre';
+            document.getElementById('perfil-apellidos').placeholder = 'Sin apellidos';
+
+            // 3. PREFIJO
+            const selectPrefijo = document.getElementById('perfil-prefijo');
+            if (usuario.prefijo_telefono) {
+                selectPrefijo.value = usuario.prefijo_telefono;
+            }
+
+            // 4. AVATAR
             urlFotoReal = usuario.avatar_url;
-            
-            // Dibujamos el avatar (Foto real o iniciales)
-            actualizarAvatar(usuario.nombre);
+            actualizarAvatar(usuario.nombre, usuario.apellidos);
         } else {
             alert("Error al obtener los datos del perfil.");
         }
@@ -35,71 +39,94 @@ async function cargarDatosPerfil() {
     }
 }
 
-// Función para refrescar la imagen en el HTML
-function actualizarAvatar(nombre) {
+function actualizarAvatar(nombre, apellidos) {
     const avatarImg = document.getElementById('avatar-grande');
-    
     if (urlFotoReal) {
         avatarImg.src = urlFotoReal;
     } else {
-        // Plan B: Iniciales si no hay foto subida
-        avatarImg.src = `https://ui-avatars.com/api/?name=${nombre}&background=2563eb&color=fff&rounded=true&bold=true&size=128`;
+        const nombreCompleto = `${nombre || ''}+${apellidos || ''}`;
+        avatarImg.src = `https://ui-avatars.com/api/?name=${nombreCompleto}&background=1a2e25&color=4ade80&rounded=true&bold=true&size=128`;
     }
 }
 
-// --- LÓGICA DE EDICIÓN DE TEXTO ---
 function alternarEdicion() {
     const btn = document.getElementById('btn-accion-perfil');
-    const inputNombre = document.getElementById('perfil-nombre');
-    const inputTelefono = document.getElementById('perfil-telefono');
+    const inputs = ['perfil-nombre', 'perfil-apellidos', 'perfil-telefono'];
+    const selectPrefijo = document.getElementById('perfil-prefijo');
 
     if (!modoEdicion) {
-        // Entrar en modo edición
         modoEdicion = true;
-        inputNombre.readOnly = false;
-        inputTelefono.readOnly = false;
-        inputNombre.focus();
-        
+        inputs.forEach(id => document.getElementById(id).readOnly = false);
+        selectPrefijo.disabled = false;
+
+        // Mostrar campos de contraseña
+        document.getElementById('grupo-nueva-contrasena').style.display = 'block';
+        document.getElementById('grupo-confirmar-contrasena').style.display = 'block';
+
+        document.getElementById('perfil-nombre').focus();
         btn.innerText = "Guardar Cambios";
-        btn.style.background = "#10b981"; // Verde éxito
+        btn.style.background = "#10b981";
     } else {
-        // Guardar cambios
         guardarPerfil();
     }
 }
 
 async function guardarPerfil() {
-    const nuevoNombre = document.getElementById('perfil-nombre').value.trim();
-    const nuevoTelefono = document.getElementById('perfil-telefono').value.trim();
+    const nombre = document.getElementById('perfil-nombre').value.trim();
+    const apellidos = document.getElementById('perfil-apellidos').value.trim();
+    const telefono = document.getElementById('perfil-telefono').value.trim();
+    const prefijo = document.getElementById('perfil-prefijo').value;
+    const nuevaContrasena = document.getElementById('perfil-nueva-contrasena').value;
+    const confirmarContrasena = document.getElementById('perfil-confirmar-contrasena').value;
     const btn = document.getElementById('btn-accion-perfil');
-    
-    if (!nuevoNombre || !nuevoTelefono) return alert("Los campos no pueden estar vacíos.");
+
+    if (!nombre || !apellidos || !telefono) return alert("Los campos no pueden estar vacíos.");
+
+    // Validar contraseña si se quiere cambiar
+    if (nuevaContrasena) {
+        if (!/^(?=.*[A-Z])(?=.*\d).{8,12}$/.test(nuevaContrasena)) {
+            return alert("La contraseña debe tener 8-12 caracteres, 1 mayúscula y 1 número.");
+        }
+        if (nuevaContrasena !== confirmarContrasena) {
+            return alert("Las contraseñas no coinciden.");
+        }
+    }
 
     btn.innerText = "Guardando...";
     btn.disabled = true;
 
     try {
+        const body = { nombre, apellidos, telefono, prefijo_telefono: prefijo };
+        if (nuevaContrasena) body.nueva_contrasena = nuevaContrasena;
+
         const res = await fetch(`https://proyectopersonal-0xcu.onrender.com/api/usuarios/${usuarioID}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre: nuevoNombre, telefono: nuevoTelefono })
+            body: JSON.stringify(body)
         });
-        
+
         if (res.ok) {
-            localStorage.setItem('benaluma_user_nombre', nuevoNombre);
-            nombreUsuario = nuevoNombre;
-            
-            // Volver a modo lectura
+            localStorage.setItem('benaluma_user_nombre', nombre);
+            nombreUsuario = nombre;
+
             modoEdicion = false;
-            document.getElementById('perfil-nombre').readOnly = true;
-            document.getElementById('perfil-telefono').readOnly = true;
+            ['perfil-nombre', 'perfil-apellidos', 'perfil-telefono'].forEach(id => {
+                document.getElementById(id).readOnly = true;
+            });
+            document.getElementById('perfil-prefijo').disabled = true;
+            document.getElementById('grupo-nueva-contrasena').style.display = 'none';
+            document.getElementById('grupo-confirmar-contrasena').style.display = 'none';
+            document.getElementById('perfil-nueva-contrasena').value = '';
+            document.getElementById('perfil-confirmar-contrasena').value = '';
+
             btn.innerText = "Editar Perfil";
-            btn.style.background = "#2563eb"; 
-            
-            actualizarAvatar(nuevoNombre);
-            alert("¡Datos actualizados!");
+            btn.style.background = "#2563eb";
+
+            actualizarAvatar(nombre, apellidos);
+            alert("¡Datos actualizados correctamente!");
         } else {
-            alert("Error al actualizar los datos.");
+            const err = await res.json();
+            alert(err.error || "Error al actualizar los datos.");
         }
     } catch (error) {
         alert("Error de conexión.");
@@ -108,9 +135,7 @@ async function guardarPerfil() {
     }
 }
 
-// --- LÓGICA DE SUBIDA DE FOTO ---
 function elegirFoto() {
-    // Evitamos subir fotos mientras editamos texto para no liar al usuario
     if (modoEdicion) return;
     document.getElementById('input-archivo-foto').click();
 }
@@ -118,13 +143,9 @@ function elegirFoto() {
 async function subirFoto(input) {
     const archivo = input.files[0];
     if (!archivo) return;
-
-    if (!archivo.type.startsWith('image/')) {
-        return alert("El archivo debe ser una imagen.");
-    }
+    if (!archivo.type.startsWith('image/')) return alert("El archivo debe ser una imagen.");
 
     const avatarImg = document.getElementById('avatar-grande');
-    const originalSrc = avatarImg.src;
     avatarImg.style.opacity = "0.5";
 
     const formData = new FormData();
@@ -135,31 +156,25 @@ async function subirFoto(input) {
             method: 'POST',
             body: formData
         });
-        
         const data = await res.json();
-        
         if (res.ok) {
             urlFotoReal = data.avatarUrl;
-            actualizarAvatar(nombreUsuario);
+            actualizarAvatar(nombreUsuario, '');
             alert("¡Imagen de perfil actualizada!");
         } else {
             throw new Error(data.error);
         }
     } catch (error) {
-        console.error("Error subiendo foto:", error);
         alert("No se pudo subir la imagen.");
-        avatarImg.src = originalSrc;
     } finally {
         avatarImg.style.opacity = "1";
-        input.value = ''; // Limpiar input
+        input.value = '';
     }
 }
 
-// --- OTROS ---
 function cerrarSesion() {
     localStorage.clear();
     window.location.href = 'index.html';
 }
 
-// Ejecutar al cargar la página
 cargarDatosPerfil();

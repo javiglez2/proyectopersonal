@@ -9,22 +9,28 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// --- CONFIGURACIÓN SUPABASE ---
 const supabaseUrl = 'https://lmhtkbrpforiohsxxlzh.supabase.co';
-// Reemplaza esto con tu clave "service_role" (la secreta larga)
 const supabaseKey = 'sb_publishable_-GvUgrKPGPLXpuZfms-AoA_tDQmyvp6';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// --- RUTAS DE USUARIOS ---
+// --- SIGNUP ---
 app.post('/api/signup', async (req, res) => {
-    const { nombre, telefono, email, contrasena } = req.body;
+    const { nombre, apellidos, prefijo_telefono, telefono, email, contrasena } = req.body;
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(contrasena, salt);
-    const { data, error } = await supabase.from('usuarios').insert([{ nombre, telefono, email, contrasena: hash }]).select();
+    const { data, error } = await supabase.from('usuarios').insert([{
+        nombre,
+        apellidos,
+        prefijo_telefono: prefijo_telefono || '+34',
+        telefono,
+        email,
+        contrasena: hash
+    }]).select();
     if (error) return res.status(400).json({ error: error.message });
     res.status(200).json(data[0]);
 });
 
+// --- LOGIN ---
 app.post('/api/login', async (req, res) => {
     const { email, contrasena } = req.body;
     const { data: user, error } = await supabase.from('usuarios').select('*').eq('email', email).single();
@@ -34,39 +40,49 @@ app.post('/api/login', async (req, res) => {
     res.status(200).json({ usuario_id: user.id, nombre: user.nombre });
 });
 
-// --- RUTAS DE PERFIL ---
+// --- GET PERFIL ---
 app.get('/api/usuarios/:id', async (req, res) => {
     const { id } = req.params;
     const { data, error } = await supabase
         .from('usuarios')
-        .select('nombre, email, telefono, avatar_url')
+        .select('nombre, apellidos, email, telefono, prefijo_telefono, avatar_url')
         .eq('id', id)
         .single();
     if (error) return res.status(400).json({ error: 'Usuario no encontrado' });
     res.json(data);
 });
 
+// --- PUT PERFIL (con cambio de contraseña opcional) ---
 app.put('/api/usuarios/:id', async (req, res) => {
     const { id } = req.params;
-    const { nombre, telefono } = req.body;
-    const { data, error } = await supabase.from('usuarios').update({ nombre, telefono }).eq('id', id).select();
+    const { nombre, apellidos, telefono, prefijo_telefono, nueva_contrasena } = req.body;
+
+    const camposActualizar = { nombre, apellidos, telefono, prefijo_telefono };
+
+    // Si manda nueva contraseña, la hasheamos y la incluimos
+    if (nueva_contrasena) {
+        const salt = await bcrypt.genSalt(10);
+        camposActualizar.contrasena = await bcrypt.hash(nueva_contrasena, salt);
+    }
+
+    const { data, error } = await supabase
+        .from('usuarios')
+        .update(camposActualizar)
+        .eq('id', id)
+        .select();
+
     if (error) return res.status(400).json({ error: 'Error al actualizar el perfil' });
     res.json({ mensaje: 'Perfil actualizado con éxito', usuario: data[0] });
 });
 
-// --- RUTAS DE VIAJES ---
+// --- VIAJES ---
 app.get('/api/viajes', async (req, res) => {
     const { data, error } = await supabase
         .from('viajes')
-        .select(`
-            *,
-            usuarios!id_conductor ( nombre, avatar_url ),
-            reservas ( id_pasajero )
-        `)
+        .select(`*, usuarios!id_conductor ( nombre, apellidos, avatar_url ), reservas ( id_pasajero )`)
         .eq('estado', 'Activo')
         .gt('plazas_disponibles', 0)
         .order('fecha_hora_salida', { ascending: true });
-
     if (error) return res.status(400).json({ error: error.message });
     res.json(data);
 });
@@ -76,16 +92,14 @@ app.get('/api/mis-viajes/:id_usuario', async (req, res) => {
         const { id_usuario } = req.params;
         const { data: viajesConductor, error: errCond } = await supabase
             .from('viajes')
-            .select(`*, usuarios!id_conductor(nombre, avatar_url), reservas(usuarios!fk_pasajero(nombre, avatar_url))`)
+            .select(`*, usuarios!id_conductor(nombre, apellidos, avatar_url), reservas(usuarios!fk_pasajero(nombre, apellidos, avatar_url))`)
             .eq('id_conductor', id_usuario);
-
         if (errCond) throw errCond;
 
         const { data: reservasPasajero, error: errPas } = await supabase
             .from('reservas')
-            .select(`viajes(*, usuarios!id_conductor(nombre, avatar_url), reservas(usuarios!fk_pasajero(nombre, avatar_url)))`)
+            .select(`viajes(*, usuarios!id_conductor(nombre, apellidos, avatar_url), reservas(usuarios!fk_pasajero(nombre, apellidos, avatar_url)))`)
             .eq('id_pasajero', id_usuario);
-
         if (errPas) throw errPas;
 
         const conductorArray = viajesConductor || [];
@@ -98,33 +112,21 @@ app.get('/api/mis-viajes/:id_usuario', async (req, res) => {
 
 app.post('/api/crear-viaje', async (req, res) => {
     try {
-        // 1. Imprimimos en la consola de Render lo que nos llega del frontend
-        console.log("📥 Datos recibidos:", req.body);
-
         const { id_conductor, origen, destino, fecha_hora, plazas, precio, latitud, longitud, categoria } = req.body;
-
-        // 2. Insertamos en Supabase asegurando que la columna 'categoria' reciba el dato
         const { error } = await supabase.from('viajes').insert([{
-            id_conductor,
-            origen,
-            destino,
-            fecha_hora_salida: fecha_hora, 
+            id_conductor, origen, destino,
+            fecha_hora_salida: fecha_hora,
             plazas_totales: parseInt(plazas),
             plazas_disponibles: parseInt(plazas),
             precio: parseFloat(precio),
             latitud: parseFloat(latitud),
             longitud: parseFloat(longitud),
             estado: 'Activo',
-            categoria: categoria || 'General' // Si categoria viene vacía, pondrá General
+            categoria: categoria || 'General'
         }]);
-
         if (error) throw error;
-        
-        console.log("✅ Viaje guardado correctamente con categoría:", categoria);
         res.status(200).json({ mensaje: 'Viaje creado' });
-
     } catch (error) {
-        console.error("❌ Error al crear viaje:", error.message);
         res.status(400).json({ error: error.message });
     }
 });
@@ -132,25 +134,22 @@ app.post('/api/crear-viaje', async (req, res) => {
 app.delete('/api/viajes/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        // El orden de borrado es vital por las claves foráneas
         await supabase.from('reservas').delete().eq('id_viaje', id);
         await supabase.from('mensajes_viajes').delete().eq('id_viaje', id);
         const { error } = await supabase.from('viajes').delete().eq('id', id);
-        
         if (error) throw error;
         res.status(200).json({ mensaje: 'Viaje eliminado correctamente' });
     } catch (error) {
-        console.error("❌ Error al borrar viaje:", error);
         res.status(400).json({ error: 'No se pudo eliminar el viaje' });
     }
 });
 
-// --- RUTAS DEL CHAT ---
+// --- CHAT ---
 app.get('/api/mensajes/:id_viaje', async (req, res) => {
     const { id_viaje } = req.params;
     const { data, error } = await supabase
         .from('mensajes_viajes')
-        .select(`*, usuarios(nombre, avatar_url)`)
+        .select(`*, usuarios(nombre, apellidos, avatar_url)`)
         .eq('id_viaje', id_viaje)
         .order('creado_en', { ascending: true });
     if (error) return res.status(400).json({ error: error.message });
@@ -165,7 +164,7 @@ app.post('/api/mensajes', async (req, res) => {
     res.json({ success: true });
 });
 
-// --- RUTA PARA SUBIR FOTO ---
+// --- UPLOAD AVATAR ---
 app.post('/api/usuarios/:id/upload-avatar', upload.single('avatar'), async (req, res) => {
     try {
         const userId = req.params.id;
@@ -178,7 +177,6 @@ app.post('/api/usuarios/:id/upload-avatar', upload.single('avatar'), async (req,
         const { error: uploadError } = await supabase.storage
             .from('benaluma')
             .upload(fileName, file.buffer, { contentType: file.mimetype, upsert: true });
-
         if (uploadError) throw uploadError;
 
         const { data: publicUrlData } = supabase.storage.from('benaluma').getPublicUrl(fileName);
@@ -189,12 +187,11 @@ app.post('/api/usuarios/:id/upload-avatar', upload.single('avatar'), async (req,
 
         res.json({ mensaje: 'Foto de perfil actualizada!', avatarUrl });
     } catch (error) {
-        console.error("🔥 Error subiendo foto:", error);
         res.status(500).json({ error: 'Fallo al subir la foto' });
     }
 });
 
 const puerto = process.env.PORT || 3000;
 app.listen(puerto, () => {
-    console.log(`🚀 Servidor corriendo en el puerto ${puerto}`);
+    console.log(`Servidor corriendo en el puerto ${puerto}`);
 });

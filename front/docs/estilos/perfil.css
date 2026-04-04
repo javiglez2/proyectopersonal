@@ -1,7 +1,4 @@
-/* --- RESET Y BASE --- */
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
     background-color: #f3f4f6;
@@ -13,28 +10,26 @@ body {
     margin: 0;
 }
 
-/* --- CONTENEDOR DE LA TARJETA --- */
 .contenedor-perfil {
     background: #ffffff;
     width: 100%;
-    max-width: 400px; /* Un poco más estrecho para que quede más elegante */
+    max-width: 420px;
     border-radius: 24px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
     margin: 20px;
     overflow: hidden;
 }
 
-/* --- CABECERA AZUL --- */
 .cabecera-perfil {
-    background: linear-gradient(135deg, #104e25, #104e25); /* Degradado moderno */
+    background: #1a2e25;
     color: white;
     text-align: center;
-    padding: 30px 20px 60px 20px; /* Más espacio abajo para que la foto monte encima */
+    padding: 30px 20px 60px 20px;
     position: relative;
 }
 
 .cabecera-perfil a {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255,255,255,0.8);
     text-decoration: none;
     font-weight: 600;
     font-size: 14px;
@@ -43,23 +38,21 @@ body {
     transition: color 0.2s;
 }
 
-.cabecera-perfil a:hover {
-    color: white;
-}
+.cabecera-perfil a:hover { color: white; }
 
 .cabecera-perfil h2 {
     margin: 0;
     font-size: 26px;
     font-weight: 700;
-    letter-spacing: -0.5px;
+    color: #4ade80;
 }
 
-/* --- FOTO DE PERFIL --- */
 .avatar-container {
     text-align: center;
-    margin-top: -55px; /* Sube la foto hacia la zona azul */
+    margin-top: -55px;
     position: relative;
     z-index: 2;
+    cursor: pointer;
 }
 
 #avatar-grande {
@@ -68,47 +61,43 @@ body {
     border-radius: 50%;
     object-fit: cover;
     border: 4px solid #ffffff;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     transition: transform 0.2s ease;
     background: white;
 }
 
-#avatar-grande:hover {
-    transform: scale(1.05); /* Efecto de zoom al pasar el ratón */
+#avatar-grande:hover { transform: scale(1.05); }
+
+.cuerpo-perfil { padding: 10px 24px 30px 24px; }
+
+/* Fila de dos columnas */
+.fila-dos {
+    display: flex;
+    gap: 12px;
 }
 
-.instruccion-foto {
-    display: block;
-    font-size: 12px;
-    color: #6b7280;
-    margin-top: 10px;
-    font-weight: 500;
-}
+.fila-dos .form-group { flex: 1; }
 
-/* --- FORMULARIO Y CAMPOS DE TEXTO --- */
-.cuerpo-perfil {
-    padding: 10px 30px 30px 30px;
-}
+.form-group { margin-top: 14px; }
 
-/* Forzamos el diseño vertical de los inputs sin tocar tu HTML */
 label {
     display: block !important;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
-    color: #4b5563;
-    margin-bottom: 6px;
-    margin-top: 16px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 5px;
     text-align: left;
 }
 
 input {
     width: 100% !important;
     box-sizing: border-box;
-    padding: 14px 16px;
+    padding: 12px 14px;
     border: 1px solid #d1d5db;
-    border-radius: 12px; /* Bordes más redondeados */
-    font-size: 15px;
+    border-radius: 12px;
+    font-size: 14px;
     color: #111827;
     background-color: #f9fafb;
     transition: all 0.2s ease;
@@ -116,51 +105,81 @@ input {
 }
 
 input:focus {
-    border-color: #2563eb;
+    border-color: #16a34a;
     background-color: #ffffff;
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); /* Anillo azul de focus */
+    box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
 }
 
-input:disabled {
+input:disabled, input[readonly] {
     background-color: #f3f4f6;
-    color: #9ca3af;
-    cursor: not-allowed;
+    color: #6b7280;
+    cursor: default;
     border-color: #e5e7eb;
 }
 
-/* --- BOTONES --- */
+/* Fila prefijo + teléfono */
+.telefono-row {
+    display: flex;
+    gap: 8px;
+}
+
+.telefono-row select {
+    width: 110px;
+    flex-shrink: 0;
+    padding: 12px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    font-size: 13px;
+    background: #f9fafb;
+    color: #111827;
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.telefono-row select:disabled {
+    background: #f3f4f6;
+    color: #6b7280;
+    cursor: default;
+    border-color: #e5e7eb;
+}
+
+.telefono-row select:not(:disabled):focus {
+    border-color: #16a34a;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
+}
+
+.telefono-row input { flex: 1; }
+
+/* Botones */
 .acciones-perfil {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    margin-top: 25px;
+    margin-top: 24px;
 }
 
 button {
     width: 100%;
     padding: 14px;
     border-radius: 12px;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     cursor: pointer;
     border: none;
     transition: all 0.2s ease;
 }
 
-button:active {
-    transform: scale(0.98); /* Pequeño efecto al hacer clic */
-}
+button:active { transform: scale(0.98); }
 
 #btn-accion-perfil {
     background-color: #2563eb;
     color: white;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 12px rgba(37,99,235,0.2);
 }
 
-#btn-accion-perfil:hover {
-    background-color: #1d4ed8;
-    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
-}
+#btn-accion-perfil:hover { background-color: #1d4ed8; }
 
 .btn-peligro {
     background-color: #fff1f2;
@@ -168,19 +187,10 @@ button:active {
     border: 1px solid #fecdd3;
 }
 
-.btn-peligro:hover {
-    background-color: #ffe4e6;
-}
+.btn-peligro:hover { background-color: #ffe4e6; }
 
-/* --- ADAPTACIÓN A MÓVIL --- */
 @media (max-width: 480px) {
-    body {
-        align-items: flex-start; /* Que empiece desde arriba en el móvil */
-    }
-    .contenedor-perfil {
-        margin: 0;
-        border-radius: 0 0 24px 24px;
-        box-shadow: none;
-        min-height: 100vh;
-    }
+    body { align-items: flex-start; }
+    .contenedor-perfil { margin: 0; border-radius: 0 0 24px 24px; min-height: 100vh; }
+    .fila-dos { flex-direction: column; gap: 0; }
 }

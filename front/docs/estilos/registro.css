@@ -1,45 +1,42 @@
-/* --- Estilos base de la página --- */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f3f4f6; /* El mismo fondo gris elegante */
+    background-color: #f3f4f6;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; /* min-height en vez de height para que no se corte en móviles */
+    min-height: 100vh;
     margin: 0;
-    padding: 20px; /* Un poco de aire a los lados */
+    padding: 20px;
     box-sizing: border-box;
 }
 
-/* --- La tarjeta blanca central --- */
 .contenedor {
     background-color: white;
     padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     width: 100%;
-    max-width: 420px; /* Un pelín más ancho para que quepan bien los textos de error */
+    max-width: 460px;
     text-align: center;
     box-sizing: border-box;
 }
 
-/* --- Textos --- */
-h1 {
-    margin-top: 0;
-    color: #1f2937;
-    font-size: 26px;
-}
+h1 { margin-top: 0; color: #1f2937; font-size: 26px; }
+p { color: #6b7280; margin-bottom: 25px; font-size: 15px; }
 
-p {
-    color: #6b7280;
-    margin-bottom: 25px;
-    font-size: 15px;
-}
-
-/* --- Agrupación de los inputs --- */
 .grupo-input {
-    margin-bottom: 12px; /* Un poco más juntos para que el formulario no sea kilométrico */
+    margin-bottom: 14px;
     text-align: left;
+}
+
+/* Fila de dos columnas para nombre y apellidos */
+.fila-dos {
+    display: flex;
+    gap: 12px;
+}
+
+.fila-dos .grupo-input {
+    flex: 1;
 }
 
 label {
@@ -47,79 +44,105 @@ label {
     margin-bottom: 6px;
     font-weight: 600;
     color: #374151;
-    font-size: 14px;
+    font-size: 13px;
 }
 
-/* --- Las cajas de texto (Inputs) --- */
 input {
     width: 100%;
     padding: 12px;
     border: 1px solid #d1d5db;
-    border-radius: 8px;
+    border-radius: 10px;
     box-sizing: border-box;
-    font-size: 15px;
-    transition: all 0.3s ease;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    color: #111827;
+    background: #f9fafb;
 }
 
 input:focus {
     outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2); 
+    border-color: #16a34a;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
 }
 
-/* --- El botón principal --- */
+/* Fila de prefijo + teléfono */
+.telefono-row {
+    display: flex;
+    gap: 8px;
+}
+
+.telefono-row select {
+    width: 120px;
+    flex-shrink: 0;
+    padding: 12px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    font-size: 13px;
+    background: #f9fafb;
+    color: #111827;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.telefono-row select:focus {
+    outline: none;
+    border-color: #16a34a;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
+}
+
+.telefono-row input {
+    flex: 1;
+}
+
 button {
     width: 100%;
     padding: 14px;
-    background-color: #2563eb;
+    background-color: #16a34a;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 15px;
+    transition: background-color 0.2s;
+    margin-top: 8px;
 }
 
-button:hover {
-    background-color: #1d4ed8;
-}
+button:hover { background-color: #15803d; }
+button:disabled { background-color: #86efac; cursor: not-allowed; }
 
-/* --- Enlaces inferiores --- */
-.enlace-login {
+.enlace-inferior {
     margin-top: 20px;
     font-size: 14px;
     color: #6b7280;
 }
 
-.enlace-login a {
-    color: #2563eb;
+.enlace-inferior a {
+    color: #16a34a;
     text-decoration: none;
     font-weight: 600;
-    transition: color 0.3s;
 }
 
-.enlace-login a:hover {
-    color: #1e40af;
-    text-decoration: underline;
-}
+.enlace-inferior a:hover { text-decoration: underline; }
 
-/* =========================================
-   ESTILOS PARA LOS ERRORES DE VALIDACIÓN 
-   ========================================= */
 .error-texto {
-    color: #dc2626; /* Rojo intenso */
-    font-size: 13px;
+    color: #dc2626;
+    font-size: 12px;
     margin-top: 4px;
     display: block;
-    min-height: 18px; /* Ocupa espacio invisible para que no de saltos al aparecer el texto */
+    min-height: 16px;
     font-weight: 500;
 }
 
 .input-error {
     border-color: #dc2626 !important;
-    background-color: #fef2f2 !important; /* Fondo rojizo muy clarito */
+    background-color: #fef2f2 !important;
     box-shadow: none !important;
 }
 
+@media (max-width: 480px) {
+    .fila-dos { flex-direction: column; gap: 0; }
+    .contenedor { padding: 28px 20px; }
+}

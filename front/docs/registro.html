@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,22 +8,58 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5/dark.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-
 <body>
     <div class="contenedor">
         <h1>Únete a Benaluma</h1>
         <p>Encuentra tu viaje a la universidad</p>
 
         <form id="registroForm">
-            <div class="grupo-input">
-                <label for="nombre">Nombre completo</label>
-                <input type="text" id="nombre" required placeholder="Ej. Javier G.">
-                <span class="error-texto" id="error-nombre"></span>
+
+            <div class="fila-dos">
+                <div class="grupo-input">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" required placeholder="Ej. Javier">
+                    <span class="error-texto" id="error-nombre"></span>
+                </div>
+                <div class="grupo-input">
+                    <label for="apellidos">Apellidos</label>
+                    <input type="text" id="apellidos" required placeholder="Ej. García López">
+                    <span class="error-texto" id="error-apellidos"></span>
+                </div>
             </div>
 
             <div class="grupo-input">
                 <label for="telefono">Teléfono</label>
-                <input type="tel" id="telefono" required placeholder="Ej. 600123456">
+                <div class="telefono-row">
+                    <select id="prefijo">
+                        <option value="+34">🇪🇸 +34</option>
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+44">🇬🇧 +44</option>
+                        <option value="+33">🇫🇷 +33</option>
+                        <option value="+49">🇩🇪 +49</option>
+                        <option value="+39">🇮🇹 +39</option>
+                        <option value="+351">🇵🇹 +351</option>
+                        <option value="+52">🇲🇽 +52</option>
+                        <option value="+54">🇦🇷 +54</option>
+                        <option value="+57">🇨🇴 +57</option>
+                        <option value="+56">🇨🇱 +56</option>
+                        <option value="+58">🇻🇪 +58</option>
+                        <option value="+51">🇵🇪 +51</option>
+                        <option value="+55">🇧🇷 +55</option>
+                        <option value="+212">🇲🇦 +212</option>
+                        <option value="+32">🇧🇪 +32</option>
+                        <option value="+31">🇳🇱 +31</option>
+                        <option value="+41">🇨🇭 +41</option>
+                        <option value="+48">🇵🇱 +48</option>
+                        <option value="+380">🇺🇦 +380</option>
+                        <option value="+40">🇷🇴 +40</option>
+                        <option value="+86">🇨🇳 +86</option>
+                        <option value="+91">🇮🇳 +91</option>
+                        <option value="+81">🇯🇵 +81</option>
+                        <option value="+82">🇰🇷 +82</option>
+                    </select>
+                    <input type="tel" id="telefono" required placeholder="600123456">
+                </div>
                 <span class="error-texto" id="error-telefono"></span>
             </div>
 
@@ -36,8 +71,14 @@
 
             <div class="grupo-input">
                 <label for="contrasena">Contraseña</label>
-                <input type="password" id="contrasena" required placeholder="8-12 letras, 1 Mayúscula, 1 Número">
+                <input type="password" id="contrasena" required placeholder="8-12 caract., 1 Mayúscula, 1 Número">
                 <span class="error-texto" id="error-contrasena"></span>
+            </div>
+
+            <div class="grupo-input">
+                <label for="confirmar-contrasena">Confirmar contraseña</label>
+                <input type="password" id="confirmar-contrasena" required placeholder="Repite tu contraseña">
+                <span class="error-texto" id="error-confirmar"></span>
             </div>
 
             <button type="submit" id="btnRegistro">Registrarme</button>
@@ -49,5 +90,4 @@
     </div>
     <script src="jscode/registro.js"></script>
 </body>
-
 </html>
