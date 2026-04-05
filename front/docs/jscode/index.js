@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fetch(`${URL_BACKEND}/api/usuarios/${usuarioID}`)
                 .then(res => res.json())
                 .then(usuario => { if (usuario.avatar_url) avatarDisplay.src = usuario.avatar_url; })
-                .catch(() => {});
+                .catch(() => { });
         }
     }
 
@@ -248,8 +248,24 @@ async function cargarMisViajes() {
             return;
         }
 
-        const creados = viajes.filter(v => v.id_conductor === usuarioID);
-        const unidos = viajes.filter(v => v.id_conductor !== usuarioID);
+        // 🌟 NUEVO: Creamos botones de chat para cada pasajero si eres el conductor
+        const pasajerosHTML = v.reservas && v.reservas.length > 0
+            ? v.reservas.map(r => {
+                const nombrePas = r.usuarios?.nombre || 'Pasajero';
+                const idPasajero = r.id_pasajero;
+
+                if (esConductor) {
+                    // Si eres el conductor, sale un botón 💬 para abrir chat privado con ese pasajero
+                    return `<span style="background:#dbeafe; color:#1e40af; padding:4px 10px; border-radius:12px; font-size:12px; margin-right:5px; border:1px solid #bfdbfe; display:inline-flex; align-items:center; gap:6px; font-weight:bold;">
+                👤 ${nombrePas} 
+                <button onclick="abrirChatPrivado('${idPasajero}', '${nombrePas}')" style="background:none; border:none; cursor:pointer; padding:0; font-size:15px; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Hablar con ${nombrePas}">💬</button>
+            </span>`;
+                } else {
+                    // Si eres otro pasajero, solo ves el nombre sin poder hablarle
+                    return `<span style="background:#f3f4f6; color:#374151; padding:4px 10px; border-radius:12px; font-size:12px; margin-right:5px; border:1px solid #e5e7eb; font-weight:bold;">👤 ${nombrePas}</span>`;
+                }
+            }).join('')
+            : 'Nadie aún';
 
         const generarTarjeta = (v, esConductor) => {
             const fechaRaw = v.fecha_hora_salida || v.fecha_hora || v.fecha;
@@ -277,7 +293,7 @@ async function cargarMisViajes() {
                     </div>
                     <div style="font-size:13px; color:#4b5563; background:#f9fafb; padding:10px; border-radius:8px; margin-bottom:10px;">
                         <b>Día:</b> ${dia} | <b>Hora:</b> ${hora}<br>
-                        <b>Pasajeros:</b> ${textoPasajeros}
+                        <b>Pasajeros:</b> ${pasajerosHTML}
                     </div>
                     ${esConductor ? `
                         <div style="display:flex; gap:5px; margin-bottom:8px;">
@@ -523,7 +539,7 @@ let chatPrivadoReceptorID = null;
 let chatPrivadoReceptorNombre = null;
 let intervaloChatPrivado = null;
 
-window.abrirChatPrivado = function(idReceptor, nombreReceptor) {
+window.abrirChatPrivado = function (idReceptor, nombreReceptor) {
     if (!usuarioID) return Swal.fire("Inicia sesión", "Debes estar conectado", "info");
 
     chatPrivadoReceptorID = idReceptor;
@@ -578,7 +594,7 @@ window.abrirChatPrivado = function(idReceptor, nombreReceptor) {
     intervaloChatPrivado = setInterval(cargarMensajesPrivados, 2500);
 };
 
-window.cerrarChatPrivado = function() {
+window.cerrarChatPrivado = function () {
     const modal = document.getElementById('modal-chat-privado');
     if (modal) modal.style.display = 'none';
     chatPrivadoReceptorID = null;
@@ -608,7 +624,7 @@ async function cargarMensajesPrivados() {
             const esMio = m.id_emisor === usuarioID;
             const hora = new Date(m.creado_en).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
             const nombre = esMio ? 'Tú' : (m.emisor?.nombre || 'Usuario');
-            
+
             // 🌟 NUEVO: Obtenemos el avatar o generamos uno por defecto
             const avatar = m.emisor?.avatar_url || `https://ui-avatars.com/api/?name=${nombre}&background=1a2e25&color=4ade80`;
 
