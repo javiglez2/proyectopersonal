@@ -76,36 +76,47 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// PANELES
+// 📱 APERTURA DE PANELES (MÓVIL / TABLET / PC)
 // ==========================================
 window.togglePanel = function (idPanel) {
     const panel = document.getElementById(idPanel);
     if (!panel) return;
 
+    // Detectamos si es Móvil o Tablet (hasta 1024px)
     const esMovilOTablet = window.innerWidth <= 1024;
 
     if (esMovilOTablet) {
         const estaAbierto = panel.classList.contains('abierta');
+
+        // 1. Cerramos todos los paneles bajándolos
         document.querySelectorAll('.tarjeta-flotante').forEach(p => {
             p.classList.remove('abierta');
             setTimeout(() => { if (!p.classList.contains('abierta')) p.style.display = 'none'; }, 350);
         });
+
+        // 2. Si el que hemos tocado estaba cerrado, lo abrimos
         if (!estaAbierto) {
             panel.style.display = 'flex';
             setTimeout(() => panel.classList.add('abierta'), 10);
         }
     } else {
+        // --- MODO ESCRITORIO ---
         if (panel.style.display === 'none' || panel.style.display === '') {
             panel.style.display = 'flex';
-            if (idPanel === 'panel-mis-viajes' && window.innerWidth < 1200) {
-                panel.style.left = '50%';
-                panel.style.transform = 'translateX(-50%)';
+
+            // 🌟 MAGIA: Calculamos el centro exacto de la pantalla para "Mis Viajes"
+            if (idPanel === 'panel-mis-viajes') {
+                const anchoPanel = panel.offsetWidth || 750;
+                // Posición X = (Mitad de la pantalla) - (Mitad del panel)
+                panel.style.left = (window.innerWidth / 2 - anchoPanel / 2) + 'px';
+                panel.style.transform = 'none'; // Evita que pegue saltos al arrastrarlo
             }
         } else {
             panel.style.display = 'none';
         }
     }
 
+    // Refrescar los datos siempre que se abran
     if (idPanel === 'panel-mis-viajes') cargarMisViajes();
     if (idPanel === 'panel-chats') cargarPanelChats();
 };
@@ -701,7 +712,7 @@ window.cargarPanelChats = async function () {
     try {
         // 1. Pedimos los chats privados al servidor
         const resPrivados = await fetch(`${URL_BACKEND}/api/inbox/${usuarioID}`);
-        
+
         if (!resPrivados.ok) {
             console.error("🚨 Error del servidor en Inbox:", await resPrivados.text());
         }
