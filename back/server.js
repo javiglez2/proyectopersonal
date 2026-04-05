@@ -87,18 +87,22 @@ app.get('/api/viajes', async (req, res) => {
     res.json(data);
 });
 
+// --- OBTENER MIS VIAJES (Corregido con id_pasajero) ---
 app.get('/api/mis-viajes/:id_usuario', async (req, res) => {
     try {
         const { id_usuario } = req.params;
+
+        // 1. Buscamos los viajes donde soy conductor (AÑADIDO id_pasajero a las reservas)
         const { data: viajesConductor, error: errCond } = await supabase
             .from('viajes')
-            .select(`*, usuarios!id_conductor(nombre, apellidos, avatar_url), reservas(usuarios!fk_pasajero(nombre, apellidos, avatar_url))`)
+            .select(`*, usuarios!id_conductor(nombre, apellidos, avatar_url), reservas(id_pasajero, usuarios!fk_pasajero(nombre, apellidos, avatar_url))`)
             .eq('id_conductor', id_usuario);
         if (errCond) throw errCond;
 
+        // 2. Buscamos los viajes donde soy pasajero
         const { data: reservasPasajero, error: errPas } = await supabase
             .from('reservas')
-            .select(`viajes(*, usuarios!id_conductor(nombre, apellidos, avatar_url), reservas(usuarios!fk_pasajero(nombre, apellidos, avatar_url)))`)
+            .select(`viajes(*, usuarios!id_conductor(nombre, apellidos, avatar_url), reservas(id_pasajero, usuarios!fk_pasajero(nombre, apellidos, avatar_url)))`)
             .eq('id_pasajero', id_usuario);
         if (errPas) throw errPas;
 
@@ -228,9 +232,15 @@ app.post('/api/usuarios/:id/upload-avatar', upload.single('avatar'), async (req,
 // Obtener conversación privada entre dos usuarios
 app.get('/api/mensajes-privados/:id_emisor/:id_receptor', async (req, res) => {
     const { id_emisor, id_receptor } = req.params;
+
+    // 🌟 ESCUDO ANTI-CUELGUES: Si falta alguna ID, cortamos aquí
+    if (!id_emisor || id_emisor === 'undefined' || !id_receptor || id_receptor === 'undefined') {
+        return res.status(400).json({ error: 'IDs de chat no válidas' });
+    }
+
     const { data, error } = await supabase
         .from('mensajes_privados')
-        .select(`*, 
+        .select(`*,
             emisor:usuarios!id_emisor(nombre, apellidos, avatar_url),
             receptor:usuarios!id_receptor(nombre, apellidos, avatar_url)
         `)
@@ -246,6 +256,7 @@ app.get('/api/mensajes-privados/:id_emisor/:id_receptor', async (req, res) => {
         .eq('id_receptor', id_emisor)
         .eq('id_emisor', id_receptor);
 
+    // 🚨 EL ESLABÓN PERDIDO: Devolvemos los mensajes a la web
     res.json(data);
 });
 
