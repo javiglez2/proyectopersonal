@@ -1,39 +1,44 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - Benaluma</title>
+    <title>Iniciar Sesión - IRIGO</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <link rel="stylesheet" href="estilos/login.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5/dark.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-
 <body>
-    <div class="contenedor">
-        <h1>Bienvenido de nuevo</h1>
-        <p>Inicia sesión para buscar o publicar viajes</p>
 
-        <form id="loginForm">
-            <div class="grupo-input">
-                <label for="emailLogin">Tu correo electrónico</label>
-                <input type="email" id="emailLogin" required placeholder="tuemail@ejemplo.com">
+    <div class="login-container">
+        <div class="brand-header">IRIGO</div>
+        
+        <h1>¡Bienvenido de nuevo!</h1>
+        <p class="form-subtitle">Inicia sesión para buscar o publicar viajes</p>
+        
+        <form action="/api/login" method="POST">
+            
+            <label for="email">Tu correo electrónico</label>
+            <div class="input-group">
+                <input type="email" id="email" name="email" placeholder="tu.email@ejemplo.com" required>
+                <i class="fa-solid fa-envelope"></i>
             </div>
-
-            <div class="grupo-input">
-                <label for="contrasenaLogin">Contraseña</label>
-                <input type="password" id="contrasenaLogin" required placeholder="Tu contraseña">
+            
+            <label for="password">Contraseña</label>
+            <div class="input-group">
+                <input type="password" id="password" name="password" placeholder="Tu contraseña" required>
+                <i class="fa-solid fa-lock"></i>
             </div>
-
-            <button type="submit">Entrar</button>
+            
+            <button type="submit" class="btn-submit">Entrar a IRIGO</button>
+            
         </form>
-
-        <p class="enlace-inferior">
-            ¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a>
-        </p>
+        
+        <div class="footer-links">
+            <p>¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
+        </div>
     </div>
-    <script src="jscode/login.js"></script>
-</body>
 
+</body>
 </html>

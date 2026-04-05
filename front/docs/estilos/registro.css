@@ -1,148 +1,165 @@
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f3f4f6;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    padding: 20px;
-    box-sizing: border-box;
+/*
+  ========================================
+  IRIGO - Pantalla de Registro (docs/estilos/registro.css)
+  ========================================
+*/
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-.contenedor {
-    background-color: white;
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    width: 100%;
-    max-width: 460px;
-    text-align: center;
-    box-sizing: border-box;
+body, html {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #0d1712; /* Fondo oscuro de la marca */
+  color: #111827;
+  overflow-x: hidden;
+  padding: 20px;
 }
 
-h1 { margin-top: 0; color: #1f2937; font-size: 26px; }
-p { color: #6b7280; margin-bottom: 25px; font-size: 15px; }
-
-.grupo-input {
-    margin-bottom: 14px;
-    text-align: left;
+.register-container {
+  background: #ffffff;
+  padding: 50px 50px; 
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  max-width: 500px; /* Tarjeta ancha y premium */
+  width: 100%;
+  transform: scale(0.95);
+  opacity: 0;
+  animation: fadeIn 0.4s ease-out forwards;
 }
 
-/* Fila de dos columnas para nombre y apellidos */
-.fila-dos {
-    display: flex;
-    gap: 12px;
+@keyframes fadeIn {
+  to { transform: scale(1); opacity: 1; }
 }
 
-.fila-dos .grupo-input {
-    flex: 1;
+.brand-header {
+  color: #4ade80; 
+  font-size: 42px; /* Un pelín más pequeño que en login para dejar espacio a los campos */
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  margin-bottom: 20px;
 }
+
+h1 {
+  color: #1a2e25; 
+  font-size: 24px; 
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.form-subtitle {
+  color: #6b7280;
+  font-size: 15px; 
+  margin-bottom: 40px; 
+}
+
+form { text-align: left; }
 
 label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: 600;
-    color: #374151;
-    font-size: 13px;
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px; 
+  font-weight: 600;
+  color: #1a2e25;
 }
 
-input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 10px;
-    box-sizing: border-box;
-    font-size: 14px;
-    transition: all 0.2s ease;
-    color: #111827;
-    background: #f9fafb;
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
 }
 
-input:focus {
-    outline: none;
-    border-color: #16a34a;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
+.input-group i {
+  position: absolute;
+  left: 18px; 
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-size: 16px; 
+  transition: color 0.2s;
 }
 
-/* Fila de prefijo + teléfono */
-.telefono-row {
-    display: flex;
-    gap: 8px;
+/* Campos extraños en el registro (para que entren dos en una línea si quieres) */
+.row {
+  display: flex;
+  gap: 15px;
+}
+.row .col {
+  flex: 1;
 }
 
-.telefono-row select {
-    width: 120px;
-    flex-shrink: 0;
-    padding: 12px 8px;
-    border: 1px solid #d1d5db;
-    border-radius: 10px;
-    font-size: 13px;
-    background: #f9fafb;
-    color: #111827;
-    cursor: pointer;
-    transition: all 0.2s;
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 14px 20px; 
+  padding-left: 45px; 
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  background: #f9fafb;
+  transition: all 0.2s;
+  font-size: 14px; 
+  color: #111827;
 }
 
-.telefono-row select:focus {
-    outline: none;
-    border-color: #16a34a;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+  border-color: #16a34a; 
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.15);
+  outline: none;
 }
 
-.telefono-row input {
-    flex: 1;
+input[type="text"]:focus + i,
+input[type="email"]:focus + i,
+input[type="password"]:focus + i {
+  color: #16a34a;
 }
 
-button {
-    width: 100%;
-    padding: 14px;
-    background-color: #16a34a;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    margin-top: 8px;
+.btn-submit {
+  width: 100%;
+  padding: 16px 25px; 
+  border-radius: 12px;
+  border: none;
+  background: #16a34a; 
+  color: #ffffff;
+  font-size: 17px; 
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  margin-top: 10px; 
 }
 
-button:hover { background-color: #15803d; }
-button:disabled { background-color: #86efac; cursor: not-allowed; }
+.btn-submit:hover { background: #15803d; }
+.btn-submit:active { transform: scale(0.98); }
 
-.enlace-inferior {
-    margin-top: 20px;
-    font-size: 14px;
-    color: #6b7280;
+.footer-links {
+  margin-top: 30px; 
+  font-size: 15px; 
+  color: #1a2e25;
+  text-align: center;
 }
 
-.enlace-inferior a {
-    color: #16a34a;
-    text-decoration: none;
-    font-weight: 600;
+.footer-links a {
+  color: #16a34a; 
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
 }
 
-.enlace-inferior a:hover { text-decoration: underline; }
-
-.error-texto {
-    color: #dc2626;
-    font-size: 12px;
-    margin-top: 4px;
-    display: block;
-    min-height: 16px;
-    font-weight: 500;
-}
-
-.input-error {
-    border-color: #dc2626 !important;
-    background-color: #fef2f2 !important;
-    box-shadow: none !important;
+.footer-links a:hover {
+  color: #4ade80; 
+  text-decoration: underline;
 }
 
 @media (max-width: 480px) {
-    .fila-dos { flex-direction: column; gap: 0; }
-    .contenedor { padding: 28px 20px; }
+  .register-container { padding: 35px 25px; }
+  .row { flex-direction: column; gap: 0; }
 }
