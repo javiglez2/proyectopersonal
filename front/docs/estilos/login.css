@@ -208,3 +208,33 @@ input[type="password"]:focus + i {
     font-size: 16px;
   }
 }
+
+/* Botón flotante para volver al inicio */
+.btn-volver-inicio {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  color: #9ca3af; /* Gris claro para que no distraiga */
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.btn-volver-inicio:hover {
+  color: #4ade80; /* Se ilumina en el verde de IRIGO */
+  transform: translateX(-4px); /* Se mueve un pelín a la izquierda */
+}
+
+/* Ajuste para pantallas de móvil */
+@media (max-width: 480px) {
+  .btn-volver-inicio {
+    top: 15px;
+    left: 15px;
+    font-size: 14px;
+  }
+}
