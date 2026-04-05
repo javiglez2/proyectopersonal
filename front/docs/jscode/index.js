@@ -677,6 +677,7 @@ async function enviarMensajePrivado() {
             body: JSON.stringify({ id_emisor: usuarioID, id_receptor: chatPrivadoReceptorID, mensaje: texto })
         });
         cargarMensajesPrivados();
+        cargarPanelChats();
         setTimeout(() => {
             const c = document.getElementById('chat-privado-mensajes');
             if (c) c.scrollTop = c.scrollHeight;
@@ -684,12 +685,14 @@ async function enviarMensajePrivado() {
     } catch (e) {
         Swal.fire("Error", "No se pudo enviar el mensaje", "error");
     }
+
+
 }
 
 // ==========================================
 // 💬 CENTRO DE MENSAJES UNIFICADO
 // ==========================================
-window.cargarPanelChats = async function() {
+window.cargarPanelChats = async function () {
     const contenedor = document.getElementById('lista-chats');
     if (!usuarioID || !contenedor) return;
 
@@ -698,6 +701,11 @@ window.cargarPanelChats = async function() {
     try {
         // 1. Pedimos los chats privados al servidor
         const resPrivados = await fetch(`${URL_BACKEND}/api/inbox/${usuarioID}`);
+        
+        if (!resPrivados.ok) {
+            console.error("🚨 Error del servidor en Inbox:", await resPrivados.text());
+        }
+
         const privados = resPrivados.ok ? await resPrivados.json() : [];
 
         // 2. Pedimos a qué viajes estamos unidos para sacar sus chats grupales
@@ -729,7 +737,7 @@ window.cargarPanelChats = async function() {
                 const f = new Date(c.fecha);
                 const hoy = new Date();
                 const esHoy = f.getDate() === hoy.getDate() && f.getMonth() === hoy.getMonth();
-                const fechaStr = esHoy ? f.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'}) : f.toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit'});
+                const fechaStr = esHoy ? f.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : f.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
 
                 html += `
                 <div onclick="abrirChatPrivado('${c.usuario.id}', '${c.usuario.nombre}')" style="display:flex; align-items:center; gap:12px; background:white; padding:12px; border-radius:14px; cursor:pointer; border:1px solid #e5e7eb; margin-bottom:10px; transition:0.2s;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='white'">
@@ -749,13 +757,13 @@ window.cargarPanelChats = async function() {
             html += `<div style="text-align:center; padding:10px; background:white; border-radius:12px; border:1px solid #e5e7eb; color:#9ca3af; font-size:13px;">No tienes mensajes privados.</div>`;
         }
 
-        if(viajes.length === 0 && privados.length === 0) {
+        if (viajes.length === 0 && privados.length === 0) {
             contenedor.innerHTML = `<div style="text-align:center; padding:20px; color:#9ca3af; font-size:14px;">Aún no tienes ningún chat activo. Únete a un viaje para empezar.</div>`;
         } else {
             contenedor.innerHTML = html;
         }
 
-    } catch(e) {
+    } catch (e) {
         contenedor.innerHTML = `<div style="text-align:center; padding:20px; color:#ef4444;">Error cargando los chats. Reintenta.</div>`;
     }
 };
