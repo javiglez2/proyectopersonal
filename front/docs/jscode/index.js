@@ -238,34 +238,21 @@ async function cargarMisViajes() {
     const contenedor = document.getElementById('lista-mis-viajes');
     if (!usuarioID || !contenedor) return;
 
+    // Mensaje temporal por si Render tarda en despertar
+    contenedor.innerHTML = `<div style="text-align:center; padding:20px; color:#6b7280;">⏳ Cargando tus viajes...</div>`;
+
     try {
         const res = await fetch(`${URL_BACKEND}/api/mis-viajes/${usuarioID}`);
         const viajes = await res.json();
         contenedor.innerHTML = '';
 
         if (viajes.length === 0) {
-            contenedor.innerHTML = "<p style='padding:15px; text-align:center;'>No tienes viajes programados.</p>";
+            contenedor.innerHTML = "<p style='padding:15px; text-align:center; color:#6b7280;'>No tienes viajes programados.</p>";
             return;
         }
 
-        // 🌟 NUEVO: Creamos botones de chat para cada pasajero si eres el conductor
-        const pasajerosHTML = v.reservas && v.reservas.length > 0
-            ? v.reservas.map(r => {
-                const nombrePas = r.usuarios?.nombre || 'Pasajero';
-                const idPasajero = r.id_pasajero;
-
-                if (esConductor) {
-                    // Si eres el conductor, sale un botón 💬 para abrir chat privado con ese pasajero
-                    return `<span style="background:#dbeafe; color:#1e40af; padding:4px 10px; border-radius:12px; font-size:12px; margin-right:5px; border:1px solid #bfdbfe; display:inline-flex; align-items:center; gap:6px; font-weight:bold;">
-                👤 ${nombrePas} 
-                <button onclick="abrirChatPrivado('${idPasajero}', '${nombrePas}')" style="background:none; border:none; cursor:pointer; padding:0; font-size:15px; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Hablar con ${nombrePas}">💬</button>
-            </span>`;
-                } else {
-                    // Si eres otro pasajero, solo ves el nombre sin poder hablarle
-                    return `<span style="background:#f3f4f6; color:#374151; padding:4px 10px; border-radius:12px; font-size:12px; margin-right:5px; border:1px solid #e5e7eb; font-weight:bold;">👤 ${nombrePas}</span>`;
-                }
-            }).join('')
-            : 'Nadie aún';
+        const creados = viajes.filter(v => v.id_conductor === usuarioID);
+        const unidos = viajes.filter(v => v.id_conductor !== usuarioID);
 
         const generarTarjeta = (v, esConductor) => {
             const fechaRaw = v.fecha_hora_salida || v.fecha_hora || v.fecha;
@@ -278,8 +265,23 @@ async function cargarMisViajes() {
                 }
             }
 
-            const pasajerosArray = v.reservas ? v.reservas.map(r => r.usuarios?.nombre || 'Pasajero') : [];
-            const textoPasajeros = pasajerosArray.length > 0 ? pasajerosArray.join(', ') : 'Nadie aún';
+            // 🌟 AQUÍ ESTÁ EL CÓDIGO DE PASAJEROS Y CHAT PERFECTAMENTE ENCAJADO
+            const pasajerosHTML = v.reservas && v.reservas.length > 0
+                ? v.reservas.map(r => {
+                    const nombrePas = r.usuarios?.nombre || 'Pasajero';
+                    const idPasajero = r.id_pasajero;
+
+                    if (esConductor) {
+                        return `<span style="background:#dbeafe; color:#1e40af; padding:4px 10px; border-radius:12px; font-size:12px; margin-right:5px; border:1px solid #bfdbfe; display:inline-flex; align-items:center; gap:6px; font-weight:bold;">
+                            👤 ${nombrePas} 
+                            <button onclick="abrirChatPrivado('${idPasajero}', '${nombrePas}')" style="background:none; border:none; cursor:pointer; padding:0; font-size:15px; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Hablar con ${nombrePas}">💬</button>
+                        </span>`;
+                    } else {
+                        return `<span style="background:#f3f4f6; color:#374151; padding:4px 10px; border-radius:12px; font-size:12px; margin-right:5px; border:1px solid #e5e7eb; font-weight:bold;">👤 ${nombrePas}</span>`;
+                    }
+                }).join('')
+                : 'Nadie aún';
+
             const cat = v.categoria || 'General';
             const estilos = obtenerEstilosCategoria(cat);
             const nombreConductor = v.usuarios?.nombre || 'Conductor';
@@ -293,7 +295,7 @@ async function cargarMisViajes() {
                     </div>
                     <div style="font-size:13px; color:#4b5563; background:#f9fafb; padding:10px; border-radius:8px; margin-bottom:10px;">
                         <b>Día:</b> ${dia} | <b>Hora:</b> ${hora}<br>
-                        <b>Pasajeros:</b> ${pasajerosHTML}
+                        <div style="margin-top:6px;"><b>Pasajeros:</b> ${pasajerosHTML}</div>
                     </div>
                     ${esConductor ? `
                         <div style="display:flex; gap:5px; margin-bottom:8px;">
@@ -317,7 +319,10 @@ async function cargarMisViajes() {
                 <div style="flex:1; min-width:280px;"><h4 style="margin:0 0 12px; color:#1a2e25;">Mis Viajes Creados</h4>${creados.map(v => generarTarjeta(v, true)).join('') || '<p style="color:#9ca3af;">Sin viajes creados</p>'}</div>
                 <div style="flex:1; min-width:280px;"><h4 style="margin:0 0 12px; color:#1a2e25;">Viajes donde me uní</h4>${unidos.map(v => generarTarjeta(v, false)).join('') || '<p style="color:#9ca3af;">Sin viajes unidos</p>'}</div>
             </div>`;
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        console.error(e);
+        contenedor.innerHTML = `<div style="text-align:center; padding:20px; color:#ef4444;">Error de conexión. Reintenta.</div>`;
+    }
 }
 
 // ==========================================
