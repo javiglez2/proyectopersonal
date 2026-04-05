@@ -134,7 +134,7 @@ window.onclick = function (event) {
 
 function cerrarSesion() {
     localStorage.clear();
-    window.location.href = 'login.html';
+    window.location.href = 'index.html';
 }
 
 // ==========================================
