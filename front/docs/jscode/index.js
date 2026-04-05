@@ -197,16 +197,15 @@ window.aplicarFiltros = function () {
         const esConductor = v.id_conductor === usuarioID;
         const estaLleno = v.plazas_disponibles <= 0;
 
-        let btnHTML = `<button onclick="unirseViaje('${v.id}', event, this)" style="background:#16a34a; color:white; border:none; padding:8px 15px; border-radius:20px; cursor:pointer; font-weight:bold; font-size:13px;">Unirme</button>`;
+        let btnHTML = `<button onclick="unirseViaje('${v.id}', event, this)" style="background:#16a34a; color:white; border:none; padding:8px 15px; border-radius:20px; cursor:pointer; font-weight:bold; font-size:13px; white-space:nowrap;">Unirme</button>`;
+        
+        // 🌟 LÓGICA INTELIGENTE CON TAMAÑOS COMPACTOS Y ANTI-SALTO DE LÍNEA
         if (estaLleno && !esConductor && !yaUnido) {
-            // Caso 1: Está lleno y tú eres un desconocido que pasaba por ahí
-            btnHTML = `<span style="background:#fee2e2; padding:5px 10px; border-radius:20px; color:#ef4444; font-size:12px; font-weight:bold;">🛑 Lleno</span>`;
+            btnHTML = `<span style="background:#fee2e2; padding:4px 8px; border-radius:20px; color:#ef4444; font-size:11px; font-weight:bold; white-space:nowrap;">Lleno</span>`;
         } else if (esConductor) {
-            // Caso 2: Eres el conductor (le añadimos el aviso de Lleno si aplica)
-            btnHTML = `<span style="background:#f3f4f6; padding:5px 10px; border-radius:20px; color:#4b5563; font-size:12px; font-weight:bold;">Tu viaje ${estaLleno ? ' (Lleno 🛑)' : ''}</span>`;
+            btnHTML = `<span style="background:#f3f4f6; padding:4px 8px; border-radius:20px; color:#4b5563; font-size:11px; font-weight:bold; white-space:nowrap;">Tu viaje ${estaLleno ? ' (Lleno)' : ''}</span>`;
         } else if (yaUnido) {
-            // Caso 3: Ya te uniste (le añadimos el aviso de Lleno si aplica)
-            btnHTML = `<span style="background:#dcfce7; padding:5px 10px; border-radius:20px; color:#166534; font-size:12px; font-weight:bold;">✔ Ya estás dentro ${estaLleno ? ' (Lleno 🛑)' : ''}</span>`;
+            btnHTML = `<span style="background:#dcfce7; padding:4px 8px; border-radius:20px; color:#166534; font-size:11px; font-weight:bold; white-space:nowrap;">✔ Ya estás dentro ${estaLleno ? ' (Lleno)' : ''}</span>`;
         }
 
         // Botón de contactar al conductor (solo si no eres tú el conductor)
