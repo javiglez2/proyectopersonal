@@ -72,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     hacerArrastrable(document.getElementById("panel-disponibles"), document.getElementById("cabecera-disponibles"));
     hacerArrastrable(document.getElementById("panel-mis-viajes"), document.getElementById("cabecera-mis-viajes"));
     hacerArrastrable(document.getElementById("panel-publicar"), document.getElementById("cabecera-publicar"));
+    hacerArrastrable(document.getElementById("panel-chats"), document.getElementById("cabecera-chats"));
 });
 
 // ==========================================
@@ -106,6 +107,7 @@ window.togglePanel = function (idPanel) {
     }
 
     if (idPanel === 'panel-mis-viajes') cargarMisViajes();
+    if (idPanel === 'panel-chats') cargarPanelChats();
 };
 
 function toggleDropdown() {
@@ -683,6 +685,80 @@ async function enviarMensajePrivado() {
         Swal.fire("Error", "No se pudo enviar el mensaje", "error");
     }
 }
+
+// ==========================================
+// 💬 CENTRO DE MENSAJES UNIFICADO
+// ==========================================
+window.cargarPanelChats = async function() {
+    const contenedor = document.getElementById('lista-chats');
+    if (!usuarioID || !contenedor) return;
+
+    contenedor.innerHTML = `<div style="text-align:center; padding:20px; color:#6b7280;">⏳ Cargando tus mensajes...</div>`;
+
+    try {
+        // 1. Pedimos los chats privados al servidor
+        const resPrivados = await fetch(`${URL_BACKEND}/api/inbox/${usuarioID}`);
+        const privados = resPrivados.ok ? await resPrivados.json() : [];
+
+        // 2. Pedimos a qué viajes estamos unidos para sacar sus chats grupales
+        const resViajes = await fetch(`${URL_BACKEND}/api/mis-viajes/${usuarioID}`);
+        const viajes = resViajes.ok ? await resViajes.json() : [];
+
+        let html = '';
+
+        // --- SECCIÓN A: CHATS DE VIAJES ---
+        if (viajes.length > 0) {
+            html += `<h4 style="margin: 0 0 10px 0; color: #1a2e25; padding: 0 5px;">🚗 Chats Grupales (Mis Viajes)</h4>`;
+            viajes.forEach(v => {
+                html += `
+                <div onclick="abrirChat('${v.id}', '${v.destino}')" style="display:flex; align-items:center; gap:12px; background:white; padding:12px; border-radius:14px; cursor:pointer; border:1px solid #e5e7eb; margin-bottom:10px; transition:0.2s;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='white'">
+                    <div style="width:46px; height:46px; border-radius:50%; background:#1a2e25; color:#4ade80; display:flex; justify-content:center; align-items:center; font-size:20px; border: 2px solid #e5e7eb;">🛣️</div>
+                    <div style="flex:1;">
+                        <b style="font-size:15px; color:#111827;">Viaje a ${v.destino}</b>
+                        <div style="font-size:13px; color:#6b7280;">Pulsa para abrir el grupo</div>
+                    </div>
+                </div>`;
+            });
+        }
+
+        // --- SECCIÓN B: CHATS PRIVADOS ---
+        html += `<h4 style="margin: 15px 0 10px 0; color: #1a2e25; padding: 0 5px;">👤 Mensajes Privados</h4>`;
+        if (privados.length > 0) {
+            privados.forEach(c => {
+                const avatar = c.usuario?.avatar_url || `https://ui-avatars.com/api/?name=${c.usuario.nombre}&background=1a2e25&color=4ade80`;
+                const f = new Date(c.fecha);
+                const hoy = new Date();
+                const esHoy = f.getDate() === hoy.getDate() && f.getMonth() === hoy.getMonth();
+                const fechaStr = esHoy ? f.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'}) : f.toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit'});
+
+                html += `
+                <div onclick="abrirChatPrivado('${c.usuario.id}', '${c.usuario.nombre}')" style="display:flex; align-items:center; gap:12px; background:white; padding:12px; border-radius:14px; cursor:pointer; border:1px solid #e5e7eb; margin-bottom:10px; transition:0.2s;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='white'">
+                    <img src="${avatar}" style="width:46px; height:46px; border-radius:50%; object-fit:cover; border:1px solid #ddd;">
+                    <div style="flex:1; overflow:hidden;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:4px; align-items:center;">
+                            <b style="font-size:15px; color:#111827;">${c.usuario.nombre}</b>
+                            <small style="color:#16a34a; font-weight:bold; font-size:11px;">${fechaStr}</small>
+                        </div>
+                        <div style="font-size:13px; color:#6b7280; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                            ${c.ultimoMensaje}
+                        </div>
+                    </div>
+                </div>`;
+            });
+        } else {
+            html += `<div style="text-align:center; padding:10px; background:white; border-radius:12px; border:1px solid #e5e7eb; color:#9ca3af; font-size:13px;">No tienes mensajes privados.</div>`;
+        }
+
+        if(viajes.length === 0 && privados.length === 0) {
+            contenedor.innerHTML = `<div style="text-align:center; padding:20px; color:#9ca3af; font-size:14px;">Aún no tienes ningún chat activo. Únete a un viaje para empezar.</div>`;
+        } else {
+            contenedor.innerHTML = html;
+        }
+
+    } catch(e) {
+        contenedor.innerHTML = `<div style="text-align:center; padding:20px; color:#ef4444;">Error cargando los chats. Reintenta.</div>`;
+    }
+};
 
 // ==========================================
 // ARRASTRAR PANELES

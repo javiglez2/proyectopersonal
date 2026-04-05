@@ -375,7 +375,7 @@ body {
 
 /* --- TAMAÑOS PANELES ESCRITORIO --- */
 #panel-publicar, #panel-disponibles { width: 380px !important; }
-#panel-mis-viajes { width: 720px !important; }
+#panel-mis-viajes { width: 750px !important; }
 
 /* --- FECHA FLATPICKR --- */
 #form-fecha {
