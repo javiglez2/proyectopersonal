@@ -81,7 +81,7 @@ app.get('/api/viajes', async (req, res) => {
         .from('viajes')
         .select(`*, usuarios!id_conductor ( nombre, apellidos, avatar_url ), reservas ( id_pasajero )`)
         .eq('estado', 'Activo')
-        .gt('plazas_disponibles', 0)
+        
         .order('fecha_hora_salida', { ascending: true });
     if (error) return res.status(400).json({ error: error.message });
     res.json(data);

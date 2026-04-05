@@ -195,10 +195,17 @@ window.aplicarFiltros = function () {
 
         const yaUnido = v.reservas?.some(r => r.id_pasajero === usuarioID);
         const esConductor = v.id_conductor === usuarioID;
+        const estaLleno = v.plazas_disponibles <= 0;
 
         let btnHTML = `<button onclick="unirseViaje('${v.id}', event, this)" style="background:#16a34a; color:white; border:none; padding:8px 15px; border-radius:20px; cursor:pointer; font-weight:bold; font-size:13px;">Unirme</button>`;
-        if (esConductor) btnHTML = `<span style="background:#f3f4f6; padding:5px 10px; border-radius:20px; color:#4b5563; font-size:12px; font-weight:bold;">Tu viaje</span>`;
-        else if (yaUnido) btnHTML = `<span style="background:#dcfce7; padding:5px 10px; border-radius:20px; color:#166534; font-size:12px; font-weight:bold;">✔ Ya estás dentro</span>`;
+        if (esConductor) {
+            btnHTML = `<span style="background:#f3f4f6; padding:5px 10px; border-radius:5px; color:#4b5563; font-size:12px; font-weight:bold;">Tu viaje</span>`;
+        } else if (yaUnido) {
+            btnHTML = `<span style="background:#dcf8c6; padding:5px 10px; border-radius:5px; color:#166534; font-size:12px; font-weight:bold;">✔ Ya estás dentro</span>`;
+        } else if (estaLleno) {
+            // 🌟 NUEVO: Si está lleno, mostramos una etiqueta roja y no hay botón de unirse
+            btnHTML = `<span style="background:#fee2e2; padding:5px 10px; border-radius:5px; color:#ef4444; font-size:12px; font-weight:bold;">🛑 Lleno</span>`;
+        }
 
         // Botón de contactar al conductor (solo si no eres tú el conductor)
         let btnContactar = '';
@@ -217,6 +224,7 @@ window.aplicarFiltros = function () {
 
         const div = document.createElement('div');
         div.className = "viaje-item";
+        div.style = `background:white; padding:15px; border-radius:12px; margin-bottom:15px; border:1px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor:pointer; ${estaLleno ? 'opacity: 0.6;' : ''}`;
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <div>
