@@ -283,6 +283,45 @@ app.get('/api/mensajes-privados/no-leidos/:id_usuario', async (req, res) => {
     res.json({ total: data.length });
 });
 
+// --- OBTENER LA BANDEJA DE ENTRADA (INBOX) ---
+app.get('/api/inbox/:id_usuario', async (req, res) => {
+    const { id_usuario } = req.params;
+    
+    // 1. Buscamos todos los mensajes privados donde este usuario sea emisor o receptor
+    const { data, error } = await supabase
+        .from('mensajes_privados')
+        .select(`
+            *,
+            emisor:usuarios!id_emisor(id, nombre, avatar_url),
+            receptor:usuarios!id_receptor(id, nombre, avatar_url)
+        `)
+        .or(`id_emisor.eq.${id_usuario},id_receptor.eq.${id_usuario}`)
+        .order('creado_en', { ascending: false }); // Los más recientes primero
+        
+    if (error) return res.status(400).json({ error: error.message });
+
+    // 2. Agrupamos para mostrar solo 1 tarjeta por cada persona (con el último mensaje)
+    const conversaciones = {};
+    
+    (data || []).forEach(m => {
+        // Averiguamos quién es el "otro" en esta conversación
+        const otroUsuario = m.id_emisor === id_usuario ? m.receptor : m.emisor;
+        if (!otroUsuario) return;
+        
+        // Como están ordenados del más nuevo al más viejo, el primero que encontramos es el último mensaje enviado
+        if (!conversaciones[otroUsuario.id]) {
+            conversaciones[otroUsuario.id] = {
+                usuario: otroUsuario,
+                ultimoMensaje: m.mensaje,
+                fecha: m.creado_en
+            };
+        }
+    });
+
+    // Devolvemos la lista limpia a la web
+    res.json(Object.values(conversaciones));
+});
+
 const puerto = process.env.PORT || 3000;
 app.listen(puerto, () => {
     console.log(`Servidor corriendo en el puerto ${puerto}`);
