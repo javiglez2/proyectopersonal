@@ -131,6 +131,47 @@ app.post('/api/crear-viaje', async (req, res) => {
     }
 });
 
+app.post('/api/reservar', async (req, res) => {
+    try {
+        const { id_viaje, id_pasajero } = req.body;
+
+        // Comprobar que no está ya unido
+        const { data: yaReservado } = await supabase
+            .from('reservas')
+            .select('id')
+            .eq('id_viaje', id_viaje)
+            .eq('id_pasajero', id_pasajero)
+            .single();
+
+        if (yaReservado) {
+            return res.status(400).json({ error: 'Ya estás unido a este viaje' });
+        }
+
+        // Crear la reserva
+        const { error: errorReserva } = await supabase
+            .from('reservas')
+            .insert([{ id_viaje, id_pasajero, estado_reserva: 'Confirmada' }]);
+
+        if (errorReserva) throw errorReserva;
+
+        // Restar una plaza disponible
+        const { error: errorPlaza } = await supabase.rpc('decrementar_plaza', { viaje_id: id_viaje });
+
+        if (errorPlaza) {
+            // Si no tienes la función RPC, usamos update directo
+            await supabase
+                .from('viajes')
+                .update({ plazas_disponibles: supabase.raw('plazas_disponibles - 1') })
+                .eq('id', id_viaje);
+        }
+
+        res.status(200).json({ mensaje: 'Te has unido al viaje correctamente' });
+    } catch (error) {
+        console.error('Error al reservar:', error);
+        res.status(400).json({ error: error.message });
+    }
+});
+
 app.delete('/api/viajes/:id', async (req, res) => {
     const { id } = req.params;
     try {
