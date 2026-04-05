@@ -608,8 +608,12 @@ async function cargarMensajesPrivados() {
             const esMio = m.id_emisor === usuarioID;
             const hora = new Date(m.creado_en).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
             const nombre = esMio ? 'Tú' : (m.emisor?.nombre || 'Usuario');
+            
+            // 🌟 NUEVO: Obtenemos el avatar o generamos uno por defecto
+            const avatar = m.emisor?.avatar_url || `https://ui-avatars.com/api/?name=${nombre}&background=1a2e25&color=4ade80`;
 
             if (esMio) {
+                // Tus mensajes (Derecha, sin foto)
                 return `
                 <div style="align-self:flex-end; max-width:80%; display:flex; flex-direction:column; align-items:flex-end;">
                     <div style="background:#dcfce7; padding:10px 14px; border-radius:16px 16px 4px 16px; font-size:14px; color:#111827; word-break:break-word;">
@@ -618,13 +622,17 @@ async function cargarMensajesPrivados() {
                     <small style="font-size:10px; color:#9ca3af; margin-top:3px;">${hora} ${m.leido ? '✓✓' : '✓'}</small>
                 </div>`;
             } else {
+                // Mensajes del conductor (Izquierda, CON FOTO)
                 return `
-                <div style="align-self:flex-start; max-width:80%; display:flex; flex-direction:column; align-items:flex-start;">
-                    <small style="font-size:11px; color:#6b7280; margin-bottom:3px; font-weight:600;">${nombre}</small>
-                    <div style="background:white; padding:10px 14px; border-radius:16px 16px 16px 4px; font-size:14px; color:#111827; border:1px solid #e5e7eb; word-break:break-word;">
-                        ${m.mensaje}
+                <div style="align-self:flex-start; max-width:85%; display:flex; gap:8px;">
+                    <img src="${avatar}" style="width:28px; height:28px; border-radius:50%; align-self:flex-end; border:1px solid #ddd; object-fit:cover;">
+                    <div style="display:flex; flex-direction:column; align-items:flex-start;">
+                        <small style="font-size:11px; color:#6b7280; margin-bottom:3px; font-weight:600;">${nombre}</small>
+                        <div style="background:white; padding:10px 14px; border-radius:16px 16px 16px 4px; font-size:14px; color:#111827; border:1px solid #e5e7eb; word-break:break-word;">
+                            ${m.mensaje}
+                        </div>
+                        <small style="font-size:10px; color:#9ca3af; margin-top:3px;">${hora}</small>
                     </div>
-                    <small style="font-size:10px; color:#9ca3af; margin-top:3px;">${hora}</small>
                 </div>`;
             }
         }).join('');
