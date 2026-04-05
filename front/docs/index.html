@@ -19,36 +19,78 @@
     <section class="hero">
         <h2>Comparte viaje, ahorra dinero y tiempo.</h2>
         <p>La plataforma exclusiva para conectar a conductores y pasajeros que van a la UMA, el PTA o los centros de estudios de Málaga y alrededores.</p>
-        <a href="registro.html" class="btn-hero">¡Empezar ahora!</a>
+        
+        <div>
+            <a href="registro.html" class="btn-hero">Empezar ahora 🚗</a>
+        </div>
+        
+        <button id="btn-toggle-info" class="btn-conocenos">
+            Conócenos más <i class="fa-solid fa-chevron-down" style="transition: transform 0.3s;"></i>
+        </button>
     </section>
 
-    <section class="features">
-        <div class="card">
-            <div class="icon">💸</div>
-            <h3>Ahorra en gasolina</h3>
-            <p>Divide los gastos del viaje entre todos los pasajeros. Ir a la universidad nunca fue tan barato para tu bolsillo.</p>
+    <div id="seccion-info" class="desplegable-wrapper">
+        <div class="desplegable-contenido">
+            
+            <div class="intro-irigo">
+                <h3>¿Qué es IRIGO?</h3>
+                <p>Nacimos con un propósito claro: <strong>transformar la forma en la que nos movemos por Málaga.</strong></p>
+                <p>Queremos acabar con los trayectos aburridos, los atascos interminables en Teatinos o el PTA, y los gastos innecesarios en gasolina. IRIGO conecta a estudiantes y trabajadores que hacen la misma ruta todos los días para que compartir coche sea fácil, seguro y económico.</p>
+            </div>
+
+            <section class="features">
+                <div class="card">
+                    <div class="icon">💸</div>
+                    <h3>Ahorra en gasolina</h3>
+                    <p>Divide los gastos del viaje entre todos los pasajeros. Ir a la universidad o al trabajo nunca fue tan barato.</p>
+                </div>
+                <div class="card">
+                    <div class="icon">🤝</div>
+                    <h3>Conoce gente nueva</h3>
+                    <p>Comparte trayecto todos los días con otras personas de tu misma zona y haz networking.</p>
+                </div>
+                <div class="card">
+                    <div class="icon">🌍</div>
+                    <h3>Cuida el planeta</h3>
+                    <p>Menos coches en la carretera significa menos atascos y menos emisiones de CO2. Viajar juntos es viajar verde.</p>
+                </div>
+            </section>
+            
         </div>
-        <div class="card">
-            <div class="icon">🤝</div>
-            <h3>Conoce gente nueva</h3>
-            <p>Comparte trayecto todos los días con otros estudiantes o trabajadores de tu misma zona y haz networking.</p>
-        </div>
-        <div class="card">
-            <div class="icon">🌍</div>
-            <h3>Cuida el planeta</h3>
-            <p>Menos coches en la carretera significa menos atascos y menos emisiones de CO2. Viajar juntos es viajar verde.</p>
-        </div>
-    </section>
+    </div>
 
     <footer>
         <p>&copy; 2026 Irigo. Creado para la comunidad de estudiantes de Málaga.</p>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+
     <script>
-        // Si el usuario ya está logueado, le enviamos directamente al mapa...
+        // Si el usuario ya está logueado... (Tu código que ya tenías)
         if (localStorage.getItem('benaluma_user_id')) {
             window.location.href = 'mapa.html';
         }
+
+        // 🌟 NUEVO: Lógica del botón "Conócenos más"
+        const btnToggle = document.getElementById('btn-toggle-info');
+        const seccionInfo = document.getElementById('seccion-info');
+        const flecha = btnToggle.querySelector('i');
+
+        btnToggle.addEventListener('click', () => {
+            seccionInfo.classList.toggle('abierto');
+            
+            if (seccionInfo.classList.contains('abierto')) {
+                // Si se abre: cambia el texto, rota la flecha y hace scroll suave
+                btnToggle.innerHTML = 'Ocultar información <i class="fa-solid fa-chevron-up"></i>';
+                setTimeout(() => {
+                    seccionInfo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300); // Espera un poco a que se abra para hacer el scroll
+            } else {
+                // Si se cierra: vuelve a la normalidad
+                btnToggle.innerHTML = 'Conócenos más <i class="fa-solid fa-chevron-down"></i>';
+            }
+        });
     </script>
+</body>
 </body>
 </html>

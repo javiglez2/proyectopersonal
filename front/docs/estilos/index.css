@@ -1,35 +1,214 @@
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: #f8fafc; color: #111827; overflow-x: hidden; }
-        
-        /* Navbar */
-        header { background-color: #1a2e25; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: fixed; width: 100%; top: 0; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        header h1 { color: #4ade80; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
-        .nav-links { display: flex; gap: 15px; align-items: center; }
-        .btn-login { color: white; text-decoration: none; font-weight: 600; padding: 8px 16px; border-radius: 20px; transition: 0.2s; font-size: 14px; }
-        .btn-login:hover { background: rgba(255,255,255,0.1); }
-        .btn-register { background: #16a34a; color: white; text-decoration: none; font-weight: 600; padding: 8px 18px; border-radius: 20px; transition: 0.2s; border: 1px solid #16a34a; font-size: 14px; }
-        .btn-register:hover { background: #15803d; border-color: #15803d; }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
 
-        /* Hero Section */
-        .hero { margin-top: 60px; padding: 120px 20px; text-align: center; background: linear-gradient(135deg, #1a2e25 0%, #0d1712 100%); color: white; min-height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .hero h2 { font-size: 48px; margin-bottom: 20px; color: #4ade80; max-width: 800px; line-height: 1.1; }
-        .hero p { font-size: 18px; max-width: 600px; margin: 0 auto 40px auto; color: #d1d5db; line-height: 1.6; }
-        .hero .btn-hero { background: #4ade80; color: #1a2e25; text-decoration: none; font-size: 18px; font-weight: 800; padding: 15px 35px; border-radius: 30px; transition: 0.3s; display: inline-block; }
-        .hero .btn-hero:hover { background: #22c55e; transform: scale(1.05); }
+body { 
+    background-color: #0d1712; 
+    color: #111827; 
+    overflow-x: hidden; 
+    display: flex; 
+    flex-direction: column; 
+    min-height: 100vh; 
+}
 
-        /* Info Cards */
-        .features { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; padding: 80px 20px; max-width: 1200px; margin: 0 auto; }
-        .card { background: white; padding: 30px; border-radius: 16px; width: 320px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; transition: transform 0.3s; }
-        .card:hover { transform: translateY(-10px); }
-        .card .icon { font-size: 40px; margin-bottom: 15px; }
-        .card h3 { font-size: 20px; margin-bottom: 10px; color: #1a2e25; }
-        .card p { color: #6b7280; font-size: 15px; line-height: 1.5; }
+/* Navbar */
+header { background-color: #1a2e25; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: fixed; width: 100%; top: 0; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+header h1 { color: #4ade80; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+.nav-links { display: flex; gap: 15px; align-items: center; }
+.btn-login { color: white; text-decoration: none; font-weight: 600; padding: 8px 16px; border-radius: 20px; transition: 0.2s; font-size: 14px; }
+.btn-login:hover { background: rgba(255,255,255,0.1); }
+.btn-register { background: #16a34a; color: white; text-decoration: none; font-weight: 600; padding: 8px 18px; border-radius: 20px; transition: 0.2s; border: 1px solid #16a34a; font-size: 14px; }
+.btn-register:hover { background: #15803d; border-color: #15803d; }
 
-        /* Footer */
-        footer { background: #111; color: #9ca3af; text-align: center; padding: 30px; font-size: 14px; }
-        
-        @media (max-width: 600px) {
-            .hero h2 { font-size: 36px; }
-            .nav-links { gap: 5px; }
-            .btn-login, .btn-register { padding: 6px 12px; font-size: 13px; }
-        }
+/* Hero Section */
+.hero { 
+    margin-top: 60px; 
+    padding: 60px 20px; 
+    text-align: center; 
+    background: linear-gradient(135deg, #1a2e25 0%, #0d1712 100%); 
+    color: white; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center;
+    flex: 1; /* Esto es lo que empuja el footer hacia abajo */
+}
+
+/* 🌟 3. Textos mucho más grandes y protagonistas */
+.hero h2 { 
+    font-size: 64px; /* Antes era 48px */
+    margin-bottom: 25px; 
+    color: #4ade80; 
+    max-width: 900px; /* Más ancho para que quepa bien */
+    line-height: 1.15; 
+}
+
+.hero p { 
+    font-size: 22px; /* Antes era 18px */
+    max-width: 750px; 
+    margin: 0 auto 40px auto; 
+    color: #d1d5db; 
+    line-height: 1.6; 
+}
+
+.hero .btn-hero { background: #4ade80; color: #1a2e25; text-decoration: none; font-size: 18px; font-weight: 800; padding: 15px 35px; border-radius: 30px; transition: 0.3s; display: inline-block; }
+.hero .btn-hero:hover { background: #22c55e; transform: scale(1.05); }
+
+/* Ajuste móvil para textos grandes */
+@media (max-width: 600px) {
+    .hero h2 { font-size: 42px; }
+    .hero p { font-size: 18px; }
+    .nav-links { gap: 5px; }
+    .btn-login, .btn-register { padding: 6px 12px; font-size: 13px; }
+}
+
+/* Info Cards */
+.features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    padding: 80px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+}
+
+.card .icon {
+    font-size: 40px;
+    margin-bottom: 15px;
+}
+
+.card h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #1a2e25;
+}
+
+.card p {
+    color: #6b7280;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+/* Footer */
+footer {
+    background: #111;
+    color: #9ca3af;
+    text-align: center;
+    padding: 30px;
+    font-size: 14px;
+}
+
+@media (max-width: 600px) {
+    .hero h2 {
+        font-size: 36px;
+    }
+
+    .nav-links {
+        gap: 5px;
+    }
+
+    .btn-login,
+    .btn-register {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+}
+
+/* =========================================
+   NUEVO DESPLEGABLE "CONÓCENOS MÁS"
+   ========================================= */
+
+/* Botón sutil en la sección Hero */
+.btn-conocenos {
+    background: transparent;
+    color: #4ade80;
+    border: 2px solid rgba(74, 222, 128, 0.5);
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 30px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-conocenos:hover {
+    background: rgba(74, 222, 128, 0.1);
+    border-color: #4ade80;
+}
+
+/* Contenedor animado */
+.desplegable-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ffffff;
+}
+
+.desplegable-wrapper.abierto {
+    grid-template-rows: 1fr;
+}
+
+.desplegable-contenido {
+    overflow: hidden;
+    /* Oculta lo que sobresale cuando está cerrado */
+}
+
+/* Texto minimalista de introducción */
+.intro-irigo {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 80px 20px 20px 20px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease;
+}
+
+.desplegable-wrapper.abierto .intro-irigo {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.3s;
+    /* Aparece un poquito después de abrirse */
+}
+
+.intro-irigo h3 {
+    font-size: 32px;
+    color: #1a2e25;
+    margin-bottom: 25px;
+    letter-spacing: -1px;
+}
+
+.intro-irigo p {
+    font-size: 18px;
+    color: #4b5563;
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+/* Ajustamos las tarjetas para que encajen bien abajo */
+.features {
+    padding-top: 40px !important;
+}
