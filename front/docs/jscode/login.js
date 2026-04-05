@@ -26,7 +26,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 showConfirmButton: false,
                 background: '#fff'
             }).then(() => {
-                window.location.href = 'index.html';
+                window.location.href = 'mapa.html';
             });
 
         } else {
