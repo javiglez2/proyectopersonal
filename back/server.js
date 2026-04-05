@@ -221,6 +221,57 @@ app.post('/api/usuarios/:id/upload-avatar', upload.single('avatar'), async (req,
     }
 });
 
+// ==========================================
+// 💬 MENSAJES PRIVADOS
+// ==========================================
+
+// Obtener conversación privada entre dos usuarios
+app.get('/api/mensajes-privados/:id_emisor/:id_receptor', async (req, res) => {
+    const { id_emisor, id_receptor } = req.params;
+    const { data, error } = await supabase
+        .from('mensajes_privados')
+        .select(`*, 
+            emisor:usuarios!id_emisor(nombre, apellidos, avatar_url),
+            receptor:usuarios!id_receptor(nombre, apellidos, avatar_url)
+        `)
+        .or(`and(id_emisor.eq.${id_emisor},id_receptor.eq.${id_receptor}),and(id_emisor.eq.${id_receptor},id_receptor.eq.${id_emisor})`)
+        .order('creado_en', { ascending: true });
+
+    if (error) return res.status(400).json({ error: error.message });
+
+    // Marcar como leídos los mensajes recibidos
+    await supabase
+        .from('mensajes_privados')
+        .update({ leido: true })
+        .eq('id_receptor', id_emisor)
+        .eq('id_emisor', id_receptor);
+
+    res.json(data);
+});
+
+// Enviar mensaje privado
+app.post('/api/mensajes-privados', async (req, res) => {
+    const { id_emisor, id_receptor, mensaje } = req.body;
+    if (!mensaje || mensaje.trim() === '') return res.status(400).json({ error: 'Mensaje vacío' });
+    const { error } = await supabase
+        .from('mensajes_privados')
+        .insert([{ id_emisor, id_receptor, mensaje }]);
+    if (error) return res.status(400).json({ error: error.message });
+    res.json({ success: true });
+});
+
+// Obtener número de mensajes no leídos
+app.get('/api/mensajes-privados/no-leidos/:id_usuario', async (req, res) => {
+    const { id_usuario } = req.params;
+    const { data, error } = await supabase
+        .from('mensajes_privados')
+        .select('id_emisor')
+        .eq('id_receptor', id_usuario)
+        .eq('leido', false);
+    if (error) return res.status(400).json({ error: error.message });
+    res.json({ total: data.length });
+});
+
 const puerto = process.env.PORT || 3000;
 app.listen(puerto, () => {
     console.log(`Servidor corriendo en el puerto ${puerto}`);
