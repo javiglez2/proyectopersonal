@@ -164,7 +164,7 @@ footer {
     display: grid;
     grid-template-rows: 0fr;
     transition: grid-template-rows 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-    background: #ffffff;
+    background: #b3ebc9;
 }
 
 .desplegable-wrapper.abierto {
