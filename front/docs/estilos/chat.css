@@ -334,20 +334,28 @@ body {
 /* ==========================================
    NOTIFICACIÓN DE NUEVO MENSAJE (BOLITA ROJA)
    ========================================== */
+/* ==========================================
+   NOTIFICACIÓN DE NUEVO MENSAJE (NÚMERO)
+   ========================================== */
 .badge-chat {
     background-color: #ef4444; /* Rojo vibrante */
     color: white;
     font-size: 11px;
-    font-weight: bold;
-    padding: 2px 8px;
-    border-radius: 12px;
-    margin-left: auto; /* Empuja el globo totalmente a la derecha */
+    font-weight: 800;
+    min-width: 22px; /* Ancho mínimo para que sea redonda */
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 50px; /* Bordes muy redondeados */
+    margin-left: auto; 
     display: none; /* Oculto por defecto */
+    justify-content: center; /* Centra el número horizontalmente */
+    align-items: center;     /* Centra el número verticalmente */
     box-shadow: 0 2px 5px rgba(239, 68, 68, 0.3);
 }
 
+/* Cambiamos a flex para que el centrado funcione al activarse */
 .badge-chat.activo {
-    display: inline-block;
+    display: flex;
     animation: popIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 

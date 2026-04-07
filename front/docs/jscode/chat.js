@@ -63,7 +63,7 @@ async function cargarListaDeChats() {
                     <div class="contacto-info">
                         <strong>${c.nombre}</strong>
                         <span class="ultimo-mensaje-txt">${c.sub}</span> </div>
-                    <div class="badge-chat" id="badge-${idElemento}">Nuevo</div> </div>
+                    <div class="badge-chat" id="badge-${idElemento}">0</div>
             `;
         });
 
@@ -237,7 +237,7 @@ document.getElementById('form-enviar-mensaje').addEventListener('submit', async 
 // ==========================================
 // VIGILANTE SILENCIOSO DE NUEVOS MENSAJES
 // ==========================================
-setInterval(actualizarListaSilenciosa, 4000); 
+setInterval(actualizarListaSilenciosa, 4000);
 
 async function actualizarListaSilenciosa() {
     if (!userId) return;
@@ -258,25 +258,30 @@ async function actualizarListaSilenciosa() {
         todosLosChats.forEach(c => {
             const idElemento = `chat-item-${c.tipo}-${c.idOriginal}`;
             const item = document.getElementById(idElemento);
-            
+
             if (item) {
                 const spanTexto = item.querySelector('.ultimo-mensaje-txt');
-                
+
                 // Si el texto del último mensaje es diferente al que tenemos en pantalla... ¡Hay mensaje nuevo!
                 if (spanTexto && spanTexto.innerText !== c.sub) {
                     spanTexto.innerText = c.sub;
-                    
+
                     // Magia: Lo movemos al principio de la lista
                     lista.prepend(item);
 
-                    // Si NO es el chat que estamos leyendo ahora mismo, encendemos la bolita roja
+                    // Si NO es el chat que estamos leyendo ahora mismo, sumamos 1 a la bolita
                     if (chatActivoId !== String(c.idOriginal)) {
-                        item.querySelector('.badge-chat').classList.add('activo');
+                        const badge = item.querySelector('.badge-chat');
+                        badge.classList.add('activo');
+
+                        // Cogemos el número actual (si no hay, asumimos 0) y le sumamos 1
+                        let numActual = parseInt(badge.innerText) || 0;
+                        badge.innerText = numActual + 1;
                     }
                 }
             }
         });
-    } catch (e) { 
+    } catch (e) {
         // Silenciamos el error para no molestar en consola si falla una petición suelta
     }
 }
