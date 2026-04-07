@@ -13,6 +13,25 @@ body {
     position: fixed; 
 }
 
+h1{
+    font-family: 'Bebas Neue', sans-serif;
+    font-weight: 400; /* Bebas Neue se ve mejor en su peso original */
+    letter-spacing: 1px; /* Un poco de separación le queda genial */
+    color: #4ade80; 
+    font-size: 48px;         /* ¡Mucho más grande! Antes estaba en 32px */
+    font-weight: 900;        /* Forzamos el máximo grosor que permita el navegador */
+    letter-spacing: 2px;     /* Separamos un pelín las letras para que respiren */
+    
+    /* TRUCO PARA ENGROSAR LA LETRA */
+    -webkit-text-stroke: 1.5px #4ade80; /* Le añade un borde del mismo color para engordarla */
+    
+    /* (Opcional) Una pequeña sombra para darle aún más presencia */
+    text-shadow: 0px 4px 10px rgba(74, 222, 128, 0.2);
+    
+    cursor: pointer;         /* Hace que parezca un botón clickeable */
+    margin: 0;
+}
+
 /* --- NAVBAR --- */
 #menu-superior {
     /* 🌟 PEGADO AL CRISTAL DE LA PANTALLA */
