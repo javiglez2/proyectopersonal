@@ -499,31 +499,36 @@ function hacerArrastrable(elmnt, handle) {
 // ==========================================
 // SISTEMA DE NOTIFICACIONES DE CHAT
 // ==========================================
-async function comprobarMensajesNuevos() {
+// ==========================================
+// GLOBO GLOBAL DE NOTIFICACIONES
+// ==========================================
+async function comprobarNotificacionesGlobales() {
     const userId = localStorage.getItem('benaluma_user_id');
     if (!userId) return;
 
     try {
-        const res = await fetch(`https://proyectopersonal-0xcu.onrender.com/api/mensajes/no-leidos/${userId}`);
+        const URL_BACKEND = 'https://proyectopersonal-0xcu.onrender.com';
+        const res = await fetch(`${URL_BACKEND}/api/mensajes/no-leidos/${userId}`);
         
         if (res.ok) {
             const datos = await res.json();
-            const numeroMensajes = datos.no_leidos || 0; 
+            const numero = datos.no_leidos || 0; // Dependiendo de cómo lo devuelva tu backend
             
-            const badge = document.getElementById('notificacion-chat');
-            if (!badge) return; // Por si el ID no existe en el HTML
-            
-            if (numeroMensajes > 0) {
-                badge.textContent = numeroMensajes;
-                badge.classList.remove('oculto');
-            } else {
-                badge.classList.add('oculto');
+            const badge = document.getElementById('notificacion-global-chat');
+            if (badge) {
+                if (numero > 0) {
+                    badge.innerText = numero > 99 ? '+99' : numero;
+                    badge.classList.remove('oculto');
+                } else {
+                    badge.classList.add('oculto');
+                }
             }
         }
-    } catch (error) {
-        console.error("Error comprobando mensajes:", error);
+    } catch (e) { 
+        // Silenciado para no llenar la consola
     }
 }
 
-comprobarMensajesNuevos();
-setInterval(comprobarMensajesNuevos, 10000);
+// Ejecutar al cargar el mapa y luego cada 5 segundos
+comprobarNotificacionesGlobales();
+setInterval(comprobarNotificacionesGlobales, 5000);
