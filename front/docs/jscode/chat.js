@@ -90,28 +90,22 @@ window.abrirChat = function(idChat, tipoChat, tituloChat) {
     chatActivoId = idChat;
     tipoChatActivo = tipoChat;
 
-    // Quitar la clase "activo" a todos y ponérsela al que hemos clickeado
     document.querySelectorAll('.contacto-item').forEach(el => el.classList.remove('activo'));
-    document.getElementById(`chat-item-${tipoChat}-${idChat}`).classList.add('activo');
+    const itemEncontrado = document.getElementById(`chat-item-${tipoChat}-${idChat}`);
+    if(itemEncontrado) itemEncontrado.classList.add('activo');
 
-    // Ocultar mensaje inicial y mostrar input de texto
+    // Mostramos la cabecera nueva y ponemos el nombre
+    const cabecera = document.getElementById('chat-header-dinamico');
+    cabecera.style.display = 'block';
+    document.getElementById('nombre-chat-actual').innerText = tituloChat;
+
     document.querySelector('.mensaje-bienvenida').style.display = 'none';
     document.getElementById('form-enviar-mensaje').classList.remove('oculto');
     
-    const historial = document.getElementById('historial-mensajes');
-    
-    // Título fijo arriba
-    historial.innerHTML = `
-        <div style="position:sticky; top:-20px; background:#111827; padding-bottom:15px; border-bottom:1px solid #374151; margin-bottom:15px; z-index:5;">
-            <h3 style="text-align:center; color:#4ade80; margin:0;">${tituloChat}</h3>
-        </div>
-        <p id="cargando-mensajes-text" style="text-align:center; color:#9ca3af;">Cargando mensajes...</p>
-    `;
+    // Limpiamos el historial para que no se vea el chat anterior mientras carga
+    document.getElementById('historial-mensajes').innerHTML = '<p style="text-align:center; color:#9ca3af;">Cargando mensajes...</p>';
 
-    // Limpiar intervalo anterior para no acumular llamadas al servidor
     if (intervaloChat) clearInterval(intervaloChat);
-    
-    // Cargar mensajes ahora, y luego cada 2.5 segundos
     cargarMensajesActivos();
     intervaloChat = setInterval(cargarMensajesActivos, 2500);
 }
@@ -121,29 +115,23 @@ window.abrirChat = function(idChat, tipoChat, tituloChat) {
 // ==========================================
 async function cargarMensajesActivos() {
     if (!chatActivoId) return;
-    
     const historial = document.getElementById('historial-mensajes');
     
     try {
-        let url = '';
-        // Elegimos la URL dependiendo de si es grupo o privado (Igual que en tu index.js antiguo)
-        if (tipoChatActivo === 'grupal') {
-            url = `${URL_BACKEND}/api/mensajes/${chatActivoId}`;
-        } else {
-            url = `${URL_BACKEND}/api/mensajes-privados/${userId}/${chatActivoId}`;
-        }
+        let url = (tipoChatActivo === 'grupal') 
+            ? `${URL_BACKEND}/api/mensajes/${chatActivoId}`
+            : `${URL_BACKEND}/api/mensajes-privados/${userId}/${chatActivoId}`;
 
         const res = await fetch(url);
-        if (!res.ok) throw new Error("Error en la respuesta del servidor");
         const mensajes = await res.json();
 
-        // Extraemos el título pegajoso que pusimos antes para no borrarlo
-        const tituloContenedor = historial.firstElementChild.outerHTML;
-        
         if (mensajes.length === 0) {
-            historial.innerHTML = tituloContenedor + `<p style="text-align:center; color:#9ca3af; margin-top:20px;">No hay mensajes aún. ¡Di hola! 👋</p>`;
+            historial.innerHTML = `<p style="text-align:center; color:#9ca3af; margin-top:20px;">No hay mensajes aún. ¡Di hola! 👋</p>`;
             return;
         }
+
+        // ... resto de tu código de pintar mensajes (el bucle forEach) ...
+        // ASEGÚRATE de que la variable htmlMensajes empiece vacía: let htmlMensajes = '';
 
         // Comprobar si estábamos haciendo scroll abajo del todo para mantenerlo
         const estaAlFinal = historial.scrollHeight - historial.scrollTop <= historial.clientHeight + 50;

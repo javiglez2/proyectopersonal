@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="estilos/chat.css">
 </head>
+
 <body>
 
     <header class="chat-header">
@@ -24,13 +26,16 @@
         </aside>
 
         <section class="chat-mensajes-area">
+            <div id="chat-header-dinamico" class="chat-header-top" style="display: none;">
+                <h3 id="nombre-chat-actual">Nombre del Chat</h3>
+            </div>
             <div id="historial-mensajes" class="mensajes-box">
                 <div class="mensaje-bienvenida">
                     <i class="fa-solid fa-comments"></i>
                     <p>Selecciona una conversación para empezar a hablar</p>
                 </div>
             </div>
-            
+
             <form id="form-enviar-mensaje" class="chat-input-area oculto">
                 <input type="text" id="input-mensaje" placeholder="Escribe un mensaje..." required>
                 <button type="submit" class="btn-enviar"><i class="fa-solid fa-paper-plane"></i></button>
@@ -40,4 +45,5 @@
 
     <script src="jscode/chat.js"></script>
 </body>
+
 </html>
