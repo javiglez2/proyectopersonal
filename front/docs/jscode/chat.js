@@ -115,58 +115,83 @@ window.abrirChat = function(idChat, tipoChat, tituloChat) {
 // ==========================================
 async function cargarMensajesActivos() {
     if (!chatActivoId) return;
-    
     const historial = document.getElementById('historial-mensajes');
     
     try {
-        let url = '';
-        if (tipoChatActivo === 'grupal') {
-            url = `${URL_BACKEND}/api/mensajes/${chatActivoId}`;
-        } else {
-            url = `${URL_BACKEND}/api/mensajes-privados/${userId}/${chatActivoId}`;
-        }
+        let url = (tipoChatActivo === 'grupal') 
+            ? `${URL_BACKEND}/api/mensajes/${chatActivoId}`
+            : `${URL_BACKEND}/api/mensajes-privados/${userId}/${chatActivoId}`;
 
         const res = await fetch(url);
-        if (!res.ok) throw new Error("Error en el servidor");
-        
         const mensajes = await res.json();
 
-        // 1. Buscamos si ya hay un título arriba para NO borrarlo
-        const tituloExistente = historial.querySelector('.titulo-chat-pegajoso');
-        let htmlTitulo = tituloExistente ? tituloExistente.outerHTML : '';
-
         if (mensajes.length === 0) {
-            historial.innerHTML = htmlTitulo + `<p style="text-align:center; color:#9ca3af; margin-top:20px;">No hay mensajes aún. ¡Di hola! 👋</p>`;
+            historial.innerHTML = `<p style="text-align:center; color:#9ca3af; margin-top:20px;">No hay mensajes aún. ¡Di hola! 👋</p>`;
             return;
         }
 
-        // 2. Construimos los mensajes
-        let htmlMensajes = htmlTitulo;
+        // ... resto de tu código de pintar mensajes (el bucle forEach) ...
+        // ASEGÚRATE de que la variable htmlMensajes empiece vacía: let htmlMensajes = '';
+
+        // Comprobar si estábamos haciendo scroll abajo del todo para mantenerlo
+        const estaAlFinal = historial.scrollHeight - historial.scrollTop <= historial.clientHeight + 50;
+
+        let htmlMensajes = tituloContenedor;
+
         mensajes.forEach(msg => {
-            const esMio = (tipoChatActivo === 'grupal') 
-                ? String(msg.id_usuario) === String(userId)
-                : String(msg.id_emisor) === String(userId);
+            let esMio, nombre, avatar, textoMsg, horaRaw;
+            
+            horaRaw = new Date(msg.creado_en || msg.fecha || new Date());
+            const hora = horaRaw.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'});
 
-            const textoMsg = msg.mensaje;
-            const claseBurbuja = esMio ? 'mia' : 'otra';
+            // Adaptar las variables de base de datos según el tipo de chat
+            if (tipoChatActivo === 'grupal') {
+                esMio = String(msg.id_usuario) === String(userId);
+                nombre = msg.usuarios?.nombre || 'Usuario';
+                avatar = msg.usuarios?.avatar_url || `https://ui-avatars.com/api/?name=${nombre}&background=1a2e25&color=4ade80`;
+                textoMsg = msg.mensaje;
+            } else {
+                esMio = String(msg.id_emisor) === String(userId);
+                nombre = esMio ? 'Tú' : (msg.emisor?.nombre || 'Usuario');
+                avatar = msg.emisor?.avatar_url || `https://ui-avatars.com/api/?name=${nombre}&background=1a2e25&color=4ade80`;
+                textoMsg = msg.mensaje;
+            }
 
-            htmlMensajes += `
-                <div class="burbuja ${claseBurbuja}">
-                    ${textoMsg}
-                </div>
-            `;
+            if (esMio) {
+                // Burbuja a la derecha (Mía)
+                htmlMensajes += `
+                    <div class="burbuja mia">
+                        ${textoMsg}
+                        <span style="display:block; font-size:10px; text-align:right; margin-top:5px; opacity:0.7;">${hora}</span>
+                    </div>
+                `;
+            } else {
+                // Burbuja a la izquierda (De otro) con avatar
+                htmlMensajes += `
+                    <div style="display:flex; gap:8px; align-items:flex-end; align-self:flex-start; margin-bottom:10px; max-width:75%;">
+                        <img src="${avatar}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid #374151;">
+                        <div class="burbuja otra" style="max-width:100%; margin-bottom:0;">
+                            ${tipoChatActivo === 'grupal' ? `<strong style="font-size:11px; display:block; margin-bottom:4px; color:#9ca3af;">${nombre}</strong>` : ''}
+                            ${textoMsg}
+                            <span style="display:block; font-size:10px; text-align:right; margin-top:5px; opacity:0.7;">${hora}</span>
+                        </div>
+                    </div>
+                `;
+            }
         });
 
         historial.innerHTML = htmlMensajes;
 
-        // Auto-scroll al final
-        historial.scrollTop = historial.scrollHeight;
+        // Auto-scroll hacia abajo si el usuario ya estaba abajo
+        if (estaAlFinal) historial.scrollTop = historial.scrollHeight;
 
     } catch (e) {
-        console.error("Error cargando mensajes:", e);
-        // Solo mostramos error si el historial está vacío
-        if (historial.innerText.includes('Cargando')) {
-            historial.innerHTML += `<p style="color:#ef4444; text-align:center;">Error de conexión con el chat.</p>`;
+        console.error(e);
+        // Si hay error pero ya hay mensajes pintados, no los borramos. 
+        // Si no hay nada pintado, mostramos el error.
+        if (historial.children.length <= 2) { 
+            const tituloContenedor = historial.firstElementChild ? historial.firstElementChild.outerHTML : '';
+            historial.innerHTML = tituloContenedor + `<p style="color:#ef4444; text-align:center;">Error al cargar mensajes.</p>`;
         }
     }
 }
