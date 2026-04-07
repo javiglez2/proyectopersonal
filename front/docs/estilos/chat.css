@@ -510,3 +510,31 @@ body {
     display: flex;
     flex-direction: column;
 }
+
+.burbuja {
+    padding: 10px 15px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    max-width: 70%;
+    word-wrap: break-word;
+}
+
+.burbuja.mia {
+    background-color: #059669; /* Verde oscuro */
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+}
+
+.burbuja.otra {
+    background-color: #374151; /* Gris oscuro */
+    color: white;
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+}
+
+#historial-mensajes {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
