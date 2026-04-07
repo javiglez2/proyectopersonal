@@ -4,7 +4,7 @@
 const userId = localStorage.getItem('benaluma_user_id');
 const URL_BACKEND = 'https://proyectopersonal-0xcu.onrender.com';
 let chatActivoId = null;
-let tipoChatActivo = null; // 'grupal' o 'privado'
+let tipoChatActivo = null; 
 let intervaloChat = null;
 
 if (!userId) {
@@ -14,68 +14,58 @@ if (!userId) {
 document.addEventListener('DOMContentLoaded', cargarListaDeChats);
 
 // ==========================================
-// 1. CARGAR LA LISTA DE CHATS (Grupos y Privados)
+// 1. CARGAR LA LISTA DE CHATS UNIFICADA
 // ==========================================
 async function cargarListaDeChats() {
     const listaDiv = document.getElementById('lista-conversaciones');
+    listaDiv.innerHTML = '<p class="cargando" style="text-align:center; padding:20px; color:#8b949e;">Cargando tus chats...</p>';
     
     try {
-        // 1. Pedimos los viajes (Chats Grupales)
         const resViajes = await fetch(`${URL_BACKEND}/api/mis-viajes/${userId}`);
         const viajes = resViajes.ok ? await resViajes.json() : [];
 
-        // 2. Pedimos la bandeja de entrada (Chats Privados)
         const resPrivados = await fetch(`${URL_BACKEND}/api/inbox/${userId}`);
         const privados = resPrivados.ok ? await resPrivados.json() : [];
 
-        listaDiv.innerHTML = ''; // Limpiamos el texto de "Cargando..."
+        listaDiv.innerHTML = ''; 
 
         if (viajes.length === 0 && privados.length === 0) {
             listaDiv.innerHTML = `<p style="text-align:center; color:#9ca3af; padding:20px;">No tienes conversaciones aún.</p>`;
             return;
         }
 
-        // --- PINTAR LOS GRUPOS (VIAJES) ---
-        if (viajes.length > 0) {
-            listaDiv.innerHTML += `<div style="padding:10px 15px; font-size:12px; font-weight:bold; color:#6b7280; text-transform:uppercase;">🚗 Chats de Viajes</div>`;
-            
-            viajes.forEach(v => {
-                listaDiv.innerHTML += `
-                    <div class="contacto-item" id="chat-item-grupal-${v.id}" onclick="abrirChat('${v.id}', 'grupal', 'Viaje a ${v.destino}')">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <div style="background:#1a2e25; width:40px; height:40px; border-radius:50%; color:#4ade80; display:flex; align-items:center; justify-content:center; font-size:16px;">
-                                <i class="fa-solid fa-car"></i>
-                            </div>
-                            <div style="flex:1; overflow:hidden;">
-                                <strong style="color:white; display:block; font-size:15px; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">Viaje a ${v.destino}</strong>
-                                <span style="font-size:12px; color:#9ca3af;">Grupo del viaje</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
+        // Unificamos todo en un solo array (mezclados)
+        let todosLosChats = [
+            ...viajes.map(v => ({
+                idOriginal: v.id,
+                tipo: 'grupal', 
+                nombre: `Viaje a ${v.destino}`, 
+                sub: 'Grupo del viaje',
+                foto: 'https://cdn-icons-png.flaticon.com/512/854/854838.png' // Icono coche/mapa para viajes
+            })),
+            ...privados.map(p => ({
+                idOriginal: p.usuario.id,
+                tipo: 'privado', 
+                nombre: p.usuario.nombre, 
+                sub: p.ultimoMensaje || 'Chat privado', 
+                foto: p.usuario.avatar_url || `https://ui-avatars.com/api/?name=${p.usuario.nombre}&background=1a2e25&color=4ade80`
+            }))
+        ];
 
-        // --- PINTAR LOS PRIVADOS ---
-        if (privados.length > 0) {
-            listaDiv.innerHTML += `<div style="padding:10px 15px; font-size:12px; font-weight:bold; color:#6b7280; text-transform:uppercase; margin-top:10px;">👤 Mensajes Privados</div>`;
+        // Renderizar la lista unificada
+        todosLosChats.forEach(c => {
+            const idElemento = `chat-item-${c.tipo}-${c.idOriginal}`;
             
-            privados.forEach(c => {
-                const avatar = c.usuario?.avatar_url || `https://ui-avatars.com/api/?name=${c.usuario.nombre}&background=1a2e25&color=4ade80`;
-                
-                listaDiv.innerHTML += `
-                    <div class="contacto-item" id="chat-item-privado-${c.usuario.id}" onclick="abrirChat('${c.usuario.id}', 'privado', '${c.usuario.nombre}')">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <img src="${avatar}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid #374151;">
-                            <div style="flex:1; overflow:hidden;">
-                                <strong style="color:white; display:block; font-size:15px; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${c.usuario.nombre}</strong>
-                                <span style="font-size:12px; color:#9ca3af; white-space:nowrap; text-overflow:ellipsis; overflow:hidden; display:block;">${c.ultimoMensaje || 'Toca para ver...'}</span>
-                            </div>
-                        </div>
+            listaDiv.innerHTML += `
+                <div class="contacto-item" id="${idElemento}" onclick="abrirChat('${c.idOriginal}', '${c.tipo}', '${c.nombre}')">
+                    <img src="${c.foto}" alt="perfil">
+                    <div class="contacto-info">
+                        <strong>${c.nombre}</strong>
+                        <span>${c.sub}</span>
                     </div>
-                `;
-            });
-        }
+                </div>
+            `;
+        });
 
     } catch (error) {
         console.error(error);
@@ -84,26 +74,39 @@ async function cargarListaDeChats() {
 }
 
 // ==========================================
-// 2. ABRIR UN CHAT (PREPARAR LA ZONA DERECHA)
+// 2. ABRIR UN CHAT Y MOVERLO ARRIBA
 // ==========================================
 window.abrirChat = function(idChat, tipoChat, tituloChat) {
     chatActivoId = idChat;
     tipoChatActivo = tipoChat;
 
+    // 1. Marcar como activo y mover arriba (Prepend)
+    const lista = document.getElementById('lista-conversaciones');
+    const itemClickado = document.getElementById(`chat-item-${tipoChat}-${idChat}`);
+    
     document.querySelectorAll('.contacto-item').forEach(el => el.classList.remove('activo'));
-    const itemEncontrado = document.getElementById(`chat-item-${tipoChat}-${idChat}`);
-    if(itemEncontrado) itemEncontrado.classList.add('activo');
+    
+    if (itemClickado) {
+        itemClickado.classList.add('activo');
+        // ESTA ES LA MAGIA QUE MUEVE EL CHAT AL PRINCIPIO:
+        lista.prepend(itemClickado); 
+    }
 
-    // Mostramos la cabecera nueva y ponemos el nombre
+    // 2. Mostrar la cabecera fija y poner el nombre
     const cabecera = document.getElementById('chat-header-dinamico');
-    cabecera.style.display = 'block';
+    cabecera.style.display = 'flex';
     document.getElementById('nombre-chat-actual').innerText = tituloChat;
 
-    document.querySelector('.mensaje-bienvenida').style.display = 'none';
+    // 3. FIX: Ocultar mensaje de bienvenida SIN dar error si ya no existe
+    const msgBienvenida = document.querySelector('.mensaje-bienvenida');
+    if (msgBienvenida) {
+        msgBienvenida.style.display = 'none';
+    }
+    
     document.getElementById('form-enviar-mensaje').classList.remove('oculto');
     
-    // Limpiamos el historial para que no se vea el chat anterior mientras carga
-    document.getElementById('historial-mensajes').innerHTML = '<p style="text-align:center; color:#9ca3af;">Cargando mensajes...</p>';
+    // Limpiamos el historial
+    document.getElementById('historial-mensajes').innerHTML = '<p style="text-align:center; color:#9ca3af; margin-top: 20px;">Cargando mensajes...</p>';
 
     if (intervaloChat) clearInterval(intervaloChat);
     cargarMensajesActivos();
@@ -130,13 +133,10 @@ async function cargarMensajesActivos() {
             return;
         }
 
-        // ... resto de tu código de pintar mensajes (el bucle forEach) ...
-        // ASEGÚRATE de que la variable htmlMensajes empiece vacía: let htmlMensajes = '';
-
-        // Comprobar si estábamos haciendo scroll abajo del todo para mantenerlo
         const estaAlFinal = historial.scrollHeight - historial.scrollTop <= historial.clientHeight + 50;
 
-        let htmlMensajes = tituloContenedor;
+        // FIX: Eliminada la variable "tituloContenedor" que daba error. Inicializamos en vacío.
+        let htmlMensajes = '';
 
         mensajes.forEach(msg => {
             let esMio, nombre, avatar, textoMsg, horaRaw;
@@ -144,7 +144,6 @@ async function cargarMensajesActivos() {
             horaRaw = new Date(msg.creado_en || msg.fecha || new Date());
             const hora = horaRaw.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'});
 
-            // Adaptar las variables de base de datos según el tipo de chat
             if (tipoChatActivo === 'grupal') {
                 esMio = String(msg.id_usuario) === String(userId);
                 nombre = msg.usuarios?.nombre || 'Usuario';
@@ -158,22 +157,20 @@ async function cargarMensajesActivos() {
             }
 
             if (esMio) {
-                // Burbuja a la derecha (Mía)
                 htmlMensajes += `
                     <div class="burbuja mia">
                         ${textoMsg}
-                        <span style="display:block; font-size:10px; text-align:right; margin-top:5px; opacity:0.7;">${hora}</span>
+                        <span class="timestamp" style="display:block; font-size:10px; text-align:right; margin-top:5px; opacity:0.7;">${hora}</span>
                     </div>
                 `;
             } else {
-                // Burbuja a la izquierda (De otro) con avatar
                 htmlMensajes += `
                     <div style="display:flex; gap:8px; align-items:flex-end; align-self:flex-start; margin-bottom:10px; max-width:75%;">
-                        <img src="${avatar}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid #374151;">
+                        <img src="${avatar}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid rgba(255,255,255,0.1);">
                         <div class="burbuja otra" style="max-width:100%; margin-bottom:0;">
-                            ${tipoChatActivo === 'grupal' ? `<strong style="font-size:11px; display:block; margin-bottom:4px; color:#9ca3af;">${nombre}</strong>` : ''}
+                            ${tipoChatActivo === 'grupal' ? `<strong style="font-size:11px; display:block; margin-bottom:4px; color:#4ade80;">${nombre}</strong>` : ''}
                             ${textoMsg}
-                            <span style="display:block; font-size:10px; text-align:right; margin-top:5px; opacity:0.7;">${hora}</span>
+                            <span class="timestamp" style="display:block; font-size:10px; text-align:right; margin-top:5px; opacity:0.7;">${hora}</span>
                         </div>
                     </div>
                 `;
@@ -182,16 +179,12 @@ async function cargarMensajesActivos() {
 
         historial.innerHTML = htmlMensajes;
 
-        // Auto-scroll hacia abajo si el usuario ya estaba abajo
         if (estaAlFinal) historial.scrollTop = historial.scrollHeight;
 
     } catch (e) {
-        console.error(e);
-        // Si hay error pero ya hay mensajes pintados, no los borramos. 
-        // Si no hay nada pintado, mostramos el error.
-        if (historial.children.length <= 2) { 
-            const tituloContenedor = historial.firstElementChild ? historial.firstElementChild.outerHTML : '';
-            historial.innerHTML = tituloContenedor + `<p style="color:#ef4444; text-align:center;">Error al cargar mensajes.</p>`;
+        console.error("Error pintando mensajes:", e);
+        if (historial.children.length === 0 || historial.innerHTML.includes('Cargando')) { 
+            historial.innerHTML = `<p style="color:#ef4444; text-align:center; margin-top:20px;">Error al cargar mensajes.</p>`;
         }
     }
 }
@@ -206,12 +199,11 @@ document.getElementById('form-enviar-mensaje').addEventListener('submit', async 
     
     if (!texto || !chatActivoId) return;
 
-    input.value = ''; // Vaciamos la caja rápido para mejor UX
+    input.value = ''; 
 
     try {
         let url, bodyData;
         
-        // La estructura de envío depende de si es grupo o privado
         if (tipoChatActivo === 'grupal') {
             url = `${URL_BACKEND}/api/mensajes`;
             bodyData = { id_viaje: chatActivoId, id_usuario: userId, mensaje: texto };
@@ -227,10 +219,7 @@ document.getElementById('form-enviar-mensaje').addEventListener('submit', async 
         });
 
         if (res.ok) {
-            // Forzamos a recargar la zona de mensajes para ver el nuestro al instante
             await cargarMensajesActivos();
-            
-            // Bajamos el scroll a tope
             setTimeout(() => {
                 const h = document.getElementById('historial-mensajes');
                 h.scrollTop = h.scrollHeight;
