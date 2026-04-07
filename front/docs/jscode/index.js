@@ -502,33 +502,42 @@ function hacerArrastrable(elmnt, handle) {
 // ==========================================
 // GLOBO GLOBAL DE NOTIFICACIONES
 // ==========================================
+// ==========================================
+// COMPROBADOR DE NOTIFICACIONES
+// ==========================================
 async function comprobarNotificacionesGlobales() {
     const userId = localStorage.getItem('benaluma_user_id');
-    if (!userId) return;
+    const badge = document.getElementById('notificacion-global-chat');
+    
+    if (!userId || !badge) return;
 
     try {
         const URL_BACKEND = 'https://proyectopersonal-0xcu.onrender.com';
-        const res = await fetch(`${URL_BACKEND}/api/mensajes/no-leidos/${userId}`);
+        
+        // Consultamos el inbox (que sabemos que funciona)
+        const res = await fetch(`${URL_BACKEND}/api/inbox/${userId}`);
         
         if (res.ok) {
-            const datos = await res.json();
-            const numero = datos.no_leidos || 0; // Dependiendo de cómo lo devuelva tu backend
+            const privados = await res.json();
             
-            const badge = document.getElementById('notificacion-global-chat');
-            if (badge) {
-                if (numero > 0) {
-                    badge.innerText = numero > 99 ? '+99' : numero;
-                    badge.classList.remove('oculto');
-                } else {
-                    badge.classList.add('oculto');
-                }
+            // TRUCO FRONTEND: Comparamos cuántos chats hay ahora vs los que vimos la última vez
+            const chatsGuardados = parseInt(localStorage.getItem('chats_count_' + userId)) || 0;
+            const chatsActuales = privados.length;
+            
+            if (chatsActuales > chatsGuardados) {
+                // ¡Hay un chat nuevo! Mostramos el globo
+                const nuevos = chatsActuales - chatsGuardados;
+                badge.innerText = nuevos;
+                badge.classList.remove('oculto');
+            } else {
+                badge.classList.add('oculto');
             }
         }
     } catch (e) { 
-        // Silenciado para no llenar la consola
+        console.log("Comprobando notificaciones...");
     }
 }
 
-// Ejecutar al cargar el mapa y luego cada 5 segundos
-comprobarNotificacionesGlobales();
+// Comprueba cada 5 segundos
 setInterval(comprobarNotificacionesGlobales, 5000);
+comprobarNotificacionesGlobales();
