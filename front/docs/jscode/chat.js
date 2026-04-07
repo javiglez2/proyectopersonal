@@ -41,7 +41,7 @@ async function cargarListaDeChats() {
                 tipo: 'grupal', 
                 nombre: `Viaje a ${v.destino}`, 
                 sub: 'Grupo del viaje',
-                foto: 'https://cdn-icons-png.flaticon.com/512/854/854838.png' // Icono coche/mapa para viajes
+                foto: 'fotos/fotogrupo2.png' // Icono coche/mapa para viajes
             })),
             ...privados.map(p => ({
                 idOriginal: p.usuario.id,

@@ -1,12 +1,13 @@
 /* ==========================================
-   WECKO CHAT - DISEÑO DEFINITIVO Y CORREGIDO
+   UEQO CHAT - TARJETA FLOTANTE CENTRAL
    ========================================== */
 
 :root {
-    --bg-base: #0d1117;
-    --bg-sidebar: #161b22;
-    --bg-active: #1f2d23;
-    --accent: #4ade80;
+    --bg-page: #0d1712;      /* El fondo verde súper oscuro (como el login) */
+    --bg-card: #0e2419;      /* Fondo de la columna izquierda */
+    --bg-chat: #030c03;      /* Fondo de la zona de mensajes */
+    --bg-active: #1f2d23;    /* Fondo del chat seleccionado */
+    --accent: #4ade80;       /* Verde vibrante UEQO */
     --border: rgba(255, 255, 255, 0.08);
     --text-main: #e6edf3;
     --text-dim: #8b949e;
@@ -19,76 +20,95 @@
 }
 
 body {
-    background-color: var(--bg-base);
+    background-color: var(--bg-page);
     color: var(--text-main);
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     height: 100vh;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     overflow: hidden;
+    padding: 20px;
 }
 
 /* ==========================================
-   CABECERA SUPERIOR (Volver al mapa)
+   BOTÓN VOLVER AL INICIO
    ========================================== */
-.chat-header {
-    height: 60px;
-    background: var(--bg-sidebar);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    gap: 16px;
-    flex-shrink: 0;
-}
-
-.btn-volver {
+.btn-volver-inicio {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    color: #9ca3af;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
     display: flex;
     align-items: center;
     gap: 8px;
-    color: var(--text-dim);
-    text-decoration: none;
-    font-size: 14px;
-    padding: 7px 14px;
-    border-radius: 8px;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.btn-volver-inicio:hover {
+    color: var(--accent);
+    transform: translateX(-4px);
+}
+
+/* ==========================================
+   LA TARJETA DEL CHAT (75% DE LA PANTALLA)
+   ========================================== */
+.chat-card {
+    width: 75vw;
+    height: 75vh;
+    max-width: 1400px;
+    max-height: 900px;
+    min-height: 500px;
+    background-color: var(--bg-chat);
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); /* Sombra profunda */
+    display: flex;
+    overflow: hidden; /* Corta las esquinas perfectamente */
     border: 1px solid var(--border);
-    transition: 0.2s;
+    
+    /* Animación de entrada estilo login */
+    transform: scale(0.95);
+    opacity: 0;
+    animation: fadeIn 0.4s ease-out forwards;
 }
 
-.btn-volver:hover {
-    color: var(--text-main);
-    background: rgba(255,255,255,0.05);
-}
-
-.logo-wrapper {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-}
-
-.logo-wrapper h2 {
-    font-size: 18px;
-    color: var(--text-main);
+@keyframes fadeIn {
+    to { transform: scale(1); opacity: 1; }
 }
 
 /* ==========================================
-   CONTENEDOR PRINCIPAL
+   COLUMNA IZQUIERDA (SIDEBAR)
    ========================================== */
-.chat-container {
-    flex: 1;
-    display: flex;
-    overflow: hidden;
-    height: calc(100vh - 60px);
-}
-
-/* ==========================================
-   LISTA LATERAL (COLUMNA IZQUIERDA)
-   ========================================== */
-.chat-lista {
+.chat-sidebar {
     width: 350px;
     min-width: 350px;
-    background: var(--bg-sidebar);
+    background: var(--bg-card);
     border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    height: 75px;
+    padding: 0 25px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+}
+
+.sidebar-header h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--accent);
+    letter-spacing: 1px;
+}
+
+.chat-lista {
+    flex: 1;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -97,39 +117,34 @@ body {
 .chat-lista::-webkit-scrollbar { width: 5px; }
 .chat-lista::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
 
-/* EL FIX PARA LAS IMÁGENES GIGANTES Y EL TEXTO */
+/* Item de Chat */
 .contacto-item {
-    display: flex;           /* Alinea imagen y texto en horizontal */
-    align-items: center;     /* Centra verticalmente */
-    padding: 15px 20px;
-    gap: 15px;               /* Separación entre imagen y texto */
+    display: flex;           
+    align-items: center;     
+    padding: 16px 20px;
+    gap: 15px;               
     cursor: pointer;
     border-bottom: 1px solid var(--border);
     transition: background 0.2s;
 }
 
-.contacto-item:hover { 
-    background: rgba(255, 255, 255, 0.03); 
-}
+.contacto-item:hover { background: rgba(255, 255, 255, 0.03); }
 
 .contacto-item.activo {
     background: var(--bg-active);
     border-left: 4px solid var(--accent);
 }
 
-/* FIX: TAMAÑO ESTRICTO PARA LA FOTO DE PERFIL */
 .contacto-item img {
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid transparent;
 }
 
-.contacto-item.activo img { 
-    border-color: var(--accent); 
-}
+.contacto-item.activo img { border-color: var(--accent); }
 
 .contacto-info { 
     flex: 1; 
@@ -139,7 +154,7 @@ body {
 }
 
 .contacto-info strong {
-    font-size: 15px;
+    font-size: 16px;
     color: var(--text-main);
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -148,7 +163,7 @@ body {
 }
 
 .contacto-info span {
-    font-size: 13px;
+    font-size: 14px;
     color: var(--text-dim);
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -162,13 +177,14 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: var(--bg-base);
+    background: var(--bg-chat);
     position: relative;
 }
 
 .chat-header-top {
-    padding: 18px;
-    background: var(--bg-sidebar);
+    height: 75px;
+    padding: 0 25px;
+    background: var(--bg-card);
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
@@ -177,7 +193,8 @@ body {
 
 #nombre-chat-actual {
     color: var(--accent);
-    font-size: 18px;
+    font-size: 20px;
+    font-weight: 600;
     margin: 0;
 }
 
@@ -189,35 +206,38 @@ body {
     justify-content: center;
     gap: 16px;
     color: var(--text-dim);
+    height: 100%;
 }
 
-.mensaje-bienvenida i { font-size: 40px; opacity: 0.5; color: var(--accent); }
+.mensaje-bienvenida i { font-size: 50px; opacity: 0.5; color: var(--accent); }
+.mensaje-bienvenida p { font-size: 18px; }
 
 .mensajes-box {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 25px;
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-/* ==========================================
-   BURBUJAS
-   ========================================== */
+.mensajes-box::-webkit-scrollbar { width: 6px; }
+.mensajes-box::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
+
+/* BURBUJAS */
 .burbuja {
-    max-width: 75%;
-    padding: 12px 16px;
-    border-radius: 18px;
+    max-width: 70%;
+    padding: 14px 18px;
+    border-radius: 20px;
     font-size: 15px;
-    line-height: 1.4;
+    line-height: 1.5;
     position: relative;
     word-wrap: break-word;
 }
 
 .burbuja.mia {
     align-self: flex-end;
-    background: #059669;
+    background: #16a34a; /* Verde UEQO para tus mensajes */
     color: white;
     border-bottom-right-radius: 4px;
 }
@@ -234,11 +254,11 @@ body {
    INPUT ÁREA
    ========================================== */
 .chat-input-area {
-    padding: 15px 20px;
-    background: var(--bg-sidebar);
+    padding: 20px 25px;
+    background: var(--bg-card);
     border-top: 1px solid var(--border);
     display: flex;
-    gap: 12px;
+    gap: 15px;
 }
 
 .chat-input-area.oculto {
@@ -247,13 +267,14 @@ body {
 
 #input-mensaje {
     flex: 1;
-    background: #0d1117;
+    background: var(--bg-page);
     border: 1px solid var(--border);
-    border-radius: 25px;
+    border-radius: 30px;
     color: white;
-    padding: 12px 20px;
+    padding: 14px 22px;
     outline: none;
-    font-size: 15px;
+    font-size: 16px;
+    transition: border-color 0.2s;
 }
 
 #input-mensaje:focus { 
@@ -263,42 +284,49 @@ body {
 .btn-enviar {
     background: var(--accent);
     border: none;
-    width: 45px;
-    height: 45px;
-    min-width: 45px;
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #0d1117;
-    font-size: 16px;
+    color: #0d1712;
+    font-size: 18px;
     transition: transform 0.2s;
 }
 
 .btn-enviar:hover {
-    transform: scale(1.05);
+    transform: scale(1.08);
 }
 
 /* ==========================================
-   RESPONSIVO (Móviles)
+   RESPONSIVO (MÓVILES Y TABLETS)
    ========================================== */
-@media (max-width: 768px) {
-    .chat-lista {
-        width: 80px;
-        min-width: 80px;
+@media (max-width: 900px) {
+    .chat-card {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+        border: none;
+    }
+    .btn-volver-inicio {
+        display: none; /* En móvil se usa el botón de volver de la cabecera si lo añades, o puedes reubicarlo */
+    }
+}
+
+@media (max-width: 600px) {
+    .chat-sidebar {
+        width: 85px;
+        min-width: 85px;
     }
     
-    .contacto-info {
-        display: none; /* Oculta el texto en móviles para dejar solo el avatar */
-    }
+    .sidebar-header h2 { display: none; }
+    .contacto-info { display: none; }
     
     .contacto-item {
         justify-content: center;
         padding: 15px 5px;
-    }
-    
-    .btn-volver span {
-        display: none;
     }
 }

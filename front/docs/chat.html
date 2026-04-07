@@ -6,29 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Chats - UEQO</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap">
     <link rel="stylesheet" href="estilos/chat.css">
 </head>
 
 <body>
 
-    <header class="chat-header">
-        <a href="mapa.html" class="btn-volver">
-            <i class="fa-solid fa-arrow-left"></i> Volver al Mapa
-        </a>
-        <div class="logo-wrapper">
-            <h2>Mis Chats</h2>
-        </div>
-    </header>
+    <a href="mapa.html" class="btn-volver-inicio">
+        <i class="fa-solid fa-arrow-left"></i> Volver al Mapa
+    </a>
 
-    <main class="chat-container">
-        <aside class="chat-lista" id="lista-conversaciones">
-            <p class="cargando">Cargando tus chats...</p>
+    <div class="chat-card">
+        
+        <aside class="chat-sidebar">
+            <div class="sidebar-header">
+                <h2>Mis Chats</h2>
+            </div>
+            <div class="chat-lista" id="lista-conversaciones">
+                <p class="cargando" style="text-align:center; padding:20px; color:#8b949e;">Cargando tus chats...</p>
+            </div>
         </aside>
 
         <section class="chat-mensajes-area">
             <div id="chat-header-dinamico" class="chat-header-top" style="display: none;">
                 <h3 id="nombre-chat-actual">Nombre del Chat</h3>
             </div>
+            
             <div id="historial-mensajes" class="mensajes-box">
                 <div class="mensaje-bienvenida">
                     <i class="fa-solid fa-comments"></i>
@@ -41,7 +44,8 @@
                 <button type="submit" class="btn-enviar"><i class="fa-solid fa-paper-plane"></i></button>
             </form>
         </section>
-    </main>
+        
+    </div>
 
     <script src="jscode/chat.js"></script>
 </body>
