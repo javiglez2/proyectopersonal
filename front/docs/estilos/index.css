@@ -35,27 +35,78 @@ header h1 { color: #4ade80; font-size: 24px; font-weight: 700; letter-spacing: -
     justify-content: center; 
     align-items: center;
     flex: 1; /* Esto es lo que empuja el footer hacia abajo */
+    position: relative;  /* Necesario para anclar el texto de fondo */
+    overflow: hidden;    /* Evita que el texto gigante cree barras de scroll */
+    z-index: 1;
+}
+
+.hero::before {
+    content: "UEQO";
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Lo centra perfectamente */
+    
+    font-size: 35vw; /* Tamaño dinámico: ocupa el 35% del ancho de la pantalla */
+    font-weight: 900; /* Lo más grueso posible */
+    line-height: 1;
+    white-space: nowrap; /* Evita que salte a la siguiente línea */
+    
+    /* El color: Blanco con una opacidad del 3% (casi invisible) */
+    /* Si prefieres que sea un verde fantasma, usa: color: rgba(74, 222, 128, 0.04); */
+    color: rgba(255, 255, 255, 0.03); 
+    
+    z-index: -1; /* Lo manda completamente al fondo */
+    pointer-events: none; /* CRÍTICO: Evita que el texto bloquee los clics en los botones */
+    user-select: none; /* Evita que el usuario lo seleccione sin querer como texto normal */
+}
+
+.hero > * {
+    position: relative;
+    z-index: 2;
 }
 
 /* 🌟 3. Textos mucho más grandes y protagonistas */
-.hero h2 { 
-    font-size: 64px; /* Antes era 48px */
-    margin-bottom: 25px; 
-    color: #4ade80; 
-    max-width: 900px; /* Más ancho para que quepa bien */
-    line-height: 1.15; 
+.hero h2 {
+    font-size: 4.2rem;       /* ¡Mucho más grande! Antes rondaría los 2.5/3rem */
+    font-weight: 800;        /* Muy negrita */
+    line-height: 1.1;        /* Junta un poco las líneas para que no se vea desarmado */
+    margin-bottom: 25px;
+    letter-spacing: -1px;    /* Le da un toque muy pro a las fuentes grandes */
 }
 
-.hero p { 
-    font-size: 22px; /* Antes era 18px */
-    max-width: 750px; 
-    margin: 0 auto 40px auto; 
-    color: #d1d5db; 
-    line-height: 1.6; 
+.hero p {
+    font-size: 1.4rem;       /* Párrafo más grande y fácil de leer */
+    line-height: 1.6;
+    max-width: 850px;        /* Evita que se estire demasiado a los lados */
+    margin: 0 auto 40px auto;/* Centrado y con más espacio hacia los botones */
+    color: #e5e7eb;          /* Un gris muy clarito para que contraste bien con el fondo oscuro */
+}
+
+.btn-hero {
+    font-size: 1.3rem;       /* Letra del botón más grande */
+    padding: 18px 45px;      /* Botón más ancho y alto */
+    border-radius: 40px;     /* Bordes bien redondeados */
+    font-weight: 700;
+    display: inline-block;
+    transition: transform 0.2s, box-shadow 0.2s;
+    /* (Mantén aquí el background y color que ya tenías) */
+}
+
+.btn-hero:hover {
+    transform: scale(1.05);  /* Efecto de crecer al pasar el ratón */
+    box-shadow: 0 10px 25px rgba(74, 222, 128, 0.4); /* Brillo verde */
 }
 
 .hero .btn-hero { background: #4ade80; color: #1a2e25; text-decoration: none; font-size: 18px; font-weight: 800; padding: 15px 35px; border-radius: 30px; transition: 0.3s; display: inline-block; }
 .hero .btn-hero:hover { background: #22c55e; transform: scale(1.05); }
+
+.btn-conocenos {
+    font-size: 1.15rem;      /* Un poco más grande también */
+    padding: 12px 30px;
+    margin-top: 30px;        /* Más separado del botón principal */
+    /* (Mantén aquí el background y color que ya tenías) */
+}
 
 /* Ajuste móvil para textos grandes */
 @media (max-width: 600px) {
@@ -63,6 +114,15 @@ header h1 { color: #4ade80; font-size: 24px; font-weight: 700; letter-spacing: -
     .hero p { font-size: 18px; }
     .nav-links { gap: 5px; }
     .btn-login, .btn-register { padding: 6px 12px; font-size: 13px; }
+}
+
+@media (max-width: 768px) {
+    .hero h2 {
+        font-size: 2.5rem; /* En móviles lo bajamos un poco */
+    }
+    .hero p {
+        font-size: 1.1rem;
+    }
 }
 
 /* Info Cards */
