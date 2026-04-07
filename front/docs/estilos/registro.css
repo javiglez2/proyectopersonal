@@ -41,39 +41,39 @@ body, html {
 }
 
 .brand-header {
+  font-family: 'Bebas Neue', sans-serif;
   color: #4ade80; 
-  font-size: 42px; /* Un pelín más pequeño que en login para dejar espacio a los campos */
-  font-weight: 800;
-  letter-spacing: -1.5px;
+  font-size: 56px; /* Un poco menor que login por tener más campos */
+  letter-spacing: 2px;
   margin-bottom: 20px;
 }
 
 h1 {
   color: #1a2e25; 
-  font-size: 24px; 
+  font-size: 30px; 
   font-weight: 700;
   margin-bottom: 10px;
 }
 
 .form-subtitle {
   color: #6b7280;
-  font-size: 15px; 
-  margin-bottom: 40px; 
+  font-size: 17px; 
+  margin-bottom: 35px; 
 }
 
 form { text-align: left; }
 
 label {
   display: block;
-  margin-bottom: 8px;
-  font-size: 14px; 
+  margin-bottom: 10px;
+  font-size: 17px; /* Aumentado */
   font-weight: 600;
   color: #1a2e25;
 }
 
 .input-group {
   position: relative;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .input-group i {
@@ -82,11 +82,10 @@ label {
   top: 50%;
   transform: translateY(-50%);
   color: #6b7280;
-  font-size: 16px; 
+  font-size: 18px; /* Aumentado */
   transition: color 0.2s;
 }
 
-/* Campos extraños en el registro (para que entren dos en una línea si quieres) */
 .row {
   display: flex;
   gap: 15px;
@@ -95,17 +94,18 @@ label {
   flex: 1;
 }
 
+/* Campos de entrada */
 input[type="text"],
 input[type="email"],
 input[type="password"] {
   width: 100%;
-  padding: 14px 20px; 
-  padding-left: 45px; 
+  padding: 16px 20px; /* Campos más gordos */
+  padding-left: 50px; 
   border-radius: 12px;
   border: 2px solid #e5e7eb;
   background: #f9fafb;
   transition: all 0.2s;
-  font-size: 14px; 
+  font-size: 16px; /* Texto interior más grande */
   color: #111827;
 }
 
@@ -124,26 +124,28 @@ input[type="password"]:focus + i {
   color: #16a34a;
 }
 
+/* Botón de registrarse */
 .btn-submit {
   width: 100%;
-  padding: 16px 25px; 
+  padding: 18px 25px; 
   border-radius: 12px;
   border: none;
   background: #16a34a; 
   color: #ffffff;
-  font-size: 17px; 
+  font-size: 19px; /* Botón con más presencia */
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
-  margin-top: 10px; 
+  margin-top: 15px; 
 }
 
 .btn-submit:hover { background: #15803d; }
 .btn-submit:active { transform: scale(0.98); }
 
+/* Links de abajo */
 .footer-links {
-  margin-top: 30px; 
-  font-size: 15px; 
+  margin-top: 35px; 
+  font-size: 17px; /* Aumentado */
   color: #1a2e25;
   text-align: center;
 }

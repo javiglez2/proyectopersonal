@@ -48,39 +48,34 @@ body, html {
   }
 }
 
-/* Encabezado de la marca "IRIGO" - Ligeramente más grande */
+/* Encabezado de la marca "UEQO" */
 .brand-header {
-  color: #4ade80; /* Verde menta brillante */
-  font-size: 48px; /* Incremetado */
-  font-weight: 800;
-  letter-spacing: -1.5px;
-  margin-bottom: 30px;
+  font-family: 'Bebas Neue', sans-serif; /* Le da el aspecto del logo */
+  color: #4ade80; 
+  font-size: 64px; /* ¡Mucho más grande! */
+  letter-spacing: 2px;
+  margin-bottom: 20px;
 }
 
-/* Títulos del formulario - Ligeramente más grandes */
+/* Títulos del formulario */
 h1 {
-  color: #1a2e25; /* Verde oscuro */
-  font-size: 26px; /* Incremetado */
+  color: #1a2e25; 
+  font-size: 32px; /* Letra más grande */
   font-weight: 700;
   margin-bottom: 12px;
 }
 
 .form-subtitle {
   color: #6b7280;
-  font-size: 15px; /* Incremetado */
-  margin-bottom: 50px; /* Más espacio */
+  font-size: 18px; /* Más legible */
+  margin-bottom: 40px; 
 }
 
-/* Estilos del formulario */
-form {
-  text-align: left;
-}
-
-/* Etiquetas de campo - Ligeramente más grandes */
+/* Etiquetas de campo (Tu correo, contraseña...) */
 label {
   display: block;
   margin-bottom: 12px;
-  font-size: 15px; /* Incremetado */
+  font-size: 18px; /* Más grande y visible */
   font-weight: 600;
   color: #1a2e25;
 }
@@ -94,86 +89,77 @@ label {
 /* Iconos de FontAwesome */
 .input-group i {
   position: absolute;
-  left: 18px; /* Ajustado */
+  left: 20px; 
   top: 50%;
   transform: translateY(-50%);
   color: #6b7280;
-  font-size: 18px; /* Incremetado */
+  font-size: 22px; /* Iconos más grandes */
   transition: color 0.2s;
 }
 
-/* Campos de entrada reales - Ligeramente más acolchados */
+/* Campos donde el usuario escribe */
 input[type="email"],
 input[type="password"] {
   width: 100%;
-  padding: 16px 20px; /* Padding incrementado */
-  padding-left: 50px; /* Más espacio para el icono */
+  padding: 20px 25px; /* Más alto y ancho por dentro */
+  padding-left: 55px; /* Espacio para el icono gigante */
   border-radius: 12px;
   border: 2px solid #e5e7eb;
   background: #f9fafb;
   transition: all 0.2s;
-  font-size: 15px; /* Incremetado */
+  font-size: 18px; /* Lo que escribes se verá más grande */
   color: #111827;
 }
 
-/* Efectos de enfoque en los campos */
+/* Efectos al hacer clic en los campos */
 input[type="email"]:focus,
 input[type="password"]:focus {
-  border-color: #16a34a; /* Verde vibrante */
+  border-color: #16a34a; 
   background: #ffffff;
-  /* Anillo de enfoque sutil */
   box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.15);
   outline: none;
 }
 
-/* Cambia el color del icono al enfocar el campo */
 input[type="email"]:focus + i,
 input[type="password"]:focus + i {
   color: #16a34a;
 }
 
-/* Botón de envío - ¡MÁS GRANDE! */
+/* Botón de enviar */
 .btn-submit {
   width: 100%;
-  padding: 18px 25px; /* Padding incrementado */
+  padding: 20px 25px; /* Botón más alto */
   border-radius: 12px;
   border: none;
-  background: #16a34a; /* Verde vibrante */
+  background: #16a34a; 
   color: #ffffff;
-  font-size: 17px; /* Ligeramente más grande */
+  font-size: 20px; /* Letra del botón enorme */
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
-  margin-top: 15px; /* Más espacio */
+  margin-top: 20px; 
 }
 
-/* Efectos del botón */
-.btn-submit:hover {
-  background: #15803d; /* Verde oscuro al pasar */
-}
-
-.btn-submit:active {
-  transform: scale(0.98); /* Pequeño "clic" visual */
-}
+.btn-submit:hover { background: #15803d; }
+.btn-submit:active { transform: scale(0.98); }
 
 /* Enlaces debajo del botón */
 .footer-links {
-  margin-top: 45px; /* Más espacio */
-  font-size: 15px; /* Incremetado */
+  margin-top: 40px; 
+  font-size: 18px; /* Textos de "¿No tienes cuenta?" más grandes */
   color: #1a2e25;
   text-align: center;
 }
 
-/* Enlace de registro */
 .footer-links a {
-  color: #16a34a; /* Verde vibrante */
+  color: #16a34a; 
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s;
 }
 
 .footer-links a:hover {
-  color: #4ade80; /* Verde menta al pasar */
+  color: #4ade80; 
   text-decoration: underline;
 }
 
