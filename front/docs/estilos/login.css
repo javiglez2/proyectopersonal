@@ -28,7 +28,7 @@ body, html {
 /* Contenedor principal de la tarjeta de login - 🌟 ¡MÁS GRANDE! */
 .login-container {
   background: #ffffff;
-  padding: 120px 200px; /* Aumentamos el relleno para que respire más */
+  padding: 100px 100px; /* Aumentamos el relleno para que respire más */
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   text-align: center;
@@ -48,34 +48,39 @@ body, html {
   }
 }
 
-/* Encabezado de la marca "UEQO" */
+/* Encabezado de la marca "IRIGO" - Ligeramente más grande */
 .brand-header {
-  font-family: 'Bebas Neue', sans-serif; /* Le da el aspecto del logo */
-  color: #4ade80; 
-  font-size: 64px; /* ¡Mucho más grande! */
-  letter-spacing: 2px;
-  margin-bottom: 20px;
+  color: #4ade80; /* Verde menta brillante */
+  font-size: 48px; /* Incremetado */
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  margin-bottom: 30px;
 }
 
-/* Títulos del formulario */
+/* Títulos del formulario - Ligeramente más grandes */
 h1 {
-  color: #1a2e25; 
-  font-size: 32px; /* Letra más grande */
+  color: #1a2e25; /* Verde oscuro */
+  font-size: 26px; /* Incremetado */
   font-weight: 700;
   margin-bottom: 12px;
 }
 
 .form-subtitle {
   color: #6b7280;
-  font-size: 18px; /* Más legible */
-  margin-bottom: 40px; 
+  font-size: 15px; /* Incremetado */
+  margin-bottom: 50px; /* Más espacio */
 }
 
-/* Etiquetas de campo (Tu correo, contraseña...) */
+/* Estilos del formulario */
+form {
+  text-align: left;
+}
+
+/* Etiquetas de campo - Ligeramente más grandes */
 label {
   display: block;
   margin-bottom: 12px;
-  font-size: 18px; /* Más grande y visible */
+  font-size: 15px; /* Incremetado */
   font-weight: 600;
   color: #1a2e25;
 }
@@ -89,77 +94,86 @@ label {
 /* Iconos de FontAwesome */
 .input-group i {
   position: absolute;
-  left: 20px; 
+  left: 18px; /* Ajustado */
   top: 50%;
   transform: translateY(-50%);
   color: #6b7280;
-  font-size: 22px; /* Iconos más grandes */
+  font-size: 18px; /* Incremetado */
   transition: color 0.2s;
 }
 
-/* Campos donde el usuario escribe */
+/* Campos de entrada reales - Ligeramente más acolchados */
 input[type="email"],
 input[type="password"] {
   width: 100%;
-  padding: 20px 25px; /* Más alto y ancho por dentro */
-  padding-left: 55px; /* Espacio para el icono gigante */
+  padding: 16px 20px; /* Padding incrementado */
+  padding-left: 50px; /* Más espacio para el icono */
   border-radius: 12px;
   border: 2px solid #e5e7eb;
   background: #f9fafb;
   transition: all 0.2s;
-  font-size: 18px; /* Lo que escribes se verá más grande */
+  font-size: 15px; /* Incremetado */
   color: #111827;
 }
 
-/* Efectos al hacer clic en los campos */
+/* Efectos de enfoque en los campos */
 input[type="email"]:focus,
 input[type="password"]:focus {
-  border-color: #16a34a; 
+  border-color: #16a34a; /* Verde vibrante */
   background: #ffffff;
+  /* Anillo de enfoque sutil */
   box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.15);
   outline: none;
 }
 
+/* Cambia el color del icono al enfocar el campo */
 input[type="email"]:focus + i,
 input[type="password"]:focus + i {
   color: #16a34a;
 }
 
-/* Botón de enviar */
+/* Botón de envío - ¡MÁS GRANDE! */
 .btn-submit {
   width: 100%;
-  padding: 20px 25px; /* Botón más alto */
+  padding: 18px 25px; /* Padding incrementado */
   border-radius: 12px;
   border: none;
-  background: #16a34a; 
+  background: #16a34a; /* Verde vibrante */
   color: #ffffff;
-  font-size: 20px; /* Letra del botón enorme */
+  font-size: 17px; /* Ligeramente más grande */
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
-  margin-top: 20px; 
+  margin-top: 15px; /* Más espacio */
 }
 
-.btn-submit:hover { background: #15803d; }
-.btn-submit:active { transform: scale(0.98); }
+/* Efectos del botón */
+.btn-submit:hover {
+  background: #15803d; /* Verde oscuro al pasar */
+}
+
+.btn-submit:active {
+  transform: scale(0.98); /* Pequeño "clic" visual */
+}
 
 /* Enlaces debajo del botón */
 .footer-links {
-  margin-top: 40px; 
-  font-size: 18px; /* Textos de "¿No tienes cuenta?" más grandes */
+  margin-top: 45px; /* Más espacio */
+  font-size: 15px; /* Incremetado */
   color: #1a2e25;
   text-align: center;
 }
 
+/* Enlace de registro */
 .footer-links a {
-  color: #16a34a; 
+  color: #16a34a; /* Verde vibrante */
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s;
 }
 
 .footer-links a:hover {
-  color: #4ade80; 
+  color: #4ade80; /* Verde menta al pasar */
   text-decoration: underline;
 }
 

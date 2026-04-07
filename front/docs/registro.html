@@ -42,7 +42,7 @@
             
             <label for="email">Correo electrónico</label>
             <div class="input-group">
-                <input type="email" id="email" name="email" placeholder="correo@gmail.com" required>
+                <input type="email" id="email" name="email" placeholder="Tu correo electrónico" required>
                 <i class="fa-solid fa-envelope"></i>
             </div>
             
@@ -50,6 +50,13 @@
             <div class="input-group">
                 <input type="password" id="password" name="password" placeholder="Mínimo 8 caracteres" required>
                 <i class="fa-solid fa-lock"></i>
+            </div>
+
+            <label for="confirmar-contrasena">Confirmar Contraseña</label>
+            <div class="input-group">
+                <input type="password" id="confirmar-contrasena" name="confirmar-contrasena" placeholder="Confirma tu contraseña" required>
+                <i class="fa-solid fa-lock"></i>
+                <span id="error-confirmar" class="error-texto"></span>
             </div>
             
             <button type="submit" class="btn-submit">Registrarme en UEQO</button>

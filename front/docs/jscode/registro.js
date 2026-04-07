@@ -1,58 +1,39 @@
-document.getElementById('registroForm').addEventListener('submit', async (e) => {
+document.getElementById('registro-form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    // 1. Limpiamos cualquier error visual previo antes de comprobar
     document.querySelectorAll('.error-texto').forEach(s => s.innerText = '');
     document.querySelectorAll('input').forEach(i => i.classList.remove('input-error'));
 
+    // 2. Recogemos los valores de los cajones
     const nombre = document.getElementById('nombre').value.trim();
     const apellidos = document.getElementById('apellidos').value.trim();
-    const prefijo = document.getElementById('prefijo').value;
-    const telefono = document.getElementById('telefono').value.trim();
     const email = document.getElementById('email').value.trim();
     const contrasena = document.getElementById('contrasena').value;
     const confirmar = document.getElementById('confirmar-contrasena').value;
 
     let valido = true;
 
-    if (!/^[A-ZÁÉÍÓÚÑ][a-záéíóúñA-ZÁÉÍÓÚÑ\s]{1,}$/.test(nombre)) {
-        document.getElementById('error-nombre').innerText = "Empieza por mayúscula";
-        document.getElementById('nombre').classList.add('input-error');
-        valido = false;
-    }
-
-    if (!/^[A-ZÁÉÍÓÚÑ][a-záéíóúñA-ZÁÉÍÓÚÑ\s]{1,}$/.test(apellidos)) {
-        document.getElementById('error-apellidos').innerText = "Empieza por mayúscula";
-        document.getElementById('apellidos').classList.add('input-error');
-        valido = false;
-    }
-
-    if (!/^\d{7,12}$/.test(telefono)) {
-        document.getElementById('error-telefono').innerText = "Número no válido";
-        document.getElementById('telefono').classList.add('input-error');
-        valido = false;
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        document.getElementById('error-email').innerText = "Email no válido";
-        document.getElementById('email').classList.add('input-error');
-        valido = false;
-    }
-
-    if (!/^(?=.*[A-Z])(?=.*\d).{8,12}$/.test(contrasena)) {
-        document.getElementById('error-contrasena').innerText = "8-12 caract., 1 mayúscula, 1 número";
+    // 3. Comprobamos que las contraseñas coincidan
+    if (contrasena !== confirmar) {
+        document.getElementById('error-confirmar').innerText = "Las contraseñas no coinciden.";
+        document.getElementById('confirmar-contrasena').classList.add('input-error');
         document.getElementById('contrasena').classList.add('input-error');
         valido = false;
     }
 
-    if (contrasena !== confirmar) {
-        document.getElementById('error-confirmar').innerText = "Las contraseñas no coinciden";
-        document.getElementById('confirmar-contrasena').classList.add('input-error');
+    // 4. Comprobamos que tenga al menos 8 caracteres (Opcional, pero recomendado)
+    if (contrasena.length < 8) {
+        document.getElementById('error-contrasena').innerText = "La contraseña debe tener al menos 8 caracteres.";
+        document.getElementById('contrasena').classList.add('input-error');
         valido = false;
     }
 
+    // Si hay algún error (valido es false), cortamos aquí y no enviamos nada al servidor
     if (!valido) return;
 
-    const btnRegistro = document.getElementById('btnRegistro');
+    // 5. Si todo está perfecto, procedemos a enviar los datos
+    const btnRegistro = document.querySelector('.btn-submit');
     btnRegistro.disabled = true;
     btnRegistro.innerText = 'Registrando...';
 
@@ -60,7 +41,7 @@ document.getElementById('registroForm').addEventListener('submit', async (e) => 
         const res = await fetch('https://proyectopersonal-0xcu.onrender.com/api/signup', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, apellidos, prefijo_telefono: prefijo, telefono, email, contrasena })
+            body: JSON.stringify({ nombre, apellidos, email, contrasena })
         });
 
         if (res.ok) {
@@ -75,12 +56,13 @@ document.getElementById('registroForm').addEventListener('submit', async (e) => 
             });
         } else {
             const d = await res.json();
-            Swal.fire('Error', d.error || 'No se pudo registrar', 'error');
+            Swal.fire('Error', d.error || 'No se pudo registrar, comprueba los datos', 'error');
         }
     } catch (err) {
         Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
     } finally {
+        // Restauramos el botón
         btnRegistro.disabled = false;
-        btnRegistro.innerText = 'Registrarme';
+        btnRegistro.innerText = 'Registrarme en UEQO';
     }
 });
