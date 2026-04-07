@@ -1,0 +1,210 @@
+/*
+  ========================================
+  WECKO - Diseño de Chat V2 (Estilo App Nativa Premium)
+  ========================================
+*/
+
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+}
+
+body { 
+    background-color: #050a08; /* Fondo hiper-oscuro para contraste */
+    color: #f9fafb; 
+    height: 100vh; 
+    display: flex; 
+    flex-direction: column; 
+    overflow: hidden; 
+}
+
+/* 🌟 SCROLLBAR PERSONALIZADA (Súper fina y moderna) */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #4ade80; }
+
+/* ==========================================
+   HEADER SUPERIOR
+   ========================================== */
+.chat-header { 
+    background: rgba(26, 46, 37, 0.85); /* Verde oscuro translúcido */
+    backdrop-filter: blur(12px); /* Efecto cristal */
+    -webkit-backdrop-filter: blur(12px);
+    padding: 15px 30px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    z-index: 10; 
+}
+
+.btn-volver { 
+    color: #4ade80; 
+    text-decoration: none; 
+    font-weight: 600; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    font-size: 15px; 
+    padding: 8px 16px;
+    background: rgba(74, 222, 128, 0.1);
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.btn-volver:hover { 
+    background: rgba(74, 222, 128, 0.2);
+    transform: translateX(-4px); 
+}
+
+.chat-header h2 { 
+    color: white; 
+    font-size: 20px; 
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+/* ==========================================
+   CONTENEDOR PRINCIPAL
+   ========================================== */
+.chat-container { 
+    display: flex; 
+    flex: 1; 
+    overflow: hidden; 
+    max-width: 1300px; 
+    margin: 0 auto; 
+    width: 100%; 
+    background: #0a120e; /* Fondo un poco más claro que el body */
+}
+
+/* ==========================================
+   LISTA DE CHATS (PANEL IZQUIERDO)
+   ========================================== */
+.chat-lista { 
+    width: 320px; 
+    background: #0d1712; 
+    border-right: 1px solid rgba(255,255,255,0.05); 
+    overflow-y: auto; 
+    padding: 15px 10px; 
+}
+
+.cargando { 
+    text-align: center; 
+    color: #6b7280; 
+    margin-top: 20px; 
+    font-size: 14px;
+}
+
+/* Items de la lista */
+.contacto-item { 
+    padding: 12px 15px; 
+    margin-bottom: 8px;
+    cursor: pointer; 
+    border-radius: 16px; /* Bordes muy redondeados tipo iOS */
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.contacto-item:hover { 
+    background: rgba(255,255,255,0.03); 
+}
+
+.contacto-item.activo { 
+    background: rgba(74, 222, 128, 0.08); /* Fondo menta muy suave */
+    border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+/* ==========================================
+   ÁREA DE MENSAJES (PANEL DERECHO)
+   ========================================== */
+.chat-mensajes-area { 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    background: transparent;
+    position: relative;
+}
+
+.mensajes-box { 
+    flex: 1; 
+    overflow-y: auto; 
+    padding: 20px 30px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+}
+
+/* Mensaje de bienvenida cuando no hay chat abierto */
+.mensaje-bienvenida { 
+    text-align: center; 
+    color: #6b7280; 
+    margin: auto; 
+    background: rgba(255,255,255,0.02);
+    padding: 40px;
+    border-radius: 24px;
+    border: 1px dashed rgba(255,255,255,0.1);
+}
+
+.mensaje-bienvenida i { 
+    font-size: 48px; 
+    margin-bottom: 15px; 
+    color: #4ade80; 
+    opacity: 0.5;
+}
+
+/* ==========================================
+   BURBUJAS DE CHAT
+   ========================================== */
+.burbuja { 
+    padding: 12px 16px; 
+    font-size: 15px; 
+    line-height: 1.5; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Mis mensajes */
+.burbuja.mia { 
+    /* Degradado premium verde */
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); 
+    color: white; 
+    border-radius: 20px 20px 4px 20px; /* Esquina inferior derecha en pico */
+}
+
+/* Mensajes de otros */
+.burbuja.otra { 
+    background: #1f2937; 
+    color: #f3f4f6; 
+    border-radius: 20px 20px 20px 4px; /* Esquina inferior izquierda en pico */
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* ==========================================
+   ZONA PARA ESCRIBIR MENSAJE (INPUT)
+   ========================================== */
+.chat-input-area { 
+    display: flex; 
+    padding: 20px 30px; 
+    background: rgba(13, 23, 18, 0.85); /* Fondo translúcido */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255,255,255,0.05); 
+    gap: 15px; 
+    align-items: center;
+}
+
+.chat-input-area.oculto { display: none; }
+
+#input-mensaje { 
+    flex: 1; 
+    padding: 16px 24px; 
+    border-radius: 30px; /* Forma de píldora */
+    border: 1px solid #374151; 
+    background: #111827; 
+    color: white; 
+    outline: none; 
+    font-size: 15px;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(

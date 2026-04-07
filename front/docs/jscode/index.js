@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     hacerArrastrable(document.getElementById("panel-disponibles"), document.getElementById("cabecera-disponibles"));
     hacerArrastrable(document.getElementById("panel-mis-viajes"), document.getElementById("cabecera-mis-viajes"));
     hacerArrastrable(document.getElementById("panel-publicar"), document.getElementById("cabecera-publicar"));
-    hacerArrastrable(document.getElementById("panel-chats"), document.getElementById("cabecera-chats"));
+    // 🌟 Eliminado el arrastrable del panel de chats antiguo
 });
 
 // ==========================================
@@ -82,43 +82,36 @@ window.togglePanel = function (idPanel) {
     const panel = document.getElementById(idPanel);
     if (!panel) return;
 
-    // Detectamos si es Móvil o Tablet (hasta 1024px)
     const esMovilOTablet = window.innerWidth <= 1024;
 
     if (esMovilOTablet) {
         const estaAbierto = panel.classList.contains('abierta');
 
-        // 1. Cerramos todos los paneles bajándolos
         document.querySelectorAll('.tarjeta-flotante').forEach(p => {
             p.classList.remove('abierta');
             setTimeout(() => { if (!p.classList.contains('abierta')) p.style.display = 'none'; }, 350);
         });
 
-        // 2. Si el que hemos tocado estaba cerrado, lo abrimos
         if (!estaAbierto) {
             panel.style.display = 'flex';
             setTimeout(() => panel.classList.add('abierta'), 10);
         }
     } else {
-        // --- MODO ESCRITORIO ---
         if (panel.style.display === 'none' || panel.style.display === '') {
             panel.style.display = 'flex';
 
-            // 🌟 MAGIA: Calculamos el centro exacto de la pantalla para "Mis Viajes"
             if (idPanel === 'panel-mis-viajes') {
                 const anchoPanel = panel.offsetWidth || 750;
-                // Posición X = (Mitad de la pantalla) - (Mitad del panel)
                 panel.style.left = (window.innerWidth / 2 - anchoPanel / 2) + 'px';
-                panel.style.transform = 'none'; // Evita que pegue saltos al arrastrarlo
+                panel.style.transform = 'none'; 
             }
         } else {
             panel.style.display = 'none';
         }
     }
 
-    // Refrescar los datos siempre que se abran
     if (idPanel === 'panel-mis-viajes') cargarMisViajes();
-    if (idPanel === 'panel-chats') cargarPanelChats();
+    // 🌟 Eliminado el if de cargarPanelChats
 };
 
 function toggleDropdown() {
@@ -199,7 +192,6 @@ window.aplicarFiltros = function () {
 
         let btnHTML = `<button onclick="unirseViaje('${v.id}', event, this)" style="background:#16a34a; color:white; border:none; padding:8px 15px; border-radius:20px; cursor:pointer; font-weight:bold; font-size:13px; white-space:nowrap;">Unirme</button>`;
         
-        // 🌟 LÓGICA INTELIGENTE CON TAMAÑOS COMPACTOS Y ANTI-SALTO DE LÍNEA
         if (estaLleno && !esConductor && !yaUnido) {
             btnHTML = `<span style="background:#fee2e2; padding:4px 8px; border-radius:20px; color:#ef4444; font-size:11px; font-weight:bold; white-space:nowrap;">Lleno</span>`;
         } else if (esConductor) {
@@ -208,13 +200,12 @@ window.aplicarFiltros = function () {
             btnHTML = `<span style="background:#dcfce7; padding:4px 8px; border-radius:20px; color:#166534; font-size:11px; font-weight:bold; white-space:nowrap;">✔ Ya estás dentro ${estaLleno ? ' (Lleno)' : ''}</span>`;
         }
 
-        // Botón de contactar al conductor (solo si no eres tú el conductor)
+        // 🌟 Modificado: Redirige a chat.html
         let btnContactar = '';
         if (!esConductor) {
-            const nombreConductor = v.usuarios?.nombre || 'Conductor';
-            btnContactar = `<button onclick="event.stopPropagation(); abrirChatPrivado('${v.id_conductor}', '${nombreConductor}')" 
+            btnContactar = `<button onclick="event.stopPropagation(); window.location.href='chat.html'" 
                 style="background:#f0fdf4; border:1px solid #bbf7d0; color:#16a34a; padding:7px 12px; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer;">
-                💬 Conductor
+                💬 Chat
             </button>`;
         }
 
@@ -260,7 +251,6 @@ async function cargarMisViajes() {
     const contenedor = document.getElementById('lista-mis-viajes');
     if (!usuarioID || !contenedor) return;
 
-    // Mensaje temporal por si Render tarda en despertar
     contenedor.innerHTML = `<div style="text-align:center; padding:20px; color:#6b7280;">⏳ Cargando tus viajes...</div>`;
 
     try {
@@ -287,16 +277,15 @@ async function cargarMisViajes() {
                 }
             }
 
-            // 🌟 AQUÍ ESTÁ EL CÓDIGO DE PASAJEROS Y CHAT PERFECTAMENTE ENCAJADO
             const pasajerosHTML = v.reservas && v.reservas.length > 0
                 ? v.reservas.map(r => {
                     const nombrePas = r.usuarios?.nombre || 'Pasajero';
-                    const idPasajero = r.id_pasajero;
 
+                    // 🌟 Modificado: Redirige a chat.html
                     if (esConductor) {
                         return `<span style="background:#dbeafe; color:#1e40af; padding:4px 10px; border-radius:12px; font-size:12px; margin-right:5px; border:1px solid #bfdbfe; display:inline-flex; align-items:center; gap:6px; font-weight:bold;">
                             👤 ${nombrePas} 
-                            <button onclick="abrirChatPrivado('${idPasajero}', '${nombrePas}')" style="background:none; border:none; cursor:pointer; padding:0; font-size:15px; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Hablar con ${nombrePas}">💬</button>
+                            <button onclick="window.location.href='chat.html'" style="background:none; border:none; cursor:pointer; padding:0; font-size:15px; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Ir a chats">💬</button>
                         </span>`;
                     } else {
                         return `<span style="background:#f3f4f6; color:#374151; padding:4px 10px; border-radius:12px; font-size:12px; margin-right:5px; border:1px solid #e5e7eb; font-weight:bold;">👤 ${nombrePas}</span>`;
@@ -306,7 +295,6 @@ async function cargarMisViajes() {
 
             const cat = v.categoria || 'General';
             const estilos = obtenerEstilosCategoria(cat);
-            const nombreConductor = v.usuarios?.nombre || 'Conductor';
 
             return `
                 <div style="background:white; padding:15px; border-radius:14px; margin-bottom:15px; border:1px solid #e5e7eb; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
@@ -325,12 +313,12 @@ async function cargarMisViajes() {
                             <button onclick="borrarViaje('${v.id}')" style="background:#fee2e2; color:#ef4444; border:1px solid #fecaca; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold;">Borrar</button>
                         </div>
                     ` : `
-                        <button onclick="abrirChatPrivado('${v.id_conductor}', '${nombreConductor}')" 
+                        <button onclick="window.location.href='chat.html'" 
                             style="width:100%; background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold; margin-bottom:8px;">
-                            💬 Mensaje al conductor
+                            💬 Ir a mis chats
                         </button>
                     `}
-                    <button onclick="abrirChat('${v.id}', '${v.destino}')" style="width:100%; background:#1a2e25; color:white; border:none; padding:12px; border-radius:8px; cursor:pointer; font-weight:bold;">
+                    <button onclick="window.location.href='chat.html'" style="width:100%; background:#1a2e25; color:white; border:none; padding:12px; border-radius:8px; cursor:pointer; font-weight:bold;">
                         Abrir Chat del Viaje
                     </button>
                 </div>`;
@@ -443,352 +431,6 @@ async function enviarViajeAlBack() {
 }
 
 // ==========================================
-// CHAT GRUPAL DEL VIAJE
-// ==========================================
-let chatViajeActual = null;
-let intervaloChat = null;
-
-window.abrirChat = function (idViaje, destino) {
-    let modal = document.getElementById('modal-chat-dinamico');
-
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'modal-chat-dinamico';
-        modal.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:99999; justify-content:center; align-items:center;';
-
-        modal.innerHTML = `
-            <div style="background:white; width:95%; max-width:450px; height:80vh; max-height:600px; border-radius:20px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.4);">
-                <div style="background:#1a2e25; color:white; padding:15px 20px; display:flex; justify-content:space-between; align-items:center;">
-                    <b id="chat-titulo-d" style="font-size:16px; color:#4ade80;">Chat</b>
-                    <button onclick="cerrarChat()" style="color:white; background:none; border:none; font-size:28px; cursor:pointer; line-height:1;">&times;</button>
-                </div>
-                <div id="chat-mensajes-d" style="flex:1; padding:16px; overflow-y:auto; background:#f8fafc; display:flex; flex-direction:column; gap:12px;">
-                    <div style="text-align:center; color:#6b7280; font-size:13px;">Cargando mensajes...</div>
-                </div>
-                <div style="padding:12px 14px; background:white; border-top:1px solid #e5e7eb; display:flex; gap:10px;">
-                    <input type="text" id="input-chat-d" placeholder="Escribe un mensaje..." style="flex:1; padding:11px 16px; border-radius:20px; border:1px solid #d1d5db; outline:none; font-size:14px;">
-                    <button onclick="enviarMensaje()" style="background:#16a34a; color:white; border:none; padding:0 18px; border-radius:20px; cursor:pointer; font-weight:bold;">Enviar</button>
-                </div>
-            </div>`;
-        document.body.appendChild(modal);
-        document.getElementById('input-chat-d').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') enviarMensaje();
-        });
-    }
-
-    modal.style.display = 'flex';
-    chatViajeActual = idViaje;
-    document.getElementById('chat-titulo-d').innerText = `Chat del viaje a ${destino}`;
-
-    if (intervaloChat) clearInterval(intervaloChat);
-    cargarMensajes();
-    intervaloChat = setInterval(cargarMensajes, 2000);
-};
-
-window.cerrarChat = function () {
-    const modal = document.getElementById('modal-chat-dinamico');
-    if (modal) modal.style.display = 'none';
-    chatViajeActual = null;
-    if (intervaloChat) clearInterval(intervaloChat);
-};
-
-async function cargarMensajes() {
-    if (!chatViajeActual) return;
-    try {
-        const res = await fetch(`${URL_BACKEND}/api/mensajes/${chatViajeActual}`);
-        if (!res.ok) throw new Error();
-        const mensajes = await res.json();
-        const contenedor = document.getElementById('chat-mensajes-d');
-        if (!contenedor) return;
-
-        if (mensajes.length === 0) {
-            contenedor.innerHTML = `<div style="text-align:center; color:#6b7280; font-size:13px; margin-top:20px; background:white; padding:10px; border-radius:10px;">No hay mensajes aún. ¡Di hola!</div>`;
-            return;
-        }
-
-        const estaAlFinal = contenedor.scrollHeight - contenedor.scrollTop <= contenedor.clientHeight + 50;
-
-        contenedor.innerHTML = mensajes.map(m => {
-            const esMio = m.id_usuario === usuarioID;
-            const hora = new Date(m.creado_en).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-            const nombre = m.usuarios?.nombre || 'Usuario';
-            const avatar = m.usuarios?.avatar_url || `https://ui-avatars.com/api/?name=${nombre}&background=1a2e25&color=4ade80`;
-
-            if (esMio) {
-                return `
-                <div style="align-self:flex-end; max-width:85%; display:flex; flex-direction:column; align-items:flex-end;">
-                    <div style="background:#dcfce7; padding:10px 14px; border-radius:16px 16px 4px 16px; font-size:14px; color:#111827; word-break:break-word;">${m.mensaje}</div>
-                    <small style="font-size:10px; color:#9ca3af; margin-top:3px;">${hora}</small>
-                </div>`;
-            } else {
-                return `
-                <div style="align-self:flex-start; max-width:85%; display:flex; gap:8px;">
-                    <img src="${avatar}" style="width:28px; height:28px; border-radius:50%; align-self:flex-end; border:1px solid #ddd; object-fit:cover;">
-                    <div style="display:flex; flex-direction:column; align-items:flex-start;">
-                        <small style="font-size:11px; color:#4b5563; margin-bottom:3px; font-weight:bold;">${nombre}</small>
-                        <div style="background:white; padding:10px 14px; border-radius:16px 16px 16px 4px; font-size:14px; color:#111827; border:1px solid #e5e7eb; word-break:break-word;">${m.mensaje}</div>
-                        <small style="font-size:10px; color:#9ca3af; margin-top:3px;">${hora}</small>
-                    </div>
-                </div>`;
-            }
-        }).join('');
-
-        if (estaAlFinal) contenedor.scrollTop = contenedor.scrollHeight;
-    } catch (e) { console.error(e); }
-}
-
-async function enviarMensaje() {
-    const input = document.getElementById('input-chat-d');
-    if (!input) return;
-    const texto = input.value.trim();
-    if (!texto || !chatViajeActual) return;
-    input.value = '';
-    try {
-        await fetch(`${URL_BACKEND}/api/mensajes`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id_viaje: chatViajeActual, id_usuario: usuarioID, mensaje: texto })
-        });
-        cargarMensajes();
-        setTimeout(() => {
-            const c = document.getElementById('chat-mensajes-d');
-            if (c) c.scrollTop = c.scrollHeight;
-        }, 100);
-    } catch (e) {
-        Swal.fire("Error", "No se pudo enviar el mensaje", "error");
-    }
-}
-
-// ==========================================
-// CHAT PRIVADO CON EL CONDUCTOR
-// ==========================================
-let chatPrivadoReceptorID = null;
-let chatPrivadoReceptorNombre = null;
-let intervaloChatPrivado = null;
-
-window.abrirChatPrivado = function (idReceptor, nombreReceptor) {
-    if (!usuarioID) return Swal.fire("Inicia sesión", "Debes estar conectado", "info");
-
-    chatPrivadoReceptorID = idReceptor;
-    chatPrivadoReceptorNombre = nombreReceptor;
-
-    let modal = document.getElementById('modal-chat-privado');
-
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'modal-chat-privado';
-        modal.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:99999; justify-content:center; align-items:center;';
-
-        modal.innerHTML = `
-            <div style="background:white; width:95%; max-width:420px; height:80vh; max-height:580px; border-radius:20px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.4);">
-                <div style="background:#1a2e25; color:white; padding:14px 18px; display:flex; justify-content:space-between; align-items:center;">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <div style="width:36px; height:36px; border-radius:50%; background:#4ade80; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#1a2e25;" id="chat-privado-avatar">?</div>
-                        <div>
-                            <div style="font-weight:700; font-size:15px; color:#4ade80;" id="chat-privado-nombre">Cargando...</div>
-                            <div style="font-size:11px; color:rgba(255,255,255,0.6);">Mensaje privado</div>
-                        </div>
-                    </div>
-                    <button onclick="cerrarChatPrivado()" style="color:white; background:none; border:none; font-size:26px; cursor:pointer; line-height:1;">&times;</button>
-                </div>
-                <div id="chat-privado-mensajes" style="flex:1; padding:16px; overflow-y:auto; background:#f8fafc; display:flex; flex-direction:column; gap:12px;">
-                    <div style="text-align:center; color:#9ca3af; font-size:13px;">Cargando mensajes...</div>
-                </div>
-                <div style="padding:12px 14px; background:white; border-top:1px solid #e5e7eb; display:flex; gap:10px;">
-                    <input type="text" id="input-chat-privado" placeholder="Escribe un mensaje..." 
-                        style="flex:1; padding:11px 16px; border-radius:20px; border:1px solid #d1d5db; outline:none; font-size:14px; background:#f9fafb;">
-                    <button onclick="enviarMensajePrivado()" 
-                        style="background:#16a34a; color:white; border:none; padding:0 18px; border-radius:20px; cursor:pointer; font-weight:700; font-size:14px;">
-                        Enviar
-                    </button>
-                </div>
-            </div>`;
-
-        document.body.appendChild(modal);
-        document.getElementById('input-chat-privado').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') enviarMensajePrivado();
-        });
-    }
-
-    document.getElementById('chat-privado-nombre').innerText = nombreReceptor;
-    const iniciales = nombreReceptor.split(' ').map(p => p[0]).join('').substring(0, 2).toUpperCase();
-    document.getElementById('chat-privado-avatar').innerText = iniciales;
-
-    modal.style.display = 'flex';
-
-    if (intervaloChatPrivado) clearInterval(intervaloChatPrivado);
-    cargarMensajesPrivados();
-    intervaloChatPrivado = setInterval(cargarMensajesPrivados, 2500);
-};
-
-window.cerrarChatPrivado = function () {
-    const modal = document.getElementById('modal-chat-privado');
-    if (modal) modal.style.display = 'none';
-    chatPrivadoReceptorID = null;
-    if (intervaloChatPrivado) clearInterval(intervaloChatPrivado);
-};
-
-async function cargarMensajesPrivados() {
-    if (!chatPrivadoReceptorID || !usuarioID) return;
-    try {
-        const res = await fetch(`${URL_BACKEND}/api/mensajes-privados/${usuarioID}/${chatPrivadoReceptorID}`);
-        if (!res.ok) throw new Error();
-        const mensajes = await res.json();
-
-        const contenedor = document.getElementById('chat-privado-mensajes');
-        if (!contenedor) return;
-
-        if (mensajes.length === 0) {
-            contenedor.innerHTML = `<div style="text-align:center; color:#9ca3af; font-size:13px; margin-top:20px; background:white; padding:12px; border-radius:12px;">
-                Sé el primero en escribir 👋
-            </div>`;
-            return;
-        }
-
-        const estaAlFinal = contenedor.scrollHeight - contenedor.scrollTop <= contenedor.clientHeight + 50;
-
-        contenedor.innerHTML = mensajes.map(m => {
-            const esMio = m.id_emisor === usuarioID;
-            const hora = new Date(m.creado_en).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-            const nombre = esMio ? 'Tú' : (m.emisor?.nombre || 'Usuario');
-
-            // 🌟 NUEVO: Obtenemos el avatar o generamos uno por defecto
-            const avatar = m.emisor?.avatar_url || `https://ui-avatars.com/api/?name=${nombre}&background=1a2e25&color=4ade80`;
-
-            if (esMio) {
-                // Tus mensajes (Derecha, sin foto)
-                return `
-                <div style="align-self:flex-end; max-width:80%; display:flex; flex-direction:column; align-items:flex-end;">
-                    <div style="background:#dcfce7; padding:10px 14px; border-radius:16px 16px 4px 16px; font-size:14px; color:#111827; word-break:break-word;">
-                        ${m.mensaje}
-                    </div>
-                    <small style="font-size:10px; color:#9ca3af; margin-top:3px;">${hora} ${m.leido ? '✓✓' : '✓'}</small>
-                </div>`;
-            } else {
-                // Mensajes del conductor (Izquierda, CON FOTO)
-                return `
-                <div style="align-self:flex-start; max-width:85%; display:flex; gap:8px;">
-                    <img src="${avatar}" style="width:28px; height:28px; border-radius:50%; align-self:flex-end; border:1px solid #ddd; object-fit:cover;">
-                    <div style="display:flex; flex-direction:column; align-items:flex-start;">
-                        <small style="font-size:11px; color:#6b7280; margin-bottom:3px; font-weight:600;">${nombre}</small>
-                        <div style="background:white; padding:10px 14px; border-radius:16px 16px 16px 4px; font-size:14px; color:#111827; border:1px solid #e5e7eb; word-break:break-word;">
-                            ${m.mensaje}
-                        </div>
-                        <small style="font-size:10px; color:#9ca3af; margin-top:3px;">${hora}</small>
-                    </div>
-                </div>`;
-            }
-        }).join('');
-
-        if (estaAlFinal) contenedor.scrollTop = contenedor.scrollHeight;
-    } catch (e) { console.error(e); }
-}
-
-async function enviarMensajePrivado() {
-    const input = document.getElementById('input-chat-privado');
-    if (!input) return;
-    const texto = input.value.trim();
-    if (!texto || !chatPrivadoReceptorID) return;
-    input.value = '';
-    try {
-        await fetch(`${URL_BACKEND}/api/mensajes-privados`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id_emisor: usuarioID, id_receptor: chatPrivadoReceptorID, mensaje: texto })
-        });
-        cargarMensajesPrivados();
-        cargarPanelChats();
-        setTimeout(() => {
-            const c = document.getElementById('chat-privado-mensajes');
-            if (c) c.scrollTop = c.scrollHeight;
-        }, 100);
-    } catch (e) {
-        Swal.fire("Error", "No se pudo enviar el mensaje", "error");
-    }
-
-
-}
-
-// ==========================================
-// 💬 CENTRO DE MENSAJES UNIFICADO
-// ==========================================
-window.cargarPanelChats = async function () {
-    const contenedor = document.getElementById('lista-chats');
-    if (!usuarioID || !contenedor) return;
-
-    contenedor.innerHTML = `<div style="text-align:center; padding:20px; color:#6b7280;">⏳ Cargando tus mensajes...</div>`;
-
-    try {
-        // 1. Pedimos los chats privados al servidor
-        const resPrivados = await fetch(`${URL_BACKEND}/api/inbox/${usuarioID}`);
-
-        if (!resPrivados.ok) {
-            console.error("🚨 Error del servidor en Inbox:", await resPrivados.text());
-        }
-
-        const privados = resPrivados.ok ? await resPrivados.json() : [];
-
-        // 2. Pedimos a qué viajes estamos unidos para sacar sus chats grupales
-        const resViajes = await fetch(`${URL_BACKEND}/api/mis-viajes/${usuarioID}`);
-        const viajes = resViajes.ok ? await resViajes.json() : [];
-
-        let html = '';
-
-        // --- SECCIÓN A: CHATS DE VIAJES ---
-        if (viajes.length > 0) {
-            html += `<h4 style="margin: 0 0 10px 0; color: #1a2e25; padding: 0 5px;">🚗 Chats Grupales (Mis Viajes)</h4>`;
-            viajes.forEach(v => {
-                html += `
-                <div onclick="abrirChat('${v.id}', '${v.destino}')" style="display:flex; align-items:center; gap:12px; background:white; padding:12px; border-radius:14px; cursor:pointer; border:1px solid #e5e7eb; margin-bottom:10px; transition:0.2s;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='white'">
-                    <div style="width:46px; height:46px; border-radius:50%; background:#1a2e25; color:#4ade80; display:flex; justify-content:center; align-items:center; font-size:20px; border: 2px solid #e5e7eb;">🛣️</div>
-                    <div style="flex:1;">
-                        <b style="font-size:15px; color:#111827;">Viaje a ${v.destino}</b>
-                        <div style="font-size:13px; color:#6b7280;">Pulsa para abrir el grupo</div>
-                    </div>
-                </div>`;
-            });
-        }
-
-        // --- SECCIÓN B: CHATS PRIVADOS ---
-        html += `<h4 style="margin: 15px 0 10px 0; color: #1a2e25; padding: 0 5px;">👤 Mensajes Privados</h4>`;
-        if (privados.length > 0) {
-            privados.forEach(c => {
-                const avatar = c.usuario?.avatar_url || `https://ui-avatars.com/api/?name=${c.usuario.nombre}&background=1a2e25&color=4ade80`;
-                const f = new Date(c.fecha);
-                const hoy = new Date();
-                const esHoy = f.getDate() === hoy.getDate() && f.getMonth() === hoy.getMonth();
-                const fechaStr = esHoy ? f.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : f.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
-
-                html += `
-                <div onclick="abrirChatPrivado('${c.usuario.id}', '${c.usuario.nombre}')" style="display:flex; align-items:center; gap:12px; background:white; padding:12px; border-radius:14px; cursor:pointer; border:1px solid #e5e7eb; margin-bottom:10px; transition:0.2s;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='white'">
-                    <img src="${avatar}" style="width:46px; height:46px; border-radius:50%; object-fit:cover; border:1px solid #ddd;">
-                    <div style="flex:1; overflow:hidden;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:4px; align-items:center;">
-                            <b style="font-size:15px; color:#111827;">${c.usuario.nombre}</b>
-                            <small style="color:#16a34a; font-weight:bold; font-size:11px;">${fechaStr}</small>
-                        </div>
-                        <div style="font-size:13px; color:#6b7280; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                            ${c.ultimoMensaje}
-                        </div>
-                    </div>
-                </div>`;
-            });
-        } else {
-            html += `<div style="text-align:center; padding:10px; background:white; border-radius:12px; border:1px solid #e5e7eb; color:#9ca3af; font-size:13px;">No tienes mensajes privados.</div>`;
-        }
-
-        if (viajes.length === 0 && privados.length === 0) {
-            contenedor.innerHTML = `<div style="text-align:center; padding:20px; color:#9ca3af; font-size:14px;">Aún no tienes ningún chat activo. Únete a un viaje para empezar.</div>`;
-        } else {
-            contenedor.innerHTML = html;
-        }
-
-    } catch (e) {
-        contenedor.innerHTML = `<div style="text-align:center; padding:20px; color:#ef4444;">Error cargando los chats. Reintenta.</div>`;
-    }
-};
-
-// ==========================================
 // ARRASTRAR PANELES
 // ==========================================
 function hacerArrastrable(elmnt, handle) {
@@ -853,3 +495,35 @@ function hacerArrastrable(elmnt, handle) {
         elmnt.style.left = nuevaPosicionLeft + "px";
     }
 }
+
+// ==========================================
+// SISTEMA DE NOTIFICACIONES DE CHAT
+// ==========================================
+async function comprobarMensajesNuevos() {
+    const userId = localStorage.getItem('benaluma_user_id');
+    if (!userId) return;
+
+    try {
+        const res = await fetch(`https://proyectopersonal-0xcu.onrender.com/api/mensajes/no-leidos/${userId}`);
+        
+        if (res.ok) {
+            const datos = await res.json();
+            const numeroMensajes = datos.no_leidos || 0; 
+            
+            const badge = document.getElementById('notificacion-chat');
+            if (!badge) return; // Por si el ID no existe en el HTML
+            
+            if (numeroMensajes > 0) {
+                badge.textContent = numeroMensajes;
+                badge.classList.remove('oculto');
+            } else {
+                badge.classList.add('oculto');
+            }
+        }
+    } catch (error) {
+        console.error("Error comprobando mensajes:", error);
+    }
+}
+
+comprobarMensajesNuevos();
+setInterval(comprobarMensajesNuevos, 10000);

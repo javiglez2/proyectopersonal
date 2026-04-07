@@ -457,3 +457,34 @@ body {
 .popup-publicar-limpio .leaflet-popup-tip-container {
     display: none !important; 
 }
+
+/* Botón de Mis Chats relativo para posicionar el globo */
+.btn-mis-chats {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+/* El globo rojo de notificaciones */
+.badge-notificacion {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #ef4444; /* Rojo vibrante */
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 50%;
+    min-width: 18px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+}
+
+/* Clase para ocultar el globo cuando hay 0 mensajes */
+.badge-notificacion.oculto {
+    display: none;
+    transform: scale(0);
+}
