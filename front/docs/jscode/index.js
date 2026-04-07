@@ -505,6 +505,9 @@ function hacerArrastrable(elmnt, handle) {
 // ==========================================
 // COMPROBADOR DE NOTIFICACIONES
 // ==========================================
+// ==========================================
+// COMPROBADOR DE NOTIFICACIONES INTELIGENTE
+// ==========================================
 async function comprobarNotificacionesGlobales() {
     const userId = localStorage.getItem('benaluma_user_id');
     const badge = document.getElementById('notificacion-global-chat');
@@ -513,28 +516,35 @@ async function comprobarNotificacionesGlobales() {
 
     try {
         const URL_BACKEND = 'https://proyectopersonal-0xcu.onrender.com';
-        
-        // Consultamos el inbox (que sabemos que funciona)
         const res = await fetch(`${URL_BACKEND}/api/inbox/${userId}`);
         
         if (res.ok) {
             const privados = await res.json();
             
-            // TRUCO FRONTEND: Comparamos cuántos chats hay ahora vs los que vimos la última vez
-            const chatsGuardados = parseInt(localStorage.getItem('chats_count_' + userId)) || 0;
-            const chatsActuales = privados.length;
+            // 1. Recuperamos nuestra "memoria" de los mensajes que ya hemos leído
+            let estadoGuardado = JSON.parse(localStorage.getItem('estado_chats_' + userId)) || {};
+            let noLeidos = 0;
             
-            if (chatsActuales > chatsGuardados) {
-                // ¡Hay un chat nuevo! Mostramos el globo
-                const nuevos = chatsActuales - chatsGuardados;
-                badge.innerText = nuevos;
+            privados.forEach(p => {
+                const idChat = String(p.usuario.id);
+                const ultimoMsg = p.ultimoMensaje;
+                
+                // 2. Si el servidor tiene un mensaje distinto al que leímos la última vez, es NUEVO
+                if (estadoGuardado[idChat] !== ultimoMsg) {
+                    noLeidos++;
+                }
+            });
+            
+            // 3. Mostramos u ocultamos el globo según los no leídos
+            if (noLeidos > 0) {
+                badge.innerText = noLeidos;
                 badge.classList.remove('oculto');
             } else {
                 badge.classList.add('oculto');
             }
         }
     } catch (e) { 
-        console.log("Comprobando notificaciones...");
+        // Silenciado para que no moleste en la consola
     }
 }
 
