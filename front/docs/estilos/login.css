@@ -28,12 +28,11 @@ body, html {
 /* Contenedor principal de la tarjeta de login - 🌟 ¡MÁS GRANDE! */
 .login-container {
   background: #ffffff;
-  padding: 60px 50px; /* Padding incrementado */
+  padding: 70px 60px; /* Aumentamos el relleno para que respire más */
   border-radius: 20px;
-  /* Sombra suave pero profunda para separar la tarjeta */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   text-align: center;
-  max-width: 500px; /* 🌟 Ancho máximo incrementado a 500px */
+  max-width: 600px; /* ¡AQUÍ ESTÁ LA MAGIA! Pasamos de 500px a 600px */
   width: 100%;
   
   /* Micro-interacción: Animación suave de entrada */
