@@ -195,17 +195,25 @@ footer {
 }
 
 .intro-irigo h3 {
-    font-size: 32px;
-    color: #1a2e25;
+    font-size: 2.8rem;      /* Bastante más grande */
+    font-weight: 800;       /* Extra negrita para que impacte */
+    color: #111827;         /* Casi negro para máximo contraste con tu fondo verde */
     margin-bottom: 25px;
-    letter-spacing: -1px;
+    letter-spacing: -0.5px; /* Junta un pelín las letras, queda muy moderno */
+}
+
+.intro-irigo {
+    text-align: center;
+    padding: 40px 20px;
 }
 
 .intro-irigo p {
-    font-size: 18px;
-    color: #4b5563;
-    line-height: 1.8;
-    margin-bottom: 20px;
+    font-size: 1.2rem;      /* Texto más grande que el estándar */
+    font-weight: 500;       /* Semi-negrita (más gordito que un texto normal) */
+    line-height: 1.8;       /* Más espacio entre líneas para que respire */
+    color: #27303f;         /* Un gris muy oscuro para que se lea perfecto */
+    max-width: 850px;       /* Evita que las líneas se estiren por toda la pantalla */
+    margin: 0 auto 20px auto; /* Centra los párrafos */
 }
 
 /* Ajustamos las tarjetas para que encajen bien abajo */
