@@ -279,7 +279,7 @@ async function cargarMisViajes() {
 
             // 🌟 NUEVO: Sacamos al conductor y le hacemos su propia etiqueta destacada
             const nombreConductor = v.usuarios?.nombre || 'Conductor';
-            const conductorHTML = `<span style="background:#fef3c7; color:#92400e; padding:4px 10px; border-radius:12px; font-size:12px; border:1px solid #fde68a; font-weight:bold; display:inline-flex; align-items:center; gap:4px;">🚗 ${nombreConductor} (Conductor)</span>`;
+            const conductorHTML = `<span style="background:#fef3c7; color:#92400e; padding:4px 10px; border-radius:12px; font-size:12px; border:1px solid #fde68a; font-weight:bold; display:inline-flex; align-items:center; gap:4px;">${nombreConductor} (Conductor)</span>`;
 
             // Pasajeros
             const pasajerosHTML = v.reservas && v.reservas.length > 0
@@ -287,11 +287,11 @@ async function cargarMisViajes() {
                     const nombrePas = r.usuarios?.nombre || 'Pasajero';
                     if (esConductor) {
                         return `<span style="background:#dbeafe; color:#1e40af; padding:4px 10px; border-radius:12px; font-size:12px; border:1px solid #bfdbfe; display:inline-flex; align-items:center; gap:6px; font-weight:bold;">
-                            👤 ${nombrePas} 
-                            <button onclick="window.location.href='chat.html'" style="background:none; border:none; cursor:pointer; padding:0; font-size:15px; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Ir a chats">💬</button>
+                            ${nombrePas} 
+                            <button onclick="window.location.href='chat.html'" style="background:none; border:none; cursor:pointer; padding:0; font-size:15px; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Ir a chats"></button>
                         </span>`;
                     } else {
-                        return `<span style="background:#f3f4f6; color:#374151; padding:4px 10px; border-radius:12px; font-size:12px; border:1px solid #e5e7eb; font-weight:bold;">👤 ${nombrePas}</span>`;
+                        return `<span style="background:#f3f4f6; color:#374151; padding:4px 10px; border-radius:12px; font-size:12px; border:1px solid #e5e7eb; font-weight:bold;">${nombrePas}</span>`;
                     }
                 }).join('')
                 : '<span style="font-size:12px; color:#6b7280; padding:4px;">Sin pasajeros aún</span>';
@@ -328,7 +328,7 @@ async function cargarMisViajes() {
                     ` : `
                         <button onclick="window.location.href='${urlChatPrivado}'" 
                             style="width:100%; background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold; margin-bottom:8px;">
-                            💬 Abrir chat privado al conductor
+                            Abrir chat privado al conductor
                         </button>
                     `}
                     <button onclick="window.location.href='chat.html'" style="width:100%; background:#1a2e25; color:white; border:none; padding:12px; border-radius:8px; cursor:pointer; font-weight:bold;">
