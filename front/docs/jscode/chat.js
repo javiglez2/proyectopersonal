@@ -322,3 +322,23 @@ async function actualizarListaSilenciosa() {
         });
     } catch (e) { /* silenciado */ }
 }
+
+// ==========================================
+// 6. CERRAR CHAT EN MÓVIL (VOLVER A LA LISTA)
+// ==========================================
+window.cerrarChatMovil = function() {
+    // Quitamos la clase que muestra el chat a pantalla completa
+    const chatCard = document.querySelector('.chat-card');
+    if (chatCard) {
+        chatCard.classList.remove('chat-activo');
+    }
+    
+    // Dejamos de pedir los mensajes de ese chat al servidor constantemente 
+    // para ahorrar datos y batería cuando estamos viendo la lista
+    chatActivoId = null;
+    tipoChatActivo = null;
+    
+    if (intervaloChat) {
+        clearInterval(intervaloChat);
+    }
+};

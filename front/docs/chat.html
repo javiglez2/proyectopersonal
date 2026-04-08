@@ -17,7 +17,7 @@
     </a>
 
     <div class="chat-card">
-        
+
         <aside class="chat-sidebar">
             <div class="sidebar-header">
                 <h2>Mis Chats</h2>
@@ -29,9 +29,12 @@
 
         <section class="chat-mensajes-area">
             <div id="chat-header-dinamico" class="chat-header-top" style="display: none;">
+                <button type="button" class="btn-volver-chat" onclick="cerrarChatMovil()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
                 <h3 id="nombre-chat-actual">Nombre del Chat</h3>
             </div>
-            
+
             <div id="historial-mensajes" class="mensajes-box">
                 <div class="mensaje-bienvenida">
                     <i class="fa-solid fa-comments"></i>
@@ -44,7 +47,7 @@
                 <button type="submit" class="btn-enviar"><i class="fa-solid fa-paper-plane"></i></button>
             </form>
         </section>
-        
+
     </div>
 
     <script src="jscode/chat.js"></script>
