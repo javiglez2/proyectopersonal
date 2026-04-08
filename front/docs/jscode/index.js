@@ -103,7 +103,7 @@ window.togglePanel = function (idPanel) {
             if (idPanel === 'panel-mis-viajes') {
                 const anchoPanel = panel.offsetWidth || 750;
                 panel.style.left = (window.innerWidth / 2 - anchoPanel / 2) + 'px';
-                panel.style.transform = 'none'; 
+                panel.style.transform = 'none';
             }
         } else {
             panel.style.display = 'none';
@@ -191,7 +191,7 @@ window.aplicarFiltros = function () {
         const estaLleno = v.plazas_disponibles <= 0;
 
         let btnHTML = `<button onclick="unirseViaje('${v.id}', event, this)" style="background:#16a34a; color:white; border:none; padding:8px 15px; border-radius:20px; cursor:pointer; font-weight:bold; font-size:13px; white-space:nowrap;">Unirme</button>`;
-        
+
         if (estaLleno && !esConductor && !yaUnido) {
             btnHTML = `<span style="background:#fee2e2; padding:4px 8px; border-radius:20px; color:#ef4444; font-size:11px; font-weight:bold; white-space:nowrap;">Lleno</span>`;
         } else if (esConductor) {
@@ -277,24 +277,31 @@ async function cargarMisViajes() {
                 }
             }
 
+            // 🌟 NUEVO: Sacamos al conductor y le hacemos su propia etiqueta destacada
+            const nombreConductor = v.usuarios?.nombre || 'Conductor';
+            const conductorHTML = `<span style="background:#fef3c7; color:#92400e; padding:4px 10px; border-radius:12px; font-size:12px; border:1px solid #fde68a; font-weight:bold; display:inline-flex; align-items:center; gap:4px;">🚗 ${nombreConductor} (Conductor)</span>`;
+
+            // Pasajeros
             const pasajerosHTML = v.reservas && v.reservas.length > 0
                 ? v.reservas.map(r => {
                     const nombrePas = r.usuarios?.nombre || 'Pasajero';
-
-                    // 🌟 Modificado: Redirige a chat.html
                     if (esConductor) {
-                        return `<span style="background:#dbeafe; color:#1e40af; padding:4px 10px; border-radius:12px; font-size:12px; margin-right:5px; border:1px solid #bfdbfe; display:inline-flex; align-items:center; gap:6px; font-weight:bold;">
+                        return `<span style="background:#dbeafe; color:#1e40af; padding:4px 10px; border-radius:12px; font-size:12px; border:1px solid #bfdbfe; display:inline-flex; align-items:center; gap:6px; font-weight:bold;">
                             👤 ${nombrePas} 
                             <button onclick="window.location.href='chat.html'" style="background:none; border:none; cursor:pointer; padding:0; font-size:15px; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Ir a chats">💬</button>
                         </span>`;
                     } else {
-                        return `<span style="background:#f3f4f6; color:#374151; padding:4px 10px; border-radius:12px; font-size:12px; margin-right:5px; border:1px solid #e5e7eb; font-weight:bold;">👤 ${nombrePas}</span>`;
+                        return `<span style="background:#f3f4f6; color:#374151; padding:4px 10px; border-radius:12px; font-size:12px; border:1px solid #e5e7eb; font-weight:bold;">👤 ${nombrePas}</span>`;
                     }
                 }).join('')
-                : 'Nadie aún';
+                : '<span style="font-size:12px; color:#6b7280; padding:4px;">Sin pasajeros aún</span>';
 
             const cat = v.categoria || 'General';
             const estilos = obtenerEstilosCategoria(cat);
+
+            // 🌟 NUEVO: Preparamos la URL para abrir el chat directamente con el conductor
+            const tituloChatDinamico = `${nombreConductor} - Viaje a ${v.destino}`;
+            const urlChatPrivado = `chat.html?userId=${v.id_conductor}&userName=${encodeURIComponent(tituloChatDinamico)}`;
 
             return `
                 <div style="background:white; padding:15px; border-radius:14px; margin-bottom:15px; border:1px solid #e5e7eb; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
@@ -305,7 +312,13 @@ async function cargarMisViajes() {
                     </div>
                     <div style="font-size:13px; color:#4b5563; background:#f9fafb; padding:10px; border-radius:8px; margin-bottom:10px;">
                         <b>Día:</b> ${dia} | <b>Hora:</b> ${hora}<br>
-                        <div style="margin-top:6px;"><b>Pasajeros:</b> ${pasajerosHTML}</div>
+                        <div style="margin-top:6px;">
+                            <b>Viajeros:</b>
+                            <div style="margin-top:4px; display:flex; flex-wrap:wrap; gap:5px;">
+                                ${conductorHTML} 
+                                ${pasajerosHTML}
+                            </div>
+                        </div>
                     </div>
                     ${esConductor ? `
                         <div style="display:flex; gap:5px; margin-bottom:8px;">
@@ -313,13 +326,13 @@ async function cargarMisViajes() {
                             <button onclick="borrarViaje('${v.id}')" style="background:#fee2e2; color:#ef4444; border:1px solid #fecaca; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold;">Borrar</button>
                         </div>
                     ` : `
-                        <button onclick="window.location.href='chat.html'" 
+                        <button onclick="window.location.href='${urlChatPrivado}'" 
                             style="width:100%; background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold; margin-bottom:8px;">
-                            💬 Ir a mis chats
+                            💬 Abrir chat privado al conductor
                         </button>
                     `}
                     <button onclick="window.location.href='chat.html'" style="width:100%; background:#1a2e25; color:white; border:none; padding:12px; border-radius:8px; cursor:pointer; font-weight:bold;">
-                        Abrir Chat del Viaje
+                        Abrir Chat del Viaje (Grupal)
                     </button>
                 </div>`;
         };
@@ -517,7 +530,7 @@ async function comprobarNotificacionesGlobales() {
         const URL_BACKEND = 'https://proyectopersonal-0xcu.onrender.com';
         const STORAGE_KEY = 'estado_chats_' + userId;
         let estadoGuardado = {};
-        try { estadoGuardado = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch {}
+        try { estadoGuardado = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { }
 
         let noLeidos = 0;
 

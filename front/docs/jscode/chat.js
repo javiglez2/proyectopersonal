@@ -82,6 +82,43 @@ async function cargarListaDeChats() {
             listaDiv.appendChild(div);
         });
 
+        // --- NUEVO: Leer la URL para abrir un chat privado automáticamente ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetUserId = urlParams.get('userId');
+        const targetUserName = urlParams.get('userName');
+
+        if (targetUserId && targetUserName) {
+            const idElemento = `chat-item-privado-${targetUserId}`;
+            let item = document.getElementById(idElemento);
+
+            // Si ya tenías un chat con él en la lista, actualizamos su nombre visual
+            if (item) {
+                const nombreEl = item.querySelector('strong');
+                if (nombreEl) nombreEl.innerText = targetUserName;
+            } else {
+                // Si nunca habéis hablado, le creamos la tarjeta temporalmente en la lista
+                item = document.createElement('div');
+                item.className = 'contacto-item';
+                item.id = idElemento;
+                item.onclick = () => abrirChat(targetUserId, 'privado', targetUserName);
+                item.innerHTML = `
+                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(targetUserName)}&background=1a2e25&color=4ade80" alt="perfil">
+                    <div class="contacto-info">
+                        <strong>${targetUserName}</strong>
+                        <span class="ultimo-mensaje-txt">Empieza a escribir...</span>
+                    </div>
+                    <div class="badge-chat" id="badge-${idElemento}"></div>
+                `;
+                listaDiv.prepend(item);
+            }
+
+            // Forzamos a que se abra ese chat al instante
+            abrirChat(targetUserId, 'privado', targetUserName);
+
+            // Limpiamos la URL silenciosamente para que al recargar la página con F5 no se vuelva a ejecutar
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
     } catch (error) {
         console.error(error);
         listaDiv.innerHTML = `<p style="color:#ef4444; text-align:center; padding:20px;">Error al cargar los chats.</p>`;
