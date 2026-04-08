@@ -7,6 +7,8 @@ let chatActivoId = null;
 let tipoChatActivo = null;
 let intervaloChat = null;
 
+const STORAGE_KEY = 'estado_chats_' + userId;
+
 if (!userId) {
     window.location.href = 'login.html';
 }
@@ -14,16 +16,30 @@ if (!userId) {
 document.addEventListener('DOMContentLoaded', cargarListaDeChats);
 
 // ==========================================
+// HELPERS DE ESTADO (leído / no leído)
+// ==========================================
+function getEstado() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+    catch { return {}; }
+}
+function setEstado(obj) { localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); }
+function marcarLeido(idChat, ultimoMensaje) {
+    const e = getEstado(); e[String(idChat)] = ultimoMensaje; setEstado(e);
+}
+function estaNoLeido(idChat, ultimoMensaje) {
+    return getEstado()[String(idChat)] !== ultimoMensaje;
+}
+
+// ==========================================
 // 1. CARGAR LA LISTA DE CHATS UNIFICADA
 // ==========================================
 async function cargarListaDeChats() {
     const listaDiv = document.getElementById('lista-conversaciones');
-    listaDiv.innerHTML = '<p class="cargando" style="text-align:center; padding:20px; color:#8b949e;">Cargando tus chats...</p>';
+    listaDiv.innerHTML = '<p style="text-align:center; padding:20px; color:#8b949e;">Cargando tus chats...</p>';
 
     try {
         const resViajes = await fetch(`${URL_BACKEND}/api/mis-viajes/${userId}`);
         const viajes = resViajes.ok ? await resViajes.json() : [];
-
         const resPrivados = await fetch(`${URL_BACKEND}/api/inbox/${userId}`);
         const privados = resPrivados.ok ? await resPrivados.json() : [];
 
@@ -34,37 +50,36 @@ async function cargarListaDeChats() {
             return;
         }
 
-        // Unificamos todo en un solo array (mezclados)
-        let todosLosChats = [
+        const todosLosChats = [
             ...viajes.map(v => ({
-                idOriginal: v.id,
-                tipo: 'grupal',
+                idOriginal: v.id, tipo: 'grupal',
                 nombre: `Viaje a ${v.destino}`,
                 sub: 'Grupo del viaje',
-                foto: 'fotos/fotogrupo2.png' // Icono coche/mapa para viajes
+                foto: 'fotos/fotogrupo2.png'
             })),
             ...privados.map(p => ({
-                idOriginal: p.usuario.id,
-                tipo: 'privado',
+                idOriginal: p.usuario.id, tipo: 'privado',
                 nombre: p.usuario.nombre,
                 sub: p.ultimoMensaje || 'Chat privado',
-                foto: p.usuario.avatar_url || `https://ui-avatars.com/api/?name=${p.usuario.nombre}&background=1a2e25&color=4ade80`
+                foto: p.usuario.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(p.usuario.nombre)}&background=1a2e25&color=4ade80`
             }))
         ];
 
-        // Renderizar la lista unificada
-        // Renderizar la lista unificada
         todosLosChats.forEach(c => {
-            const idElemento = `chat-item-${c.tipo}-${c.idOriginal}`;
-
-            listaDiv.innerHTML += `
-                <div class="contacto-item" id="${idElemento}" onclick="abrirChat('${c.idOriginal}', '${c.tipo}', '${c.nombre}')">
-                    <img src="${c.foto}" alt="perfil">
-                    <div class="contacto-info">
-                        <strong>${c.nombre}</strong>
-                        <span class="ultimo-mensaje-txt">${c.sub}</span> </div>
-                    <div class="badge-chat" id="badge-${idElemento}">0</div>
+            const noLeido = estaNoLeido(c.idOriginal, c.sub);
+            const div = document.createElement('div');
+            div.className = 'contacto-item';
+            div.id = `chat-item-${c.tipo}-${c.idOriginal}`;
+            div.onclick = () => abrirChat(c.idOriginal, c.tipo, c.nombre);
+            div.innerHTML = `
+                <img src="${c.foto}" alt="perfil" onerror="this.src='https://ui-avatars.com/api/?name=?&background=1a2e25&color=4ade80'">
+                <div class="contacto-info">
+                    <strong>${c.nombre}</strong>
+                    <span class="ultimo-mensaje-txt">${c.sub}</span>
+                </div>
+                <div class="badge-chat ${noLeido ? 'activo' : ''}" id="badge-chat-item-${c.tipo}-${c.idOriginal}">${noLeido ? '1' : ''}</div>
             `;
+            listaDiv.appendChild(div);
         });
 
     } catch (error) {
@@ -74,54 +89,46 @@ async function cargarListaDeChats() {
 }
 
 // ==========================================
-// 2. ABRIR UN CHAT Y MOVERLO ARRIBA
+// 2. ABRIR UN CHAT
 // ==========================================
 window.abrirChat = function (idChat, tipoChat, tituloChat) {
-    chatActivoId = idChat;
+    chatActivoId = String(idChat);
     tipoChatActivo = tipoChat;
 
-    // 1. Marcar como activo y mover arriba (Prepend)
     const lista = document.getElementById('lista-conversaciones');
     const itemClickado = document.getElementById(`chat-item-${tipoChat}-${idChat}`);
 
     document.querySelectorAll('.contacto-item').forEach(el => el.classList.remove('activo'));
 
     if (itemClickado) {
+        lista.prepend(itemClickado); // Mover al tope
         itemClickado.classList.add('activo');
-        // Ocultar notificación si la tenía
+
+        // Marcar como leído
+        const spanTexto = itemClickado.querySelector('.ultimo-mensaje-txt');
+        const ultimoMsg = spanTexto ? spanTexto.innerText : '';
+        marcarLeido(idChat, ultimoMsg);
+
+        // Quitar badge
         const badge = itemClickado.querySelector('.badge-chat');
-        if (badge) {
-            badge.classList.remove('activo');
-            badge.innerText = '0';
-        }
-        const spanTexto = itemClickado.querySelector('.ultimo-mensaje-txt') || itemClickado.querySelector('.contacto-info span');
-        if (spanTexto) {
-            let estadoGuardado = JSON.parse(localStorage.getItem('estado_chats_' + userId)) || {};
-            estadoGuardado[idChat] = spanTexto.innerText;
-            localStorage.setItem('estado_chats_' + userId, JSON.stringify(estadoGuardado));
-        }
+        if (badge) { badge.classList.remove('activo'); badge.innerText = ''; }
     }
 
-    // 2. Mostrar la cabecera fija y poner el nombre
+    // Mostrar cabecera y nombre
     const cabecera = document.getElementById('chat-header-dinamico');
     cabecera.style.display = 'flex';
     document.getElementById('nombre-chat-actual').innerText = tituloChat;
 
-    // 3. FIX: Ocultar mensaje de bienvenida SIN dar error si ya no existe
     const msgBienvenida = document.querySelector('.mensaje-bienvenida');
-    if (msgBienvenida) {
-        msgBienvenida.style.display = 'none';
-    }
-
+    if (msgBienvenida) msgBienvenida.style.display = 'none';
     document.getElementById('form-enviar-mensaje').classList.remove('oculto');
 
-    // Limpiamos el historial
     document.getElementById('historial-mensajes').innerHTML = '<p style="text-align:center; color:#9ca3af; margin-top: 20px;">Cargando mensajes...</p>';
 
     if (intervaloChat) clearInterval(intervaloChat);
     cargarMensajesActivos();
     intervaloChat = setInterval(cargarMensajesActivos, 2500);
-}
+};
 
 // ==========================================
 // 3. CARGAR LOS MENSAJES DEL CHAT ACTIVO
@@ -131,7 +138,7 @@ async function cargarMensajesActivos() {
     const historial = document.getElementById('historial-mensajes');
 
     try {
-        let url = (tipoChatActivo === 'grupal')
+        const url = (tipoChatActivo === 'grupal')
             ? `${URL_BACKEND}/api/mensajes/${chatActivoId}`
             : `${URL_BACKEND}/api/mensajes-privados/${userId}/${chatActivoId}`;
 
@@ -144,25 +151,22 @@ async function cargarMensajesActivos() {
         }
 
         const estaAlFinal = historial.scrollHeight - historial.scrollTop <= historial.clientHeight + 50;
-
-        // FIX: Eliminada la variable "tituloContenedor" que daba error. Inicializamos en vacío.
         let htmlMensajes = '';
 
         mensajes.forEach(msg => {
-            let esMio, nombre, avatar, textoMsg, horaRaw;
-
-            horaRaw = new Date(msg.creado_en || msg.fecha || new Date());
+            const horaRaw = new Date(msg.creado_en || msg.fecha || new Date());
             const hora = horaRaw.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+            let esMio, nombre, avatar, textoMsg;
 
             if (tipoChatActivo === 'grupal') {
                 esMio = String(msg.id_usuario) === String(userId);
                 nombre = msg.usuarios?.nombre || 'Usuario';
-                avatar = msg.usuarios?.avatar_url || `https://ui-avatars.com/api/?name=${nombre}&background=1a2e25&color=4ade80`;
+                avatar = msg.usuarios?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&background=1a2e25&color=4ade80`;
                 textoMsg = msg.mensaje;
             } else {
                 esMio = String(msg.id_emisor) === String(userId);
                 nombre = esMio ? 'Tú' : (msg.emisor?.nombre || 'Usuario');
-                avatar = msg.emisor?.avatar_url || `https://ui-avatars.com/api/?name=${nombre}&background=1a2e25&color=4ade80`;
+                avatar = msg.emisor?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&background=1a2e25&color=4ade80`;
                 textoMsg = msg.mensaje;
             }
 
@@ -170,26 +174,29 @@ async function cargarMensajesActivos() {
                 htmlMensajes += `
                     <div class="burbuja mia">
                         ${textoMsg}
-                        <span class="timestamp" style="display:block; font-size:10px; text-align:right; margin-top:5px; opacity:0.7;">${hora}</span>
-                    </div>
-                `;
+                        <span style="display:block; font-size:10px; text-align:right; margin-top:5px; opacity:0.7;">${hora}</span>
+                    </div>`;
             } else {
                 htmlMensajes += `
                     <div style="display:flex; gap:8px; align-items:flex-end; align-self:flex-start; margin-bottom:10px; max-width:75%;">
-                        <img src="${avatar}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid rgba(255,255,255,0.1);">
+                        <img src="${avatar}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid rgba(255,255,255,0.1);" onerror="this.src='https://ui-avatars.com/api/?name=?&background=1a2e25&color=4ade80'">
                         <div class="burbuja otra" style="max-width:100%; margin-bottom:0;">
                             ${tipoChatActivo === 'grupal' ? `<strong style="font-size:11px; display:block; margin-bottom:4px; color:#4ade80;">${nombre}</strong>` : ''}
                             ${textoMsg}
-                            <span class="timestamp" style="display:block; font-size:10px; text-align:right; margin-top:5px; opacity:0.7;">${hora}</span>
+                            <span style="display:block; font-size:10px; text-align:right; margin-top:5px; opacity:0.7;">${hora}</span>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }
         });
 
         historial.innerHTML = htmlMensajes;
-
         if (estaAlFinal) historial.scrollTop = historial.scrollHeight;
+
+        // Marcar como leído el último mensaje del chat activo
+        const ultimoMsg = mensajes[mensajes.length - 1].mensaje;
+        marcarLeido(chatActivoId, ultimoMsg);
+        const spanActivo = document.querySelector(`#chat-item-${tipoChatActivo}-${chatActivoId} .ultimo-mensaje-txt`);
+        if (spanActivo) spanActivo.innerText = ultimoMsg;
 
     } catch (e) {
         console.error("Error pintando mensajes:", e);
@@ -206,25 +213,17 @@ document.getElementById('form-enviar-mensaje').addEventListener('submit', async 
     e.preventDefault();
     const input = document.getElementById('input-mensaje');
     const texto = input.value.trim();
-
     if (!texto || !chatActivoId) return;
-
     input.value = '';
 
     try {
-        let url, bodyData;
-
-        if (tipoChatActivo === 'grupal') {
-            url = `${URL_BACKEND}/api/mensajes`;
-            bodyData = { id_viaje: chatActivoId, id_usuario: userId, mensaje: texto };
-        } else {
-            url = `${URL_BACKEND}/api/mensajes-privados`;
-            bodyData = { id_emisor: userId, id_receptor: chatActivoId, mensaje: texto };
-        }
+        const url = tipoChatActivo === 'grupal' ? `${URL_BACKEND}/api/mensajes` : `${URL_BACKEND}/api/mensajes-privados`;
+        const bodyData = tipoChatActivo === 'grupal'
+            ? { id_viaje: chatActivoId, id_usuario: userId, mensaje: texto }
+            : { id_emisor: userId, id_receptor: chatActivoId, mensaje: texto };
 
         const res = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(bodyData)
         });
 
@@ -235,14 +234,11 @@ document.getElementById('form-enviar-mensaje').addEventListener('submit', async 
                 h.scrollTop = h.scrollHeight;
             }, 50);
         }
-
-    } catch (e) {
-        console.error("Error al enviar", e);
-    }
+    } catch (e) { console.error("Error al enviar", e); }
 });
 
 // ==========================================
-// VIGILANTE SILENCIOSO DE NUEVOS MENSAJES
+// 5. VIGILANTE SILENCIOSO DE NUEVOS MENSAJES
 // ==========================================
 setInterval(actualizarListaSilenciosa, 4000);
 
@@ -251,45 +247,40 @@ async function actualizarListaSilenciosa() {
     try {
         const resViajes = await fetch(`${URL_BACKEND}/api/mis-viajes/${userId}`);
         const viajes = resViajes.ok ? await resViajes.json() : [];
-
         const resPrivados = await fetch(`${URL_BACKEND}/api/inbox/${userId}`);
         const privados = resPrivados.ok ? await resPrivados.json() : [];
 
-        let todosLosChats = [
+        const todos = [
             ...viajes.map(v => ({ idOriginal: v.id, tipo: 'grupal', sub: 'Grupo del viaje' })),
             ...privados.map(p => ({ idOriginal: p.usuario.id, tipo: 'privado', sub: p.ultimoMensaje || 'Chat privado' }))
         ];
 
         const lista = document.getElementById('lista-conversaciones');
 
-        todosLosChats.forEach(c => {
-            const idElemento = `chat-item-${c.tipo}-${c.idOriginal}`;
-            const item = document.getElementById(idElemento);
+        todos.forEach(c => {
+            const item = document.getElementById(`chat-item-${c.tipo}-${c.idOriginal}`);
+            if (!item) return;
 
-            if (item) {
-                const spanTexto = item.querySelector('.ultimo-mensaje-txt');
+            const spanTexto = item.querySelector('.ultimo-mensaje-txt');
+            const textoActual = spanTexto ? spanTexto.innerText : '';
+            if (textoActual === c.sub) return; // Sin cambios
 
-                // Si el texto del último mensaje es diferente al que tenemos en pantalla... ¡Hay mensaje nuevo!
-                if (spanTexto && spanTexto.innerText !== c.sub) {
-                    spanTexto.innerText = c.sub;
-                    lista.prepend(item);
+            if (spanTexto) spanTexto.innerText = c.sub;
+            lista.prepend(item); // Subir al tope
 
-                    if (chatActivoId !== String(c.idOriginal)) {
-                        // Si NO estamos en este chat, encendemos la bolita
-                        const badge = item.querySelector('.badge-chat');
-                        badge.classList.add('activo');
-                        let numActual = parseInt(badge.innerText) || 0;
-                        badge.innerText = numActual + 1;
-                    } else {
-                        // 🌟 Si YA estamos leyendo este chat en pantalla, lo marcamos como leído directamente en la memoria
-                        let estadoGuardado = JSON.parse(localStorage.getItem('estado_chats_' + userId)) || {};
-                        estadoGuardado[c.idOriginal] = c.sub;
-                        localStorage.setItem('estado_chats_' + userId, JSON.stringify(estadoGuardado));
-                    }
+            const esElChatAbierto = chatActivoId === String(c.idOriginal);
+            if (!esElChatAbierto) {
+                // Incrementar badge
+                const badge = item.querySelector('.badge-chat');
+                if (badge) {
+                    badge.classList.add('activo');
+                    const n = parseInt(badge.innerText) || 0;
+                    badge.innerText = n + 1;
                 }
+            } else {
+                // Ya lo estamos viendo, marcar leído
+                marcarLeido(c.idOriginal, c.sub);
             }
         });
-    } catch (e) {
-        // Silenciamos el error para no molestar en consola si falla una petición suelta
-    }
+    } catch (e) { /* silenciado */ }
 }

@@ -511,40 +511,48 @@ function hacerArrastrable(elmnt, handle) {
 async function comprobarNotificacionesGlobales() {
     const userId = localStorage.getItem('benaluma_user_id');
     const badge = document.getElementById('notificacion-global-chat');
-    
     if (!userId || !badge) return;
 
     try {
         const URL_BACKEND = 'https://proyectopersonal-0xcu.onrender.com';
-        const res = await fetch(`${URL_BACKEND}/api/inbox/${userId}`);
-        
-        if (res.ok) {
-            const privados = await res.json();
-            
-            // 1. Recuperamos nuestra "memoria" de los mensajes que ya hemos leído
-            let estadoGuardado = JSON.parse(localStorage.getItem('estado_chats_' + userId)) || {};
-            let noLeidos = 0;
-            
+        const STORAGE_KEY = 'estado_chats_' + userId;
+        let estadoGuardado = {};
+        try { estadoGuardado = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch {}
+
+        let noLeidos = 0;
+
+        // Chats privados
+        const resPrivados = await fetch(`${URL_BACKEND}/api/inbox/${userId}`);
+        if (resPrivados.ok) {
+            const privados = await resPrivados.json();
             privados.forEach(p => {
                 const idChat = String(p.usuario.id);
                 const ultimoMsg = p.ultimoMensaje;
-                
-                // 2. Si el servidor tiene un mensaje distinto al que leímos la última vez, es NUEVO
-                if (estadoGuardado[idChat] !== ultimoMsg) {
-                    noLeidos++;
-                }
+                if (ultimoMsg && estadoGuardado[idChat] !== ultimoMsg) noLeidos++;
             });
-            
-            // 3. Mostramos u ocultamos el globo según los no leídos
-            if (noLeidos > 0) {
-                badge.innerText = noLeidos;
-                badge.classList.remove('oculto');
-            } else {
-                badge.classList.add('oculto');
-            }
         }
-    } catch (e) { 
-        // Silenciado para que no moleste en la consola
+
+        // Chats grupales (mis viajes)
+        const resViajes = await fetch(`${URL_BACKEND}/api/mis-viajes/${userId}`);
+        if (resViajes.ok) {
+            const viajes = await resViajes.json();
+            // Para los grupos usamos la sub fija "Grupo del viaje" - no podemos detectar
+            // nuevos mensajes sin pedir cada grupo, así que usamos el estado guardado
+            // Si el usuario nunca ha abierto el grupo, lo contamos como no leído
+            viajes.forEach(v => {
+                const idChat = String(v.id);
+                if (!(idChat in estadoGuardado)) noLeidos++;
+            });
+        }
+
+        if (noLeidos > 0) {
+            badge.innerText = noLeidos;
+            badge.classList.remove('oculto');
+        } else {
+            badge.classList.add('oculto');
+        }
+    } catch (e) {
+        // Silenciado
     }
 }
 
