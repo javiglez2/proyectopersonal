@@ -136,6 +136,7 @@ window.abrirChat = function (idChat, tipoChat, tituloChat) {
     const itemClickado = document.getElementById(`chat-item-${tipoChat}-${idChat}`);
 
     document.querySelectorAll('.contacto-item').forEach(el => el.classList.remove('activo'));
+    document.querySelector('.chat-card').classList.add('chat-activo');
 
     if (itemClickado) {
         lista.prepend(itemClickado); // Mover al tope

@@ -1,22 +1,22 @@
 /* ==========================================
-   UEQO CHAT - TARJETA FLOTANTE CENTRAL
+   UEQO CHAT - TARJETA FLOTANTE (REESCRITO DEFINITIVO)
    ========================================== */
 
 :root {
-    --bg-page: #0d1712;      /* El fondo verde súper oscuro (como el login) */
-    --bg-card: #0e2419;      /* Fondo de la columna izquierda */
-    --bg-chat: #030c03;      /* Fondo de la zona de mensajes */
-    --bg-active: #1f2d23;    /* Fondo del chat seleccionado */
-    --accent: #4ade80;       /* Verde vibrante UEQO */
+    --bg-page: #0d1712;
+    --bg-card: #0e2419;
+    --bg-chat: #030c03;
+    --bg-active: #1f2d23;
+    --accent: #4ade80;
     --border: rgba(255, 255, 255, 0.08);
     --text-main: #e6edf3;
     --text-dim: #8b949e;
 }
 
-* { 
-    box-sizing: border-box; 
-    margin: 0; 
-    padding: 0; 
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
@@ -28,12 +28,13 @@ body {
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    /* Padding base para escritorio */
     padding: 20px;
 }
 
 /* ==========================================
-   BOTÓN VOLVER AL INICIO
-   ========================================== */
+   BOTÓN VOLVER AL INICIO (ESCRITORIO)
+   ========================================= */
 .btn-volver-inicio {
     position: absolute;
     top: 30px;
@@ -55,7 +56,7 @@ body {
 }
 
 /* ==========================================
-   LA TARJETA DEL CHAT (75% DE LA PANTALLA)
+   LA TARJETA DEL CHAT (ESCRITORIO)
    ========================================== */
 .chat-card {
     width: 75vw;
@@ -65,23 +66,25 @@ body {
     min-height: 500px;
     background-color: var(--bg-chat);
     border-radius: 24px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); /* Sombra profunda */
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     display: flex;
-    overflow: hidden; /* Corta las esquinas perfectamente */
+    overflow: hidden;
     border: 1px solid var(--border);
-    
-    /* Animación de entrada estilo login */
+
     transform: scale(0.95);
     opacity: 0;
     animation: fadeIn 0.4s ease-out forwards;
 }
 
 @keyframes fadeIn {
-    to { transform: scale(1); opacity: 1; }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 /* ==========================================
-   COLUMNA IZQUIERDA (SIDEBAR)
+   COLUMNA IZQUIERDA (SIDEBAR) - GENERAL
    ========================================== */
 .chat-sidebar {
     width: 350px;
@@ -114,24 +117,28 @@ body {
     flex-direction: column;
 }
 
-.chat-lista::-webkit-scrollbar { width: 5px; }
-.chat-lista::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
+.chat-lista::-webkit-scrollbar {
+    width: 5px;
+}
+
+.chat-lista::-webkit-scrollbar-thumb {
+    background: #30363d;
+    border-radius: 10px;
+}
 
 /* Item de Chat */
 .contacto-item {
-    display: flex;           
-    align-items: center;     
-    padding: 20px 20px;
-    gap: 15px;               
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    gap: 15px;
     cursor: pointer;
     border-bottom: 1px solid var(--border);
     transition: background 0.2s;
 }
 
-.contacto-item:hover { background: rgba(255, 255, 255, 0.03); }
-
-.contacto-item + .contacto-item {
-    border-top: 1px solid rgba(255,255,255,0.05);
+.contacto-item:hover {
+    background: rgba(255, 255, 255, 0.03);
 }
 
 .contacto-item.activo {
@@ -148,11 +155,13 @@ body {
     border: 2px solid transparent;
 }
 
-.contacto-item.activo img { border-color: var(--accent); }
+.contacto-item.activo img {
+    border-color: var(--accent);
+}
 
-.contacto-info { 
-    flex: 1; 
-    overflow: hidden; 
+.contacto-info {
+    flex: 1;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
 }
@@ -174,8 +183,28 @@ body {
     overflow: hidden;
 }
 
+/* Bolita de notificación */
+.badge-chat {
+    background-color: #ef4444;
+    color: white;
+    font-size: 11px;
+    font-weight: 800;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 50px;
+    margin-left: auto;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.badge-chat.activo {
+    display: flex;
+}
+
 /* ==========================================
-   ÁREA DE MENSAJES (DERECHA)
+   ÁREA DE MENSAJES (DERECHA) - GENERAL
    ========================================== */
 .chat-mensajes-area {
     flex: 1;
@@ -193,6 +222,11 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* Botón Volver (Móvil) - Oculto en escritorio */
+.btn-volver-chat {
+    display: none;
 }
 
 #nombre-chat-actual {
@@ -213,8 +247,17 @@ body {
     height: 100%;
 }
 
-.mensaje-bienvenida i { font-size: 50px; opacity: 0.5; color: var(--accent); }
-.mensaje-bienvenida p { font-size: 18px; }
+.mensaje-bienvenida i {
+    font-size: 50px;
+    opacity: 0.5;
+    color: var(--accent);
+}
+
+.mensaje-bienvenida p {
+    font-size: 18px;
+    text-align: center;
+    padding: 0 20px;
+}
 
 .mensajes-box {
     flex: 1;
@@ -225,8 +268,14 @@ body {
     gap: 15px;
 }
 
-.mensajes-box::-webkit-scrollbar { width: 6px; }
-.mensajes-box::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
+.mensajes-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mensajes-box::-webkit-scrollbar-thumb {
+    background: #30363d;
+    border-radius: 10px;
+}
 
 /* BURBUJAS */
 .burbuja {
@@ -235,13 +284,12 @@ body {
     border-radius: 20px;
     font-size: 15px;
     line-height: 1.5;
-    position: relative;
     word-wrap: break-word;
 }
 
 .burbuja.mia {
     align-self: flex-end;
-    background: #16a34a; /* Verde UEQO para tus mensajes */
+    background: #16a34a;
     color: white;
     border-bottom-right-radius: 4px;
 }
@@ -254,15 +302,15 @@ body {
     border-bottom-left-radius: 4px;
 }
 
-/* ==========================================
-   INPUT ÁREA
-   ========================================== */
+/* INPUT ÁREA */
 .chat-input-area {
     padding: 20px 25px;
     background: var(--bg-card);
     border-top: 1px solid var(--border);
     display: flex;
     gap: 15px;
+    /* Asegura que no se encorve */
+    flex-shrink: 0;
 }
 
 .chat-input-area.oculto {
@@ -281,8 +329,8 @@ body {
     transition: border-color 0.2s;
 }
 
-#input-mensaje:focus { 
-    border-color: var(--accent); 
+#input-mensaje:focus {
+    border-color: var(--accent);
 }
 
 .btn-enviar {
@@ -306,64 +354,129 @@ body {
 }
 
 /* ==========================================
-   RESPONSIVO (MÓVILES Y TABLETS)
+   ⭐⭐⭐ ARREGLO TOTAL PARA MÓVILES ⭐⭐⭐
    ========================================== */
 @media (max-width: 900px) {
+    body {
+        padding: 0;
+    }
+
+    /* Ocultamos el botón flotante de escritorio */
+    .btn-volver-inicio {
+        display: none;
+    }
+
+    /* La tarjeta ocupa toda la pantalla */
     .chat-card {
         width: 100vw;
         height: 100vh;
+        max-height: 100vh;
         border-radius: 0;
         border: none;
+        position: relative;
     }
-    .btn-volver-inicio {
-        display: none; /* En móvil se usa el botón de volver de la cabecera si lo añades, o puedes reubicarlo */
-    }
-}
 
-@media (max-width: 600px) {
+    /* ESTADO INICIAL: Mostramos Sidebar, Ocultamos Chat */
     .chat-sidebar {
-        width: 85px;
-        min-width: 85px;
+        width: 100%;
+        min-width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        z-index: 5;
+        transition: transform 0.3s ease;
     }
-    
-    .sidebar-header h2 { display: none; }
-    .contacto-info { display: none; }
-    
-    .contacto-item {
+
+    .chat-mensajes-area {
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        z-index: 10;
+        /* Lo movemos a la derecha, fuera de la pantalla */
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    }
+
+    /* ⭐ CUANDO UN CHAT ESTÁ ACTIVO ⭐
+       (Esta clase '.chat-activo' se la tienes que añadir al .chat-card con JS) */
+    .chat-card.chat-activo .chat-sidebar {
+        /* Movemos la lista a la izquierda (fuera de la pantalla) */
+        transform: translateX(-100%);
+    }
+
+    .chat-card.chat-activo .chat-mensajes-area {
+        /* Traemos el chat a la pantalla */
+        transform: translateX(0%);
+    }
+
+    /* Ajustes de cabeceras en móvil */
+    .sidebar-header,
+    .chat-header-top {
+        height: 60px;
+        padding: 0 15px;
+    }
+
+    .sidebar-header h2 {
+        font-size: 28px;
+    }
+
+    /* Botón Volver dentro del chat (Móvil) */
+    .chat-header-top {
+        justify-content: flex-start;
+        /* Alineación a la izquierda */
+        gap: 10px;
+    }
+
+    .btn-volver-chat {
+        display: flex;
+        align-items: center;
         justify-content: center;
-        padding: 15px 5px;
+        background: none;
+        border: none;
+        color: var(--accent);
+        font-size: 20px;
+        padding: 10px;
+        cursor: pointer;
     }
-}
 
-/* ==========================================
-   NOTIFICACIÓN DE NUEVO MENSAJE (BOLITA ROJA)
-   ========================================== */
-/* ==========================================
-   NOTIFICACIÓN DE NUEVO MENSAJE (NÚMERO)
-   ========================================== */
-.badge-chat {
-    background-color: #ef4444; /* Rojo vibrante */
-    color: white;
-    font-size: 11px;
-    font-weight: 800;
-    min-width: 22px; /* Ancho mínimo para que sea redonda */
-    height: 22px;
-    padding: 0 6px;
-    border-radius: 50px; /* Bordes muy redondeados */
-    margin-left: auto; 
-    display: none; /* Oculto por defecto */
-    justify-content: center; /* Centra el número horizontalmente */
-    align-items: center;     /* Centra el número verticalmente */
-    box-shadow: 0 2px 5px rgba(239, 68, 68, 0.3);
-}
+    #nombre-chat-actual {
+        font-size: 18px;
+        text-align: left;
+    }
 
-/* Cambiamos a flex para que el centrado funcione al activarse */
-.badge-chat.activo {
-    display: flex;
-    animation: popIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-}
+    /* Ajustes de mensajes e input */
+    .mensajes-box {
+        padding: 15px;
+        gap: 10px;
+    }
 
-@keyframes popIn {
-    0% { transform: scale(0); }
-    100% { transform: scale(1); }
+    .burbuja {
+        max-width: 85%;
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+
+    .chat-input-area {
+        padding: 10px 15px;
+        gap: 10px;
+        /* Forzamos a que se vea abajo del todo */
+        position: relative;
+        bottom: 0;
+        width: 100%;
+    }
+
+    #input-mensaje {
+        padding: 10px 18px;
+        font-size: 14px;
+    }
+
+    .btn-enviar {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        font-size: 16px;
+    }
 }
