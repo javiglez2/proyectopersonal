@@ -3,95 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UEQO - Comparte coche</title>
+    <title>UEQO - Comparte tu viaje</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap">
     <link rel="stylesheet" href="estilos/index.css">
 </head>
 <body>
 
-    <header>
-        <h1>UEQO</h1>
-        <div class="nav-links">
-            <a href="login.html" class="btn-login">Iniciar Sesión</a>
-            <a href="registro.html" class="btn-register">Registrarse</a>
-        </div>
-    </header>
+    <div id="ueqo-bg-giant" class="parallax-el" data-speed="0.05">UEQO</div>
 
-    <section class="hero">
-        <h2>Comparte viaje, ahorra dinero y tiempo.</h2>
-        <p>La plataforma exclusiva para conectar a conductores y pasajeros estudiantes que van a la UMA, el PTA o los centros de estudios de Málaga y alrededores.</p>
-        
-        <div>
-            <a href="registro.html" class="btn-hero">Empezar ahora 🚗</a>
-        </div>
-        
-        <button id="btn-toggle-info" class="btn-conocenos">
-            Conócenos más <i class="fa-solid fa-chevron-down" style="transition: transform 0.3s;"></i>
-        </button>
-    </section>
+    <div class="glow-orb orb-left"></div>
+    <div class="glow-orb orb-right"></div>
 
-    <div id="seccion-info" class="desplegable-wrapper">
-        <div class="desplegable-contenido">
-            
-            <div class="intro-irigo">
-                <h3>¿Qué es UEQO?</h3>
-                <p>Somos una aplicación web que busca facilitar el proceso de compartir viajes entre estudiantes de Málaga.</p>
-                <p>UEQO está en constante evolución. Queremos que compartir coche sea más fácil, seguro y económico, conectando a estudiantes que recorren rutas similares. Estamos creciendo cada día, mejorando nuestra app y sumando usuarios que quieren una movilidad más inteligente y sostenible.</p>
-                <p>Actualmente, UEQO está en pleno desarrollo y a la espera de la evolución de la plataforma, pero disponible para todos nuestros usuarios.</p>        
+    <div id="hologram-container">
+        
+        <div class="holo-phone parallax-el" data-speed="0.03">
+            <div class="holo-screen">
+                <div class="holo-pin"><i class="fa-solid fa-location-dot"></i></div>
+                <svg class="holo-route" viewBox="0 0 100 100">
+                    <path d="M20,80 L40,50 L70,60 L90,20" stroke="#4ade80" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" filter="drop-shadow(0px 0px 4px #4ade80)"/>
+                    <circle cx="20" cy="80" r="4" fill="#4ade80" filter="drop-shadow(0px 0px 4px #4ade80)"/>
+                    <circle cx="90" cy="20" r="4" fill="#4ade80" filter="drop-shadow(0px 0px 4px #4ade80)"/>
+                </svg>
             </div>
-
-            <section class="features">
-                <div class="card">
-                    <div class="icon">💸</div>
-                    <h3>Ahorra en gasolina</h3>
-                    <p>Divide los gastos del viaje entre todos los pasajeros. Ir a la universidad o al trabajo nunca fue tan barato.</p>
-                </div>
-                <div class="card">
-                    <div class="icon">🤝</div>
-                    <h3>Conoce gente nueva</h3>
-                    <p>Comparte trayecto todos los días con otras personas de tu misma zona y haz networking.</p>
-                </div>
-                <div class="card">
-                    <div class="icon">🌍</div>
-                    <h3>Cuida el planeta</h3>
-                    <p>Menos coches en la carretera significa menos atascos y menos emisiones de CO2. Viajar juntos es viajar verde.</p>
-                </div>
-            </section>
-            
         </div>
+
+        <div class="holo-chat parallax-el" data-speed="-0.04">
+            <div class="holo-bubble">
+                <i class="fa-solid fa-message"></i>
+                <div class="holo-badge">+1</div>
+            </div>
+            <div class="holo-card"></div>
+            <div class="holo-card small"></div>
+        </div>
+
     </div>
 
+    <nav class="navbar-glass">
+        <div class="nav-logo">UEQO</div>
+        <div class="nav-actions">
+            <a href="login.html" class="btn-nav-login">Iniciar sesión</a>
+        </div>
+    </nav>
+
+    <main class="hero-section">
+        <div class="hero-content fade-in visible">
+            <span class="badge-nuevo">La nueva forma de moverte</span>
+            <h1 class="slogan-principal">Tu viaje, tus reglas. <br><span class="resaltado">Comparte ruta y ahorra.</span></h1>
+            <p class="sub-slogan">Conecta con estudiantes y conductores de tu zona. Menos gastos, menos contaminación, más comodidad.</p>
+            
+            <div class="action-box-glass">
+                <p>¿Listo para empezar?</p>
+                <div class="action-buttons">
+                    <a href="registro.html" class="btn-primary">
+                        Crear cuenta
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="info-section">
+        <div class="single-info-block fade-in">
+            <h2 class="info-title"><span class="text-green">¿Qué es UEQO?</span><br></h2>
+            <p class="info-text">
+                UEQO es una plataforma de gestión de viajes compartidos diseñada específicamente para estudiantes de Málaga. Nuestra misión es facilitar la conexión entre conductores y pasajeros que comparten rutas similares.<br><br>
+                Actualmente, UEQO se encuentra en su fase inicial de desarrollo, pero estamos comprometidos a crear una experiencia de usuario excepcional. Nuestro objetivo es lanzar la aplicación en un futuro cercano, ofreciendo una solución eficiente y sostenible para la movilidad estudiantil en Málaga.
+            </p>
+        </div>
+    </section>
+
     <footer>
-        <p>&copy; 2026 UEQO. Creado para la comunidad de estudiantes de Málaga.</p>
+        <p>© 2026 UEQO - Desarrollado para mejorar la movilidad.</p>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
-
-    <script>
-        // Si el usuario ya está logueado... (Tu código que ya tenías)
-        if (localStorage.getItem('benaluma_user_id')) {
-            window.location.href = 'mapa.html';
-        }
-
-        // 🌟 NUEVO: Lógica del botón "Conócenos más"
-        const btnToggle = document.getElementById('btn-toggle-info');
-        const seccionInfo = document.getElementById('seccion-info');
-        const flecha = btnToggle.querySelector('i');
-
-        btnToggle.addEventListener('click', () => {
-            seccionInfo.classList.toggle('abierto');
-            
-            if (seccionInfo.classList.contains('abierto')) {
-                // Si se abre: cambia el texto, rota la flecha y hace scroll suave
-                btnToggle.innerHTML = 'Ocultar información <i class="fa-solid fa-chevron-up"></i>';
-                setTimeout(() => {
-                    seccionInfo.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 300); // Espera un poco a que se abra para hacer el scroll
-            } else {
-                // Si se cierra: vuelve a la normalidad
-                btnToggle.innerHTML = 'Conócenos más <i class="fa-solid fa-chevron-down"></i>';
-            }
-        });
-    </script>
-</body>
+    <script src="jscode/landing.js"></script>
 </body>
 </html>

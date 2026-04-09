@@ -1,301 +1,250 @@
+/* ==========================================
+   UEQO - LANDING PAGE (App-Mobile Premium 3D)
+   ========================================== */
+
+:root {
+    --bg-dark: #070d0a; 
+    --primary: #4ade80;
+    --primary-hover: #22c55e;
+    --glass-bg: rgba(255, 255, 255, 0.03); 
+    --glass-border: rgba(255, 255, 255, 0.08); 
+    --text-light: #f3f4f6;
+    --text-muted: #9ca3af;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-h1{
-    font-family: 'Bebas Neue', sans-serif;
-    font-weight: 400; /* Bebas Neue se ve mejor en su peso original */
-    letter-spacing: 1px; /* Un poco de separación le queda genial */
-    color: #4ade80; 
-    font-size: 48px;         /* ¡Mucho más grande! Antes estaba en 32px */
-    font-weight: 900;        /* Forzamos el máximo grosor que permita el navegador */
-    letter-spacing: 2px;     /* Separamos un pelín las letras para que respiren */
-    
-    /* TRUCO PARA ENGROSAR LA LETRA */
-    -webkit-text-stroke: 1px #4ade80; /* Le añade un borde del mismo color para engordarla */
-    
-    /* (Opcional) Una pequeña sombra para darle aún más presencia */
-    text-shadow: 0px 4px 10px rgba(74, 222, 128, 0.2);
-    
-    cursor: pointer;         /* Hace que parezca un botón clickeable */
-    margin: 0;
-}
-
-body { 
-    background-color: #0d1712; 
-    color: #111827; 
-    overflow-x: hidden; 
-    display: flex; 
-    flex-direction: column; 
-    min-height: 100vh; 
-}
-
-/* Navbar */
-header { background-color: #1a2e25; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: fixed; width: 100%; top: 0; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-header h1 { color: #4ade80; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
-.nav-links { display: flex; gap: 15px; align-items: center; }
-.btn-login { color: white; text-decoration: none; font-weight: 600; padding: 8px 16px; border-radius: 20px; transition: 0.2s; font-size: 14px; }
-.btn-login:hover { background: rgba(255,255,255,0.1); }
-.btn-register { background: #16a34a; color: white; text-decoration: none; font-weight: 600; padding: 8px 18px; border-radius: 20px; transition: 0.2s; border: 1px solid #16a34a; font-size: 14px; }
-.btn-register:hover { background: #15803d; border-color: #15803d; }
-
-/* Hero Section */
-.hero { 
-    margin-top: 60px; 
-    padding: 60px 20px; 
-    text-align: center; 
-    background: linear-gradient(135deg, #1a2e25 0%, #0d1712 100%); 
-    color: white; 
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center; 
-    align-items: center;
-    flex: 1; /* Esto es lo que empuja el footer hacia abajo */
-    position: relative;  /* Necesario para anclar el texto de fondo */
-    overflow: hidden;    /* Evita que el texto gigante cree barras de scroll */
-    z-index: 1;
-}
-
-.hero::before {
-    content: "UEQO";
-    position: absolute;
-    top: 45%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* Lo centra perfectamente */
-    
-    font-size: 35vw; /* Tamaño dinámico: ocupa el 35% del ancho de la pantalla */
-    font-weight: 900; /* Lo más grueso posible */
-    line-height: 1;
-    white-space: nowrap; /* Evita que salte a la siguiente línea */
-    
-    /* El color: Blanco con una opacidad del 3% (casi invisible) */
-    /* Si prefieres que sea un verde fantasma, usa: color: rgba(74, 222, 128, 0.04); */
-    color: rgba(255, 255, 255, 0.03); 
-    
-    z-index: -1; /* Lo manda completamente al fondo */
-    pointer-events: none; /* CRÍTICO: Evita que el texto bloquee los clics en los botones */
-    user-select: none; /* Evita que el usuario lo seleccione sin querer como texto normal */
-}
-
-.hero > * {
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    overflow-x: hidden;
     position: relative;
-    z-index: 2;
 }
 
-/* 🌟 3. Textos mucho más grandes y protagonistas */
-.hero h2 {
-    font-size: 4.2rem;       /* ¡Mucho más grande! Antes rondaría los 2.5/3rem */
-    font-weight: 800;        /* Muy negrita */
-    line-height: 1.1;        /* Junta un poco las líneas para que no se vea desarmado */
-    margin-bottom: 25px;
-    letter-spacing: -1px;    /* Le da un toque muy pro a las fuentes grandes */
+/* ==========================================
+   FONDOS Y LUCES
+   ========================================== */
+.glow-orb {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: var(--primary);
+    border-radius: 50%;
+    filter: blur(150px);
+    opacity: 0.12; 
+    z-index: -3;
+    pointer-events: none;
+}
+.orb-left { top: 20%; left: -150px; }
+.orb-right { top: 60%; right: -150px; }
+
+#ueqo-bg-giant {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 35vw; 
+    color: rgba(74, 222, 128, 0.04); 
+    z-index: -2;
+    pointer-events: none;
+    user-select: none;
+    line-height: 1;
+    white-space: nowrap;
+    transition: transform 0.1s ease-out;
 }
 
-.hero p {
-    font-size: 1.4rem;       /* Párrafo más grande y fácil de leer */
-    line-height: 1.6;
-    max-width: 850px;        /* Evita que se estire demasiado a los lados */
-    margin: 0 auto 40px auto;/* Centrado y con más espacio hacia los botones */
-    color: #e5e7eb;          /* Un gris muy clarito para que contraste bien con el fondo oscuro */
-}
-
-.btn-hero {
-    font-size: 1.3rem;       /* Letra del botón más grande */
-    padding: 18px 45px;      /* Botón más ancho y alto */
-    border-radius: 40px;     /* Bordes bien redondeados */
-    font-weight: 700;
-    display: inline-block;
-    transition: transform 0.2s, box-shadow 0.2s;
-    /* (Mantén aquí el background y color que ya tenías) */
-}
-
-.btn-hero:hover {
-    transform: scale(1.05);  /* Efecto de crecer al pasar el ratón */
-    box-shadow: 0 10px 25px rgba(74, 222, 128, 0.4); /* Brillo verde */
-}
-
-.hero .btn-hero { background: #4ade80; color: #1a2e25; text-decoration: none; font-size: 18px; font-weight: 800; padding: 15px 35px; border-radius: 30px; transition: 0.3s; display: inline-block; }
-.hero .btn-hero:hover { background: #22c55e; transform: scale(1.05); }
-
-.btn-conocenos {
-    font-size: 1.15rem;      /* Un poco más grande también */
-    padding: 12px 30px;
-    margin-top: 30px;        /* Más separado del botón principal */
-    /* (Mantén aquí el background y color que ya tenías) */
-}
-
-/* Ajuste móvil para textos grandes */
-@media (max-width: 600px) {
-    .hero h2 { font-size: 42px; }
-    .hero p { font-size: 18px; }
-    .nav-links { gap: 5px; }
-    .btn-login, .btn-register { padding: 6px 12px; font-size: 13px; }
-}
-
-@media (max-width: 768px) {
-    .hero h2 {
-        font-size: 2.5rem; /* En móviles lo bajamos un poco */
-    }
-    .hero p {
-        font-size: 1.1rem;
-    }
-}
-
-/* Info Cards */
-.features {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 30px;
-    padding: 80px 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.card {
-    background: white;
-    padding: 30px;
-    border-radius: 16px;
-    width: 320px;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e5e7eb;
-    transition: transform 0.3s;
-}
-
-.card:hover {
-    transform: translateY(-10px);
-}
-
-.card .icon {
-    font-size: 40px;
-    margin-bottom: 15px;
-}
-
-.card h3 {
-    font-size: 20px;
-    margin-bottom: 10px;
-    color: #1a2e25;
-}
-
-.card p {
-    color: #6b7280;
-    font-size: 15px;
-    line-height: 1.5;
-}
-
-/* Footer */
-footer {
-    background: #111;
-    color: #9ca3af;
-    text-align: center;
-    padding: 30px;
-    font-size: 14px;
-}
-
-@media (max-width: 600px) {
-    .hero h2 {
-        font-size: 36px;
-    }
-
-    .nav-links {
-        gap: 5px;
-    }
-
-    .btn-login,
-    .btn-register {
-        padding: 6px 12px;
-        font-size: 13px;
-    }
-}
-
-/* =========================================
-   NUEVO DESPLEGABLE "CONÓCENOS MÁS"
-   ========================================= */
-
-/* Botón sutil en la sección Hero */
-.btn-conocenos {
-    background: transparent;
-    color: #4ade80;
-    border: 2px solid rgba(74, 222, 128, 0.5);
-    padding: 12px 30px;
-    border-radius: 30px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 30px;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.btn-conocenos:hover {
-    background: rgba(74, 222, 128, 0.1);
-    border-color: #4ade80;
-}
-
-/* Contenedor animado */
-.desplegable-wrapper {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-    background: #b3ebc9;
-}
-
-.desplegable-wrapper.abierto {
-    grid-template-rows: 1fr;
-}
-
-.desplegable-contenido {
+/* ==========================================
+   ⭐ HOLOGRAMAS DE CRISTAL 3D (NUEVO)
+   ========================================== */
+#hologram-container {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1; 
+    pointer-events: none; 
     overflow: hidden;
-    /* Oculta lo que sobresale cuando está cerrado */
 }
 
-/* Texto minimalista de introducción */
-.intro-irigo {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 80px 20px 20px 20px;
+/* Estilo base de cristal */
+.holo-glass {
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Teléfono flotante (Izquierda) */
+.holo-phone {
+    position: absolute;
+    top: 25%; left: 5%;
+    width: 180px; height: 350px;
+    border-radius: 30px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+    backdrop-filter: blur(12px);
+    border: 2px solid rgba(255,255,255,0.15);
+    border-top: 2px solid rgba(255,255,255,0.3);
+    border-left: 2px solid rgba(255,255,255,0.3);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05);
+    transform: rotate(-10deg);
+    animation: floatHolo 6s ease-in-out infinite;
+}
+
+.holo-screen {
+    position: absolute;
+    top: 10px; left: 10px; right: 10px; bottom: 10px;
+    border-radius: 20px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.holo-pin {
+    position: absolute;
+    top: 15%; left: 65%;
+    font-size: 35px;
+    color: var(--primary);
+    filter: drop-shadow(0 0 10px var(--primary));
+    animation: pulsePin 2s infinite alternate;
+}
+
+.holo-route {
+    position: absolute;
+    top: 30%; left: 10%;
+    width: 80%; height: 50%;
+}
+
+/* Chat flotante (Derecha) */
+.holo-chat {
+    position: absolute;
+    top: 35%; right: 8%;
+    animation: floatHolo 8s ease-in-out infinite reverse;
+}
+
+.holo-bubble {
+    width: 100px; height: 90px;
+    background: linear-gradient(135deg, rgba(74,222,128,0.15) 0%, rgba(74,222,128,0.02) 100%);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(74,222,128,0.3);
+    border-radius: 25px 25px 5px 25px;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 40px; color: var(--primary);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4), inset 0 0 15px rgba(74,222,128,0.1);
+    position: relative;
+    transform: rotate(10deg);
+}
+
+.holo-badge {
+    position: absolute;
+    top: -10px; right: -10px;
+    background: var(--primary);
+    color: #000;
+    font-weight: 800; font-size: 14px;
+    width: 30px; height: 30px;
+    display: flex; justify-content: center; align-items: center;
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--primary);
+}
+
+.holo-card {
+    width: 140px; height: 50px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 15px;
+    margin-top: 20px;
+    transform: rotate(5deg) translateX(-30px);
+}
+
+.holo-card.small { width: 100px; height: 30px; margin-top: 10px; transform: rotate(15deg) translateX(10px); }
+
+@keyframes floatHolo {
+    0% { transform: translateY(0px) rotate(auto); }
+    50% { transform: translateY(-25px) rotate(auto); }
+    100% { transform: translateY(0px) rotate(auto); }
+}
+
+@keyframes pulsePin {
+    0% { transform: scale(1); filter: drop-shadow(0 0 5px var(--primary)); }
+    100% { transform: scale(1.1); filter: drop-shadow(0 0 15px var(--primary)); }
+}
+
+/* ==========================================
+   NAVBAR & HERO
+   ========================================== */
+.navbar-glass {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 1200px;
+    height: 65px; background: var(--glass-bg); backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border); border-radius: 40px; display: flex; justify-content: space-between;
+    align-items: center; padding: 0 30px; z-index: 1000; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+.nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--primary); letter-spacing: 2px; }
+.btn-nav-login { color: white; text-decoration: none; font-weight: 600; font-size: 14px; padding: 10px 20px; border-radius: 20px; transition: background 0.3s; }
+.btn-nav-login:hover { background: rgba(255, 255, 255, 0.1); }
+
+.hero-section { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 120px 20px 60px 20px; }
+.hero-content { text-align: center; max-width: 800px; z-index: 2; position: relative; }
+.badge-nuevo { display: inline-block; background: rgba(74, 222, 128, 0.1); color: var(--primary); border: 1px solid rgba(74, 222, 128, 0.3); padding: 6px 16px; border-radius: 30px; font-size: 13px; font-weight: 700; margin-bottom: 20px; }
+.slogan-principal { font-size: 4rem; font-weight: 800; line-height: 1.1; margin-bottom: 25px; letter-spacing: -1px; }
+.slogan-principal .resaltado { color: var(--primary); text-shadow: 0 0 30px rgba(74, 222, 128, 0.4); }
+.sub-slogan { font-size: 1.25rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto; }
+
+.action-box-glass { background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); padding: 30px; border-radius: 24px; display: inline-block; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); }
+.action-box-glass p { font-size: 14px; color: var(--text-muted); font-weight: 600; margin-bottom: 15px; text-transform: uppercase; }
+.btn-primary { background: var(--primary); color: #070d0a; text-decoration: none; font-weight: 800; font-size: 18px; padding: 16px 40px; border-radius: 30px; display: inline-flex; align-items: center; gap: 12px; transition: all 0.3s ease; }
+.btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 10px 25px rgba(74, 222, 128, 0.4); }
+
+/* ==========================================
+   SECCIÓN DE INFORMACIÓN (ARREGLO Z-INDEX)
+   ========================================== */
+.info-section {
+    padding: 20px 20px 100px 20px;
+    display: flex;
+    justify-content: center;
+    position: relative; /* Asegura que respeta la capa */
+    z-index: 10; /* Se pone por encima de los fondos */
+}
+
+.single-info-block {
+    background: linear-gradient(145deg, rgba(20, 30, 25, 0.95) 0%, rgba(10, 15, 12, 0.98) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    padding: 80px 60px;
+    max-width: 1000px;
     text-align: center;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.6s ease;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+    position: relative;
+    overflow: hidden;
 }
 
-.desplegable-wrapper.abierto .intro-irigo {
-    opacity: 1;
-    transform: translateY(0);
-    transition-delay: 0.3s;
-    /* Aparece un poquito después de abrirse */
+.single-info-block::before {
+    content: ''; position: absolute; top: -50px; left: -50px; width: 200px; height: 200px;
+    background: var(--primary); filter: blur(80px); opacity: 0.1; pointer-events: none;
 }
 
-.intro-irigo h3 {
-    font-size: 2.8rem;      /* Bastante más grande */
-    font-weight: 800;       /* Extra negrita para que impacte */
-    color: #111827;         /* Casi negro para máximo contraste con tu fondo verde */
-    margin-bottom: 25px;
-    letter-spacing: -0.5px; /* Junta un pelín las letras, queda muy moderno */
+.info-title { font-size: 3.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 30px; color: white; letter-spacing: -1px; }
+.info-title .text-green { color: var(--primary); }
+.info-text { font-size: 1.3rem; color: var(--text-muted); line-height: 1.8; max-width: 750px; margin: 0 auto; }
+
+footer { text-align: center; padding: 40px 20px; color: #4b5563; font-size: 14px; border-top: 1px solid var(--glass-border); position: relative; z-index: 10; }
+
+/* ==========================================
+   MÓVILES
+   ========================================== */
+@media (max-width: 900px) {
+    #hologram-container { display: none; } /* Ocultamos hologramas en móvil */
+    .slogan-principal { font-size: 2.8rem; }
+    .sub-slogan { font-size: 1.1rem; }
+    #ueqo-bg-giant { font-size: 60vw; }
+    .single-info-block { padding: 50px 30px; border-radius: 20px; }
+    .info-title { font-size: 2.5rem; }
+    .info-text { font-size: 1.1rem; }
 }
 
-.intro-irigo {
-    text-align: center;
-    padding: 40px 20px;
-}
-
-.intro-irigo p {
-    font-size: 1.2rem;      /* Texto más grande que el estándar */
-    font-weight: 500;       /* Semi-negrita (más gordito que un texto normal) */
-    line-height: 1.8;       /* Más espacio entre líneas para que respire */
-    color: #27303f;         /* Un gris muy oscuro para que se lea perfecto */
-    max-width: 850px;       /* Evita que las líneas se estiren por toda la pantalla */
-    margin: 0 auto 20px auto; /* Centra los párrafos */
-}
-
-/* Ajustamos las tarjetas para que encajen bien abajo */
-.features {
-    padding-top: 40px !important;
-}
+.fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
