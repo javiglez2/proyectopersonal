@@ -1,41 +1,78 @@
 document.getElementById('registro-form').addEventListener('submit', async (e) => {
+    // 1. Evitamos que el formulario recargue la página pase lo que pase
     e.preventDefault();
 
-    // 1. Limpiamos cualquier error visual previo antes de comprobar
-    document.querySelectorAll('.error-texto').forEach(s => s.innerText = '');
-    document.querySelectorAll('input').forEach(i => i.classList.remove('input-error'));
+    // 2. Recogemos los elementos del HTML de forma segura
+    const nombreInput = document.getElementById('nombre');
+    const apellidosInput = document.getElementById('apellidos');
+    const emailInput = document.getElementById('email');
+    const passInput = document.getElementById('password');
+    const confPassInput = document.getElementById('confirmar-contrasena');
 
-    // 2. Recogemos los valores de los campos
-    const nombre = document.getElementById('nombre').value.trim();
-    const apellidos = document.getElementById('apellidos').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const contrasena = document.getElementById('password').value;           // ✅ era 'contrasena', el HTML usa 'password'
-    const confirmar = document.getElementById('confirmar-contrasena').value;
+    // Si por algún motivo no encuentra un input en el HTML, avisa en lugar de romperse
+    if (!nombreInput || !apellidosInput || !emailInput || !passInput || !confPassInput) {
+        Swal.fire('Error interno', 'No se encontraron algunos campos en el formulario HTML.', 'error');
+        return;
+    }
 
-    let valido = true;
+    const nombre = nombreInput.value.trim();
+    const apellidos = apellidosInput.value.trim();
+    const email = emailInput.value.trim();
+    const contrasena = passInput.value;
+    const confirmar = confPassInput.value;
 
-    // 3. Comprobamos que tenga al menos 8 caracteres
+    // ==========================================
+    // 3. VALIDACIONES ESTRICTAS
+    // ==========================================
+
+    // A) Comprobar que no haya campos vacíos
+    if (!nombre || !apellidos || !email || !contrasena || !confirmar) {
+        Swal.fire({
+            title: 'Campos incompletos',
+            text: 'Por favor, rellena todos los datos para poder registrarte.',
+            icon: 'warning',
+            confirmButtonColor: '#16a34a'
+        });
+        return;
+    }
+
+    // B) Comprobar la longitud de la contraseña (Mínimo 8 caracteres)
     if (contrasena.length < 8) {
-        document.getElementById('error-confirmar').innerText = "La contraseña debe tener al menos 8 caracteres."; // ✅ 'error-contrasena' no existe en el HTML, usamos el que sí existe
-        document.getElementById('password').classList.add('input-error');
-        valido = false;
+        Swal.fire({
+            title: 'Contraseña muy corta',
+            text: 'Por seguridad, la contraseña debe tener al menos 8 caracteres.',
+            icon: 'warning',
+            confirmButtonColor: '#16a34a'
+        }).then(() => {
+            passInput.focus(); // Ponemos el cursor en la contraseña
+        });
+        return;
     }
 
-    // 4. Comprobamos que las contraseñas coincidan
+    // C) Comprobar que ambas contraseñas coincidan
     if (contrasena !== confirmar) {
-        document.getElementById('error-confirmar').innerText = "Las contraseñas no coinciden.";
-        document.getElementById('confirmar-contrasena').classList.add('input-error');
-        document.getElementById('password').classList.add('input-error');
-        valido = false;
+        Swal.fire({
+            title: 'Las contraseñas no coinciden',
+            text: 'Asegúrate de escribir exactamente la misma contraseña en ambos campos.',
+            icon: 'warning',
+            confirmButtonColor: '#16a34a'
+        }).then(() => {
+            confPassInput.focus();
+            confPassInput.value = ''; // Vaciamos el campo de confirmar para que lo vuelva a escribir
+        });
+        return;
     }
 
-    // Si hay algún error, cortamos aquí
-    if (!valido) return;
+    // ==========================================
+    // 4. ENVÍO AL SERVIDOR
+    // ==========================================
 
-    // 5. Si todo está perfecto, enviamos los datos
-    const btnRegistro = document.querySelector('.btn-submit');
-    btnRegistro.disabled = true;
-    btnRegistro.innerText = 'Registrando...';
+    // Bloqueamos el botón para que no le den dos veces sin querer
+    const btnRegistro = document.querySelector('.btn-submit') || document.querySelector('button[type="submit"]');
+    if (btnRegistro) {
+        btnRegistro.disabled = true;
+        btnRegistro.innerText = 'Registrando...';
+    }
 
     try {
         const res = await fetch('https://proyectopersonal-0xcu.onrender.com/api/signup', {
@@ -46,7 +83,7 @@ document.getElementById('registro-form').addEventListener('submit', async (e) =>
 
         if (res.ok) {
             Swal.fire({
-                title: '¡Bienvenido!',
+                title: '¡Bienvenido a UEQO!',
                 text: 'Tu cuenta ha sido creada correctamente.',
                 icon: 'success',
                 timer: 2000,
@@ -56,12 +93,25 @@ document.getElementById('registro-form').addEventListener('submit', async (e) =>
             });
         } else {
             const d = await res.json();
-            Swal.fire('Error', d.error || 'No se pudo registrar, comprueba los datos', 'error');
+            Swal.fire({
+                title: 'No se pudo registrar',
+                text: d.error || 'El correo electrónico ya está en uso o los datos no son válidos.',
+                icon: 'error',
+                confirmButtonColor: '#ef4444'
+            });
         }
     } catch (err) {
-        Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+        Swal.fire({
+            title: 'Error de conexión',
+            text: 'No se ha podido conectar con el servidor. Inténtalo de nuevo más tarde.',
+            icon: 'error',
+            confirmButtonColor: '#ef4444'
+        });
     } finally {
-        btnRegistro.disabled = false;
-        btnRegistro.innerText = 'Registrarme en UEQO';
+        // Desbloqueamos el botón si algo falla
+        if (btnRegistro) {
+            btnRegistro.disabled = false;
+            btnRegistro.innerText = 'Crear cuenta gratis';
+        }
     }
 });
