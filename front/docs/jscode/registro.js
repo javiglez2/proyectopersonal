@@ -1,117 +1,107 @@
 document.getElementById('registro-form').addEventListener('submit', async (e) => {
-    // 1. Evitamos que el formulario recargue la página pase lo que pase
-    e.preventDefault();
+    e.preventDefault(); // Evitamos que recargue la página
 
-    // 2. Recogemos los elementos del HTML de forma segura
+    // 1. Recogemos los campos
     const nombreInput = document.getElementById('nombre');
     const apellidosInput = document.getElementById('apellidos');
     const emailInput = document.getElementById('email');
     const passInput = document.getElementById('password');
     const confPassInput = document.getElementById('confirmar-contrasena');
 
-    // Si por algún motivo no encuentra un input en el HTML, avisa en lugar de romperse
-    if (!nombreInput || !apellidosInput || !emailInput || !passInput || !confPassInput) {
-        Swal.fire('Error interno', 'No se encontraron algunos campos en el formulario HTML.', 'error');
-        return;
+    // 2. Limpiamos errores previos visuales
+    document.querySelectorAll('.error-texto').forEach(el => el.remove());
+    document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+
+    let valido = true;
+
+    // --- FUNCIÓN MAGICA PARA PINTAR ERRORES BONITOS ---
+    const mostrarError = (input, mensaje) => {
+        input.classList.add('input-error'); // Pinta el borde y el fondo de rojo
+        
+        // Creamos el mensajito de texto y lo ponemos debajo
+        const span = document.createElement('span');
+        span.className = 'error-texto';
+        span.innerText = mensaje;
+        
+        // Lo metemos dentro del div .input-group para que se posicione bien
+        input.parentElement.appendChild(span);
+        valido = false;
+    };
+
+    // 3. VALIDACIONES INDIVIDUALES
+
+    // Nombres vacíos
+    if (!nombreInput.value.trim()) mostrarError(nombreInput, 'El nombre es obligatorio.');
+    if (!apellidosInput.value.trim()) mostrarError(apellidosInput, 'Los apellidos son obligatorios.');
+
+    // Email formato correcto
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailInput.value.trim()) {
+        mostrarError(emailInput, 'El correo es obligatorio.');
+    } else if (!emailRegex.test(emailInput.value.trim())) {
+        mostrarError(emailInput, 'Introduce un correo válido.');
     }
 
-    const nombre = nombreInput.value.trim();
-    const apellidos = apellidosInput.value.trim();
-    const email = emailInput.value.trim();
+    // Contraseña (AQUÍ ESTÁ LA REGLA DE LOS 8 CARACTERES)
     const contrasena = passInput.value;
+    if (!contrasena) {
+        mostrarError(passInput, 'Debes introducir una contraseña.');
+    } else if (contrasena.length < 8) {
+        mostrarError(passInput, 'Mínimo 8 caracteres, por favor.');
+    }
+
+    // Confirmar contraseña
     const confirmar = confPassInput.value;
-
-    // ==========================================
-    // 3. VALIDACIONES ESTRICTAS
-    // ==========================================
-
-    // A) Comprobar que no haya campos vacíos
-    if (!nombre || !apellidos || !email || !contrasena || !confirmar) {
-        Swal.fire({
-            title: 'Campos incompletos',
-            text: 'Por favor, rellena todos los datos para poder registrarte.',
-            icon: 'warning',
-            confirmButtonColor: '#16a34a'
-        });
-        return;
+    if (!confirmar) {
+        mostrarError(confPassInput, 'Repite la contraseña para confirmar.');
+    } else if (contrasena !== confirmar) {
+        mostrarError(confPassInput, 'Las contraseñas no coinciden.');
     }
 
-    // B) Comprobar la longitud de la contraseña (Mínimo 8 caracteres)
-    if (contrasena.length < 8) {
-        Swal.fire({
-            title: 'Contraseña muy corta',
-            text: 'Por seguridad, la contraseña debe tener al menos 8 caracteres.',
-            icon: 'warning',
-            confirmButtonColor: '#16a34a'
-        }).then(() => {
-            passInput.focus(); // Ponemos el cursor en la contraseña
-        });
-        return;
-    }
-
-    // C) Comprobar que ambas contraseñas coincidan
-    if (contrasena !== confirmar) {
-        Swal.fire({
-            title: 'Las contraseñas no coinciden',
-            text: 'Asegúrate de escribir exactamente la misma contraseña en ambos campos.',
-            icon: 'warning',
-            confirmButtonColor: '#16a34a'
-        }).then(() => {
-            confPassInput.focus();
-            confPassInput.value = ''; // Vaciamos el campo de confirmar para que lo vuelva a escribir
-        });
-        return;
-    }
+    // Si algún 'mostrarError' se ejecutó, 'valido' será false y cortamos aquí.
+    if (!valido) return;
 
     // ==========================================
-    // 4. ENVÍO AL SERVIDOR
+    // 4. ENVÍO AL SERVIDOR SI TODO ESTÁ PERFECTO
     // ==========================================
-
-    // Bloqueamos el botón para que no le den dos veces sin querer
+    
     const btnRegistro = document.querySelector('.btn-submit') || document.querySelector('button[type="submit"]');
-    if (btnRegistro) {
-        btnRegistro.disabled = true;
-        btnRegistro.innerText = 'Registrando...';
-    }
+    btnRegistro.disabled = true;
+    btnRegistro.innerText = 'Registrando...';
 
     try {
         const res = await fetch('https://proyectopersonal-0xcu.onrender.com/api/signup', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, apellidos, email, contrasena })
+            body: JSON.stringify({ 
+                nombre: nombreInput.value.trim(), 
+                apellidos: apellidosInput.value.trim(), 
+                email: emailInput.value.trim(), 
+                contrasena: contrasena 
+            })
         });
 
         if (res.ok) {
+            // SweetAlert sí lo usamos para el éxito porque queda genial en el centro de la pantalla
             Swal.fire({
                 title: '¡Bienvenido a UEQO!',
                 text: 'Tu cuenta ha sido creada correctamente.',
                 icon: 'success',
                 timer: 2000,
-                showConfirmButton: false
+                showConfirmButton: false,
+                background: '#111827',
+                color: '#fff'
             }).then(() => {
                 window.location.href = 'login.html';
             });
         } else {
             const d = await res.json();
-            Swal.fire({
-                title: 'No se pudo registrar',
-                text: d.error || 'El correo electrónico ya está en uso o los datos no son válidos.',
-                icon: 'error',
-                confirmButtonColor: '#ef4444'
-            });
+            mostrarError(emailInput, d.error || 'Este correo ya está en uso.');
         }
     } catch (err) {
-        Swal.fire({
-            title: 'Error de conexión',
-            text: 'No se ha podido conectar con el servidor. Inténtalo de nuevo más tarde.',
-            icon: 'error',
-            confirmButtonColor: '#ef4444'
-        });
+        Swal.fire('Error', 'No se ha podido conectar con el servidor.', 'error');
     } finally {
-        // Desbloqueamos el botón si algo falla
-        if (btnRegistro) {
-            btnRegistro.disabled = false;
-            btnRegistro.innerText = 'Crear cuenta gratis';
-        }
+        btnRegistro.disabled = false;
+        btnRegistro.innerText = 'Registrarme en UEQO';
     }
 });
