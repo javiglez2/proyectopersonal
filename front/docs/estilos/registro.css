@@ -212,9 +212,10 @@ input[type="password"]:focus + i {
   color: #ef4444; /* Rojo vibrante */
   font-size: 13px;
   font-weight: 600;
-  position: absolute;
-  bottom: -22px; /* Lo coloca justo debajo del input */
-  left: 5px;
+  display: block; /* Hace que ocupe su propio espacio */
+  margin-top: -15px; /* Lo acerca un poco a la caja de arriba */
+  margin-bottom: 15px; /* Empuja la siguiente caja hacia abajo */
+  line-height: 1.4;
 }
 
 /* Clase que el JS añadirá si hay un error */

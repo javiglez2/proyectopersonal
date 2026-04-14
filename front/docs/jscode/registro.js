@@ -17,12 +17,12 @@ document.getElementById('registro-form').addEventListener('submit', async (e) =>
     // --- FUNCIÓN MAGICA PARA PINTAR ERRORES BONITOS ---
     const mostrarError = (input, mensaje) => {
         input.classList.add('input-error'); // Pinta el borde y el fondo de rojo
-        
+
         // Creamos el mensajito de texto y lo ponemos debajo
         const span = document.createElement('span');
         span.className = 'error-texto';
         span.innerText = mensaje;
-        
+
         // Lo metemos dentro del div .input-group para que se posicione bien
         input.parentElement.appendChild(span);
         valido = false;
@@ -64,7 +64,7 @@ document.getElementById('registro-form').addEventListener('submit', async (e) =>
     // ==========================================
     // 4. ENVÍO AL SERVIDOR SI TODO ESTÁ PERFECTO
     // ==========================================
-    
+
     const btnRegistro = document.querySelector('.btn-submit') || document.querySelector('button[type="submit"]');
     btnRegistro.disabled = true;
     btnRegistro.innerText = 'Registrando...';
@@ -73,11 +73,11 @@ document.getElementById('registro-form').addEventListener('submit', async (e) =>
         const res = await fetch('https://proyectopersonal-0xcu.onrender.com/api/signup', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                nombre: nombreInput.value.trim(), 
-                apellidos: apellidosInput.value.trim(), 
-                email: emailInput.value.trim(), 
-                contrasena: contrasena 
+            body: JSON.stringify({
+                nombre: nombreInput.value.trim(),
+                apellidos: apellidosInput.value.trim(),
+                email: emailInput.value.trim(),
+                contrasena: contrasena
             })
         });
 
@@ -99,7 +99,12 @@ document.getElementById('registro-form').addEventListener('submit', async (e) =>
             mostrarError(emailInput, d.error || 'Este correo ya está en uso.');
         }
     } catch (err) {
-        Swal.fire('Error', 'No se ha podido conectar con el servidor.', 'error');
+        Swal.fire({
+            title: 'Error al registrar',
+            text: 'Revisa que todos los campos estén correctos y vuelve a intentarlo.', // Mensaje genérico y amigable
+            icon: 'error',
+            confirmButtonColor: '#4ade80' // Verde UEQO
+        });
     } finally {
         btnRegistro.disabled = false;
         btnRegistro.innerText = 'Registrarme en UEQO';
