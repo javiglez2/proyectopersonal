@@ -212,13 +212,13 @@ input[type="tel"]:focus + i {
 }
 
 .error-texto {
-  color: #ef4444; /* Rojo vibrante */
+  color: #ef4444; 
   font-size: 13px;
   font-weight: 600;
-  display: block; /* Hace que ocupe su propio espacio */
-  margin-top: -15px; /* Lo acerca un poco a la caja de arriba */
-  margin-bottom: 15px; /* Empuja la siguiente caja hacia abajo */
-  line-height: 1.4;
+  display: block; 
+  margin-top: 6px; /* 🔥 EL CAMBIO CLAVE: Positivo para que caiga por debajo de la caja */
+  padding-left: 5px; /* Lo metemos un poquito hacia la derecha para que quede alineado */
+  line-height: 1.2;
 }
 
 /* Clase que el JS añadirá si hay un error */
