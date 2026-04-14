@@ -41,11 +41,15 @@ body, html {
 }
 
 .brand-header {
-  color: #4ade80; 
-  font-size: 42px; /* Un pelín más pequeño que en login para dejar espacio a los campos */
-  font-weight: 800;
-  letter-spacing: -1.5px;
+  font-family: 'Bebas Neue', sans-serif;
+  color: #4ade80;
+  font-size: 65px;
+  font-weight: 400; /* <-- Muy importante que sea 400 */
+  letter-spacing: 4px;
   margin-bottom: 20px;
+  line-height: 1;
+  text-align: center;
+  user-select: none;
 }
 
 h1 {
