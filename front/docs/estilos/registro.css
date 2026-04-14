@@ -130,6 +130,7 @@ input[type="password"]:focus + i,
 input[type="tel"]:focus + i {
   color: #16a34a;
 }
+
 .btn-submit {
   width: 100%;
   padding: 16px 25px; 
@@ -228,4 +229,43 @@ input.input-error {
 
 input.input-error + i {
   color: #ef4444 !important; /* El icono también se pone rojo */
+}
+
+/* ==========================================
+   ESTILOS PARA EL PREFIJO Y TELÉFONO
+   ========================================== */
+.prefijo-input-group {
+  display: flex;
+  gap: 10px;
+}
+
+.select-prefijo {
+  width: 120px;
+  padding: 14px 10px 14px 42px; /* Los 42px dejan sitio al icono del teléfono */
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 14px;
+  color: #111827;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s;
+  appearance: none; /* Quita la flechita fea por defecto del navegador */
+}
+
+.select-prefijo:focus {
+  border-color: #16a34a; 
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.15);
+}
+
+/* Al input del teléfono le quitamos el padding gigante izquierdo porque el icono ahora está en el select */
+.prefijo-input-group input[type="tel"] {
+  padding-left: 20px !important; 
+  flex: 1; /* Ocupa todo el espacio restante a la derecha */
+}
+
+/* Aseguramos que el icono se quede flotando encima del selector */
+.prefijo-input-group i {
+  z-index: 10;
 }

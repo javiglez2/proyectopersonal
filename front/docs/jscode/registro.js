@@ -58,6 +58,27 @@ document.getElementById('registro-form').addEventListener('submit', async (e) =>
         mostrarError(confPassInput, 'Las contraseñas no coinciden.');
     }
 
+    const prefijo = document.getElementById('prefijo').value;
+    const telefono = document.getElementById('telefono').value;
+
+    // Regex: Busca que el texto empiece (^) y termine ($) con números ([0-9]), y que haya exactamente {9}
+    const regexTelefono = /^[0-9]{9}$/;
+
+    if (!regexTelefono.test(telefono)) {
+        // Alerta bonita si falla
+        Swal.fire({
+            title: 'Teléfono incorrecto',
+            text: 'El número de teléfono debe contener exactamente 9 cifras y ningún espacio ni letra.',
+            icon: 'warning',
+            confirmButtonColor: '#16a34a' // Verde UEQO
+        });
+        return; // El return detiene la ejecución, así no se envía nada al backend
+    }
+
+    // Si pasa la validación, unes el prefijo y el número para guardarlo en la Base de Datos
+    const telefonoCompleto = prefijo + " " + telefono; 
+    // Quedará algo como: "+34 600123456"
+
     // Si algún 'mostrarError' se ejecutó, 'valido' será false y cortamos aquí.
     if (!valido) return;
 
