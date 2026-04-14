@@ -3,7 +3,8 @@ const inputTelefono = document.querySelector("#telefono");
 const iti = window.intlTelInput(inputTelefono, {
     initialCountry: "es", // España por defecto
     preferredCountries: ["es", "pt", "fr", "gb"], // Favoritos arriba
-    separateDialCode: true // Código +34 separado
+    separateDialCode: true, // Código +34 separado
+    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/js/utils.js"
 });
 
 // 2. EVENTO AL HACER CLIC EN REGISTRARSE
