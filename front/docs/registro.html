@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap">
 
     <link rel="stylesheet" href="estilos/registro.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/css/intlTelInput.css">
 </head>
 
 <body>
@@ -48,15 +50,8 @@
             </div>
 
             <label for="telefono">Teléfono</label>
-            <div class="input-group prefijo-input-group">
-                <i class="fa-solid fa-phone"></i>
-                <select id="prefijo" name="prefijo" class="select-prefijo">
-                    <option value="+34">🇪🇸 +34</option>
-                    <option value="+351">🇵🇹 +351</option>
-                    <option value="+33">🇫🇷 +33</option>
-                    <option value="+44">🇬🇧 +44</option>
-                </select>
-                <input type="tel" id="telefono" name="telefono" placeholder="Ej: 600123456" required maxlength="9">
+            <div class="input-group">
+                <input type="tel" id="telefono" name="telefono" required>
             </div>
 
             <label for="email">Correo electrónico</label>
@@ -88,6 +83,7 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/js/intlTelInput.min.js"></script>
     <script src="jscode/registro.js"></script>
 </body>
 

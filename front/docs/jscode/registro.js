@@ -1,6 +1,14 @@
 document.getElementById('registro-form').addEventListener('submit', async (e) => {
     e.preventDefault(); // Evitamos que recargue la página
 
+    // Inicializar el input de teléfono con banderas
+    const inputTelefono = document.querySelector("#telefono");
+    const iti = window.intlTelInput(inputTelefono, {
+        initialCountry: "es", // España por defecto
+        preferredCountries: ["es", "pt", "fr", "gb"], // Países favoritos arriba
+        separateDialCode: true // ¡Hace que el +34 se vea bonito junto a la bandera!
+    });
+
     // 1. Recogemos los campos
     const nombreInput = document.getElementById('nombre');
     const apellidosInput = document.getElementById('apellidos');
@@ -64,20 +72,19 @@ document.getElementById('registro-form').addEventListener('submit', async (e) =>
     // Regex: Busca que el texto empiece (^) y termine ($) con números ([0-9]), y que haya exactamente {9}
     const regexTelefono = /^[0-9]{9}$/;
 
-    if (!regexTelefono.test(telefono)) {
-        // Alerta bonita si falla
+    // Comprobamos si el número es válido para el país seleccionado
+    if (!iti.isValidNumber()) {
         Swal.fire({
             title: 'Teléfono incorrecto',
-            text: 'El número de teléfono debe contener exactamente 9 cifras y ningún espacio ni letra.',
+            text: 'Revisa que el número esté bien escrito para el país seleccionado.',
             icon: 'warning',
-            confirmButtonColor: '#16a34a' // Verde UEQO
+            confirmButtonColor: '#16a34a'
         });
-        return; // El return detiene la ejecución, así no se envía nada al backend
+        return;
     }
 
-    // Si pasa la validación, unes el prefijo y el número para guardarlo en la Base de Datos
-    const telefonoCompleto = prefijo + " " + telefono; 
-    // Quedará algo como: "+34 600123456"
+    // Obtenemos el número completo internacional (Ej: +34600123456)
+    const telefonoCompleto = iti.getNumber();
 
     // Si algún 'mostrarError' se ejecutó, 'valido' será false y cortamos aquí.
     if (!valido) return;

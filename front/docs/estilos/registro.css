@@ -234,9 +234,33 @@ input.input-error + i {
 /* ==========================================
    ESTILOS PARA EL PREFIJO Y TELÉFONO
    ========================================== */
-.prefijo-input-group {
-  display: flex;
-  gap: 10px;
+/* ==========================================
+   LIBRERÍA DE BANDERAS (TELÉFONO)
+   ========================================== */
+.iti { 
+  width: 100%; 
+  display: block; 
+}
+
+/* Espacio para que el número no pise la bandera */
+.iti input[type="tel"] {
+  padding-left: 90px !important; 
+}
+
+/* Diseño del recuadro de la bandera */
+.iti__selected-flag {
+  border-radius: 12px 0 0 12px;
+  padding: 0 15px;
+  background-color: #f9fafb;
+}
+
+/* Menú desplegable de países */
+.iti__country-list {
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
 }
 
 .select-prefijo {
