@@ -59,18 +59,22 @@ document.getElementById('registro-form').addEventListener('submit', async (e) =>
         mostrarError(confPassInput, 'Las contraseñas no coinciden.');
     }
 
-    // --- VALIDACIÓN DEL TELÉFONO ---
-    if (!iti.isValidNumber()) {
+    const telefonoEscrito = inputTelefono.value.replace(/\s+/g, '');
+
+    // Comprobamos que haya escrito al menos 9 números
+    if (telefonoEscrito.length < 9) {
         Swal.fire({
-            title: 'Teléfono incorrecto',
-            text: 'Revisa que el número esté bien escrito para el país seleccionado.',
+            title: 'Teléfono demasiado corto',
+            text: 'Por favor, asegúrate de escribir el número completo (mínimo 9 cifras).',
             icon: 'warning',
             confirmButtonColor: '#16a34a'
         });
-        return; // Paramos todo si el teléfono está mal
+        return; // Paramos todo si el teléfono es corto
     }
 
-    const telefonoCompleto = iti.getNumber(); // Coge el formato limpio (Ej: +34600123456)
+    // Cogemos el prefijo de la bandera (+34) y lo unimos al número limpio
+    const prefijoSeleccionado = iti.getSelectedCountryData().dialCode;
+    const telefonoCompleto = "+" + prefijoSeleccionado + telefonoEscrito;
 
     // Si hubo algún error en los campos de arriba, paramos.
     if (!valido) return;
