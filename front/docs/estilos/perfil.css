@@ -1,3 +1,4 @@
+/* --- CONFIGURACIÓN BASE --- */
 * { box-sizing: border-box; }
 
 body {
@@ -20,6 +21,7 @@ body {
     overflow: hidden;
 }
 
+/* --- CABECERA --- */
 .cabecera-perfil {
     background: #1a2e25;
     color: white;
@@ -47,6 +49,7 @@ body {
     color: #4ade80;
 }
 
+/* --- AVATAR --- */
 .avatar-container {
     text-align: center;
     margin-top: -55px;
@@ -68,9 +71,9 @@ body {
 
 #avatar-grande:hover { transform: scale(1.05); }
 
+/* --- CUERPO Y FORMULARIO --- */
 .cuerpo-perfil { padding: 10px 24px 30px 24px; }
 
-/* Fila de dos columnas */
 .fila-dos {
     display: flex;
     gap: 12px;
@@ -91,7 +94,8 @@ label {
     text-align: left;
 }
 
-input {
+/* 🔥 INPUTS DINÁMICOS (SOLO DENTRO DEL PERFIL) 🔥 */
+.contenedor-perfil input {
     width: 100% !important;
     box-sizing: border-box;
     padding: 12px 14px;
@@ -104,70 +108,46 @@ input {
     outline: none;
 }
 
-input:focus {
+.contenedor-perfil input:focus {
     border-color: #16a34a;
     background-color: #ffffff;
     box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
 }
 
-input:disabled, input[readonly] {
+.contenedor-perfil input:disabled, 
+.contenedor-perfil input[readonly] {
     background-color: #f3f4f6;
     color: #6b7280;
     cursor: default;
     border-color: #e5e7eb;
 }
 
-/* Fila prefijo + teléfono */
-.telefono-row {
-    display: flex;
-    gap: 8px;
-}
-
-/* ==========================================
-   LIBRERÍA DE BANDERAS (TELÉFONO)
-   ========================================== */
+/* --- LIBRERÍA DE BANDERAS (iti) --- */
 .iti { 
-  width: 100%; 
-  display: block; 
+    width: 100%; 
+    display: block; 
 }
 
-/* Espacio para que el número no pise la bandera */
 .iti input[type="tel"] {
-  padding-left: 90px !important; 
+    padding-left: 90px !important; 
 }
 
-/* Diseño del recuadro de la bandera */
 .iti__selected-flag {
-  border-radius: 12px 0 0 12px;
-  padding: 0 15px;
-  background-color: #f9fafb;
+    border-radius: 12px 0 0 12px;
+    padding: 0 15px;
+    background-color: #f9fafb;
 }
 
-/* Menú desplegable de países */
 .iti__country-list {
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 14px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    z-index: 100;
 }
 
-.telefono-row select:disabled {
-    background: #f3f4f6;
-    color: #6b7280;
-    cursor: default;
-    border-color: #e5e7eb;
-}
-
-.telefono-row select:not(:disabled):focus {
-    border-color: #16a34a;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
-}
-
-.telefono-row input { flex: 1; }
-
-/* Botones */
+/* --- BOTONES (SOLO DENTRO DEL PERFIL) --- */
 .acciones-perfil {
     display: flex;
     flex-direction: column;
@@ -175,7 +155,7 @@ input:disabled, input[readonly] {
     margin-top: 24px;
 }
 
-button {
+.contenedor-perfil button {
     width: 100%;
     padding: 14px;
     border-radius: 12px;
@@ -186,7 +166,7 @@ button {
     transition: all 0.2s ease;
 }
 
-button:active { transform: scale(0.98); }
+.contenedor-perfil button:active { transform: scale(0.98); }
 
 #btn-accion-perfil {
     background-color: #2563eb;
@@ -197,13 +177,14 @@ button:active { transform: scale(0.98); }
 #btn-accion-perfil:hover { background-color: #1d4ed8; }
 
 .btn-peligro {
-    background-color: #fff1f2;
-    color: #e11d48;
-    border: 1px solid #fecdd3;
+    background-color: #fff1f2 !important;
+    color: #e11d48 !important;
+    border: 1px solid #fecdd3 !important;
 }
 
-.btn-peligro:hover { background-color: #ffe4e6; }
+.btn-peligro:hover { background-color: #ffe4e6 !important; }
 
+/* --- RESPONSIVE --- */
 @media (max-width: 480px) {
     body { align-items: flex-start; }
     .contenedor-perfil { margin: 0; border-radius: 0 0 24px 24px; min-height: 100vh; }
