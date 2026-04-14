@@ -5,29 +5,35 @@ let modoEdicion = false;
 
 if (!usuarioID) window.location.href = 'login.html';
 
+// 1. INICIALIZAMOS LA BANDERA (Se inicializa bloqueada por el HTML)
+const inputTelefono = document.querySelector("#perfil-telefono");
+const iti = window.intlTelInput(inputTelefono, {
+    initialCountry: "es", 
+    preferredCountries: ["es", "pt", "fr", "gb"], 
+    separateDialCode: true,
+    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/js/utils.js"
+});
+
 async function cargarDatosPerfil() {
     try {
         const res = await fetch(`https://proyectopersonal-0xcu.onrender.com/api/usuarios/${usuarioID}`);
         const usuario = await res.json();
 
         if (res.ok) {
-            // 1. INYECTAR LOS DATOS (Esto es lo que se había borrado sin querer)
             document.getElementById('perfil-nombre').value = usuario.nombre || '';
             document.getElementById('perfil-apellidos').value = usuario.apellidos || '';
-            document.getElementById('perfil-telefono').value = usuario.telefono || '';
             document.getElementById('perfil-email').value = usuario.email || '';
 
-            // 2. TEXTOS DE FONDO (Para cuando esté realmente vacío)
             document.getElementById('perfil-nombre').placeholder = 'Sin nombre';
             document.getElementById('perfil-apellidos').placeholder = 'Sin apellidos';
 
-            // 3. PREFIJO
-            const selectPrefijo = document.getElementById('perfil-prefijo');
-            if (usuario.prefijo_telefono) {
-                selectPrefijo.value = usuario.prefijo_telefono;
+            // Unimos el prefijo y el teléfono que vienen del backend para que la librería los entienda
+            if (usuario.prefijo_telefono && usuario.telefono) {
+                iti.setNumber(usuario.prefijo_telefono + usuario.telefono);
+            } else if (usuario.telefono) {
+                iti.setNumber(usuario.telefono); // Por si solo hubiera número
             }
 
-            // 4. AVATAR
             urlFotoReal = usuario.avatar_url;
             actualizarAvatar(usuario.nombre, usuario.apellidos);
         } else {
@@ -51,15 +57,16 @@ function actualizarAvatar(nombre, apellidos) {
 
 function alternarEdicion() {
     const btn = document.getElementById('btn-accion-perfil');
-    const inputs = ['perfil-nombre', 'perfil-apellidos', 'perfil-telefono'];
-    const selectPrefijo = document.getElementById('perfil-prefijo');
+    const inputs = ['perfil-nombre', 'perfil-apellidos']; // Quitamos el teléfono de aquí
+    const inputTel = document.getElementById('perfil-telefono');
 
     if (!modoEdicion) {
         modoEdicion = true;
         inputs.forEach(id => document.getElementById(id).readOnly = false);
-        selectPrefijo.disabled = false;
+        
+        // Desbloqueamos el teléfono (esto también desbloquea la bandera automáticamente)
+        inputTel.disabled = false;
 
-        // Mostrar campos de contraseña
         document.getElementById('grupo-nueva-contrasena').style.display = 'block';
         document.getElementById('grupo-confirmar-contrasena').style.display = 'block';
 
@@ -74,15 +81,19 @@ function alternarEdicion() {
 async function guardarPerfil() {
     const nombre = document.getElementById('perfil-nombre').value.trim();
     const apellidos = document.getElementById('perfil-apellidos').value.trim();
-    const telefono = document.getElementById('perfil-telefono').value.trim();
-    const prefijo = document.getElementById('perfil-prefijo').value;
+    
+    // Extracción limpia a prueba de balas (como hicimos en registro)
+    const telefonoEscrito = inputTelefono.value.replace(/\s+/g, '');
+    const prefijo = "+" + iti.getSelectedCountryData().dialCode;
+
     const nuevaContrasena = document.getElementById('perfil-nueva-contrasena').value;
     const confirmarContrasena = document.getElementById('perfil-confirmar-contrasena').value;
     const btn = document.getElementById('btn-accion-perfil');
 
-    if (!nombre || !apellidos || !telefono) return alert("Los campos no pueden estar vacíos.");
+    if (!nombre || !apellidos || !telefonoEscrito) return alert("Los campos no pueden estar vacíos.");
+    
+    if (telefonoEscrito.length < 9) return alert("El teléfono es demasiado corto.");
 
-    // Validar contraseña si se quiere cambiar
     if (nuevaContrasena) {
         if (!/^(?=.*[A-Z])(?=.*\d).{8,12}$/.test(nuevaContrasena)) {
             return alert("La contraseña debe tener 8-12 caracteres, 1 mayúscula y 1 número.");
@@ -96,7 +107,8 @@ async function guardarPerfil() {
     btn.disabled = true;
 
     try {
-        const body = { nombre, apellidos, telefono, prefijo_telefono: prefijo };
+        // Volvemos a separar el prefijo y el teléfono para enviárselo a tu Base de Datos
+        const body = { nombre, apellidos, telefono: telefonoEscrito, prefijo_telefono: prefijo };
         if (nuevaContrasena) body.nueva_contrasena = nuevaContrasena;
 
         const res = await fetch(`https://proyectopersonal-0xcu.onrender.com/api/usuarios/${usuarioID}`, {
@@ -110,10 +122,13 @@ async function guardarPerfil() {
             nombreUsuario = nombre;
 
             modoEdicion = false;
-            ['perfil-nombre', 'perfil-apellidos', 'perfil-telefono'].forEach(id => {
+            ['perfil-nombre', 'perfil-apellidos'].forEach(id => {
                 document.getElementById(id).readOnly = true;
             });
-            document.getElementById('perfil-prefijo').disabled = true;
+            
+            // Volvemos a bloquear el teléfono (y la bandera)
+            inputTelefono.disabled = true;
+            
             document.getElementById('grupo-nueva-contrasena').style.display = 'none';
             document.getElementById('grupo-confirmar-contrasena').style.display = 'none';
             document.getElementById('perfil-nueva-contrasena').value = '';

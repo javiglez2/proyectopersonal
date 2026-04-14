@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UEQO - Mi Perfil</title>
     <link rel="stylesheet" href="estilos/perfil.css?v=2.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/css/intlTelInput.css">
 </head>
+
 <body>
     <div class="contenedor-perfil">
         <div class="cabecera-perfil">
@@ -16,7 +19,8 @@
         <div class="cuerpo-perfil">
             <div class="avatar-container" onclick="elegirFoto()" title="Haz clic para cambiar tu foto">
                 <img id="avatar-grande" src="" alt="Cargando avatar...">
-                <input type="file" id="input-archivo-foto" style="display: none;" accept="image/*" onchange="subirFoto(this)">
+                <input type="file" id="input-archivo-foto" style="display: none;" accept="image/*"
+                    onchange="subirFoto(this)">
             </div>
 
             <div class="fila-dos">
@@ -33,29 +37,7 @@
             <div class="form-group">
                 <label>Teléfono</label>
                 <div class="telefono-row">
-                    <select id="perfil-prefijo" disabled>
-                        <option value="+34">🇪🇸 +34</option>
-                        <option value="+1">🇺🇸 +1</option>
-                        <option value="+44">🇬🇧 +44</option>
-                        <option value="+33">🇫🇷 +33</option>
-                        <option value="+49">🇩🇪 +49</option>
-                        <option value="+39">🇮🇹 +39</option>
-                        <option value="+351">🇵🇹 +351</option>
-                        <option value="+52">🇲🇽 +52</option>
-                        <option value="+54">🇦🇷 +54</option>
-                        <option value="+57">🇨🇴 +57</option>
-                        <option value="+212">🇲🇦 +212</option>
-                        <option value="+32">🇧🇪 +32</option>
-                        <option value="+31">🇳🇱 +31</option>
-                        <option value="+41">🇨🇭 +41</option>
-                        <option value="+48">🇵🇱 +48</option>
-                        <option value="+86">🇨🇳 +86</option>
-                        <option value="+91">🇮🇳 +91</option>
-                        <option value="+55">🇧🇷 +55</option>
-                        <option value="+56">🇨🇱 +56</option>
-                        <option value="+58">🇻🇪 +58</option>
-                    </select>
-                    <input type="tel" id="perfil-telefono" readonly placeholder="Cargando...">
+                    <input type="tel" id="perfil-telefono" disabled placeholder="Cargando...">
                 </div>
             </div>
 
@@ -84,6 +66,9 @@
             </div>
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/js/intlTelInput.min.js"></script>
+    <script src="jscode/perfil.js"></script>
     <script src="jscode/perfil.js"></script>
 </body>
+
 </html>

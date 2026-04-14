@@ -123,18 +123,33 @@ input:disabled, input[readonly] {
     gap: 8px;
 }
 
-.telefono-row select {
-    width: 110px;
-    flex-shrink: 0;
-    padding: 12px 8px;
-    border: 1px solid #d1d5db;
-    border-radius: 12px;
-    font-size: 13px;
-    background: #f9fafb;
-    color: #111827;
-    cursor: pointer;
-    transition: all 0.2s;
-    outline: none;
+/* ==========================================
+   LIBRERÍA DE BANDERAS (TELÉFONO)
+   ========================================== */
+.iti { 
+  width: 100%; 
+  display: block; 
+}
+
+/* Espacio para que el número no pise la bandera */
+.iti input[type="tel"] {
+  padding-left: 90px !important; 
+}
+
+/* Diseño del recuadro de la bandera */
+.iti__selected-flag {
+  border-radius: 12px 0 0 12px;
+  padding: 0 15px;
+  background-color: #f9fafb;
+}
+
+/* Menú desplegable de países */
+.iti__country-list {
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
 }
 
 .telefono-row select:disabled {
