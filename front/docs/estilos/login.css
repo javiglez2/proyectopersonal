@@ -1,11 +1,3 @@
-/*
-  ========================================
-  IRIGO - Pantalla de Login (docs/estilos/login.css)
-  Estilo moderno y premium, con tarjeta grande y fondo unificado.
-  ========================================
-*/
-
-/* Reset básico y centrado principal */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -18,24 +10,20 @@ body, html {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  /* 🌟 SOLUCIÓN: Fondo OSCURO UNIFICADO de la marca, sin franjas */
   background-color: #0d1712;
   color: #111827;
   overflow-x: hidden;
-  padding: 20px; /* Margen para pantallas pequeñas */
+  padding: 20px;
 }
 
-/* Contenedor principal de la tarjeta de login - 🌟 ¡MÁS GRANDE! */
 .login-container {
   background: #ffffff;
-  padding: 100px 100px; /* Aumentamos el relleno para que respire más */
+  padding: 100px 100px;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   text-align: center;
-  max-width: 900px; /* ¡AQUÍ ESTÁ LA MAGIA! Pasamos de 500px a 600px */
+  max-width: 900px;
   width: 100%;
-  
-  /* Micro-interacción: Animación suave de entrada */
   transform: scale(0.95);
   opacity: 0;
   animation: fadeIn 0.4s ease-out forwards;
@@ -48,136 +36,173 @@ body, html {
   }
 }
 
-/* Encabezado de la marca "IRIGO" - Ligeramente más grande */
 .brand-header {
-  color: #4ade80; /* Verde menta brillante */
-  font-size: 48px; /* Incremetado */
-  font-weight: 800;
-  letter-spacing: -1.5px;
-  margin-bottom: 30px;
+  font-family: 'Bebas Neue', sans-serif; /* La fuente exacta del logo */
+  color: #4ade80; /* El verde característico de tu imagen */
+  font-size: 65px; /* Tamaño grande para que destaque */
+  font-weight: 400; 
+  letter-spacing: 4px; /* Separación entre letras calcada a la imagen */
+  margin-bottom: 20px;
+  line-height: 1;
+  text-align: center;
+  user-select: none; /* Truco: Evita que el usuario seleccione el texto, así parece una imagen real */
 }
 
-/* Títulos del formulario - Ligeramente más grandes */
 h1 {
-  color: #1a2e25; /* Verde oscuro */
-  font-size: 26px; /* Incremetado */
+  color: #1a2e25;
+  font-size: 26px;
   font-weight: 700;
   margin-bottom: 12px;
 }
 
 .form-subtitle {
   color: #6b7280;
-  font-size: 15px; /* Incremetado */
-  margin-bottom: 50px; /* Más espacio */
+  font-size: 15px;
+  margin-bottom: 50px;
 }
 
-/* Estilos del formulario */
 form {
   text-align: left;
 }
 
-/* Etiquetas de campo - Ligeramente más grandes */
 label {
   display: block;
   margin-bottom: 12px;
-  font-size: 15px; /* Incremetado */
+  font-size: 15px;
   font-weight: 600;
   color: #1a2e25;
 }
 
-/* Campos de entrada con icono */
 .input-group {
   position: relative;
-  margin-bottom: 25px;
+  margin-bottom: 6px; /* Reducido para dejar espacio al mensaje de error */
 }
 
-/* Iconos de FontAwesome */
 .input-group i {
   position: absolute;
-  left: 18px; /* Ajustado */
+  left: 18px;
   top: 50%;
   transform: translateY(-50%);
   color: #6b7280;
-  font-size: 18px; /* Incremetado */
+  font-size: 18px;
   transition: color 0.2s;
 }
 
-/* Campos de entrada reales - Ligeramente más acolchados */
 input[type="email"],
 input[type="password"] {
   width: 100%;
-  padding: 16px 20px; /* Padding incrementado */
-  padding-left: 50px; /* Más espacio para el icono */
+  padding: 16px 20px;
+  padding-left: 50px;
   border-radius: 12px;
   border: 2px solid #e5e7eb;
   background: #f9fafb;
   transition: all 0.2s;
-  font-size: 15px; /* Incremetado */
+  font-size: 15px;
   color: #111827;
 }
 
-/* Efectos de enfoque en los campos */
 input[type="email"]:focus,
 input[type="password"]:focus {
-  border-color: #16a34a; /* Verde vibrante */
+  border-color: #16a34a;
   background: #ffffff;
-  /* Anillo de enfoque sutil */
   box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.15);
   outline: none;
 }
 
-/* Cambia el color del icono al enfocar el campo */
 input[type="email"]:focus + i,
 input[type="password"]:focus + i {
   color: #16a34a;
 }
 
-/* Botón de envío - ¡MÁS GRANDE! */
+/* Estado de error en el campo */
+input.input-error {
+  border-color: #dc2626 !important;
+  background: #fff5f5 !important;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12) !important;
+}
+
+input.input-error + i {
+  color: #dc2626 !important;
+}
+
+/* Mensaje de error debajo del campo */
+.error-msg {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 6px;
+  margin-bottom: 18px;
+  padding-left: 4px;
+}
+
+.error-msg.visible {
+  display: flex;
+}
+
+.error-msg::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23dc2626'%3E%3Cpath fill-rule='evenodd' d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* Espacio entre campo y su error cuando no hay mensaje */
+.field-wrapper {
+  margin-bottom: 20px;
+}
+
+.field-wrapper:has(.error-msg.visible) {
+  margin-bottom: 4px;
+}
+
 .btn-submit {
   width: 100%;
-  padding: 18px 25px; /* Padding incrementado */
+  padding: 18px 25px;
   border-radius: 12px;
   border: none;
-  background: #16a34a; /* Verde vibrante */
+  background: #16a34a;
   color: #ffffff;
-  font-size: 17px; /* Ligeramente más grande */
+  font-size: 17px;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
-  margin-top: 15px; /* Más espacio */
+  margin-top: 15px;
 }
 
-/* Efectos del botón */
 .btn-submit:hover {
-  background: #15803d; /* Verde oscuro al pasar */
+  background: #15803d;
 }
 
 .btn-submit:active {
-  transform: scale(0.98); /* Pequeño "clic" visual */
+  transform: scale(0.98);
 }
 
-/* Enlaces debajo del botón */
 .footer-links {
-  margin-top: 45px; /* Más espacio */
-  font-size: 15px; /* Incremetado */
+  margin-top: 45px;
+  font-size: 15px;
   color: #1a2e25;
   text-align: center;
 }
 
-/* Enlace de registro */
 .footer-links a {
-  color: #16a34a; /* Verde vibrante */
+  color: #16a34a;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s;
 }
 
 .footer-links a:hover {
-  color: #4ade80; /* Verde menta al pasar */
+  color: #4ade80;
   text-decoration: underline;
 }
 
-/* Ajustes para móviles - Asegurar que la tarjeta no se vea *demasiado* grande */
 @media (max-width: 480px) {
   .login-container {
     padding: 35px 25px;
@@ -208,12 +233,11 @@ input[type="password"]:focus + i {
   }
 }
 
-/* Botón flotante para volver al inicio */
 .btn-volver-inicio {
   position: absolute;
   top: 30px;
   left: 30px;
-  color: #9ca3af; /* Gris claro para que no distraiga */
+  color: #9ca3af;
   text-decoration: none;
   font-size: 15px;
   font-weight: 600;
@@ -225,11 +249,10 @@ input[type="password"]:focus + i {
 }
 
 .btn-volver-inicio:hover {
-  color: #4ade80; /* Se ilumina en el verde de IRIGO */
-  transform: translateX(-4px); /* Se mueve un pelín a la izquierda */
+  color: #4ade80;
+  transform: translateX(-4px);
 }
 
-/* Ajuste para pantallas de móvil */
 @media (max-width: 480px) {
   .btn-volver-inicio {
     top: 15px;

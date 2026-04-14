@@ -81,7 +81,7 @@ app.get('/api/viajes', async (req, res) => {
         .from('viajes')
         .select(`*, usuarios!id_conductor ( nombre, apellidos, avatar_url ), reservas ( id_pasajero )`)
         .eq('estado', 'Activo')
-        
+
         .order('fecha_hora_salida', { ascending: true });
     if (error) return res.status(400).json({ error: error.message });
     res.json(data);
@@ -286,7 +286,7 @@ app.get('/api/mensajes-privados/no-leidos/:id_usuario', async (req, res) => {
 // --- OBTENER LA BANDEJA DE ENTRADA (INBOX) ---
 app.get('/api/inbox/:id_usuario', async (req, res) => {
     const { id_usuario } = req.params;
-    
+
     // 1. Buscamos todos los mensajes privados donde este usuario sea emisor o receptor
     const { data, error } = await supabase
         .from('mensajes_privados')
@@ -297,17 +297,17 @@ app.get('/api/inbox/:id_usuario', async (req, res) => {
         `)
         .or(`id_emisor.eq.${id_usuario},id_receptor.eq.${id_usuario}`)
         .order('creado_en', { ascending: false }); // Los más recientes primero
-        
+
     if (error) return res.status(400).json({ error: error.message });
 
     // 2. Agrupamos para mostrar solo 1 tarjeta por cada persona (con el último mensaje)
     const conversaciones = {};
-    
+
     (data || []).forEach(m => {
         // Averiguamos quién es el "otro" en esta conversación
         const otroUsuario = m.id_emisor === id_usuario ? m.receptor : m.emisor;
         if (!otroUsuario) return;
-        
+
         // Como están ordenados del más nuevo al más viejo, el primero que encontramos es el último mensaje enviado
         if (!conversaciones[otroUsuario.id]) {
             conversaciones[otroUsuario.id] = {
@@ -321,6 +321,50 @@ app.get('/api/inbox/:id_usuario', async (req, res) => {
     // Devolvemos la lista limpia a la web
     res.json(Object.values(conversaciones));
 });
+
+// ==========================================
+// 🧹 LIMPIEZA AUTOMÁTICA DE VIAJES
+// ==========================================
+async function borrarViajesCaducados() {
+    try {
+        // Calculamos la fecha y hora de hace 24 horas exactas
+        const hace24Horas = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+        // Buscamos los viajes cuya FECHA DE SALIDA fue hace más de 24 horas
+        // (Si realmente quieres que sea por fecha de creación, cambia 'fecha_hora_salida' por 'created_at')
+        const { data: viajes, error: errorBusqueda } = await supabase
+            .from('viajes')
+            .select('id')
+            .lt('fecha_hora_salida', hace24Horas);
+
+        if (errorBusqueda) throw errorBusqueda;
+
+        // Si encontramos viajes antiguos, procedemos a borrarlos
+        if (viajes && viajes.length > 0) {
+            const idsViajes = viajes.map(v => v.id);
+            console.log(`Borrando ${idsViajes.length} viaje(s) caducado(s)...`);
+
+            // 1. Borramos los mensajes del chat grupal de esos viajes
+            await supabase.from('mensajes_viajes').delete().in('id_viaje', idsViajes);
+
+            // 2. Borramos las reservas asociadas a esos viajes
+            await supabase.from('reservas').delete().in('id_viaje', idsViajes);
+
+            // 3. Borramos los viajes en sí
+            await supabase.from('viajes').delete().in('id', idsViajes);
+
+            console.log('Limpieza automática completada con éxito.');
+        }
+    } catch (error) {
+        console.error('Error en la limpieza automática:', error.message);
+    }
+}
+
+// Ejecutar la limpieza cada 1 hora (3600000 milisegundos)
+setInterval(borrarViajesCaducados, 3600000);
+
+// Ejecutar la función una vez justo cuando se reinicie/arranque el servidor
+borrarViajesCaducados();
 
 const puerto = process.env.PORT || 3000;
 app.listen(puerto, () => {

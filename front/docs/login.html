@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <link rel="stylesheet" href="estilos/login.css">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap">
 </head>
 
 <body>
@@ -23,17 +25,23 @@
         <h1>¡Bienvenido de nuevo!</h1>
         <p class="form-subtitle">Inicia sesión para buscar o publicar viajes</p>
 
-        <form id="loginForm">
+        <form id="loginForm" novalidate>
             <label for="emailLogin">Tu correo electrónico</label>
-            <div class="input-group">
-                <input type="email" id="emailLogin" placeholder="Tu correo electrónico" required>
-                <i class="fa-solid fa-envelope"></i>
+            <div class="field-wrapper">
+                <div class="input-group">
+                    <input type="email" id="emailLogin" placeholder="Tu correo electrónico">
+                    <i class="fa-solid fa-envelope"></i>
+                </div>
+                <span class="error-msg" id="emailError"></span>
             </div>
 
             <label for="contrasenaLogin">Contraseña</label>
-            <div class="input-group">
-                <input type="password" id="contrasenaLogin" placeholder="Tu contraseña" required>
-                <i class="fa-solid fa-lock"></i>
+            <div class="field-wrapper">
+                <div class="input-group">
+                    <input type="password" id="contrasenaLogin" placeholder="Tu contraseña">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <span class="error-msg" id="contrasenaError"></span>
             </div>
 
             <button type="submit" class="btn-submit">Entrar a UEQO</button>
