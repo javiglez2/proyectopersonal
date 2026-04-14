@@ -80,7 +80,14 @@ label {
   margin-bottom: 20px;
 }
 
-.input-group i {
+/* Nuevo contenedor para aislar el input del mensaje de error */
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Ahora el icono se centra con respecto al input-wrapper */
+.input-wrapper i {
   position: absolute;
   left: 18px; 
   top: 50%;
@@ -88,6 +95,12 @@ label {
   color: #6b7280;
   font-size: 16px; 
   transition: color 0.2s;
+  pointer-events: none; /* Evita que el usuario haga clic en el icono por error */
+}
+
+/* El input-group ya no necesita ser relative porque lo es el wrapper */
+.input-group {
+  margin-bottom: 28px; 
 }
 
 /* Campos extraños en el registro (para que entren dos en una línea si quieres) */

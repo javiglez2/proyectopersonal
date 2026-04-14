@@ -25,12 +25,16 @@ document.getElementById('registro-form').addEventListener('submit', async (e) =>
     let valido = true;
 
     // Función para pintar errores bonitos
+    // Función para pintar errores bonitos
     const mostrarError = (input, mensaje) => {
         input.classList.add('input-error');
         const span = document.createElement('span');
         span.className = 'error-texto';
         span.innerText = mensaje;
-        input.parentElement.appendChild(span);
+
+        // 🔥 EL CAMBIO: Le decimos que busque el ".input-group" (el abuelo) y lo meta ahí
+        input.closest('.input-group').appendChild(span);
+
         valido = false;
     };
 
