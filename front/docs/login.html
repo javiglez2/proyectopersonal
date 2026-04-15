@@ -1,34 +1,32 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión - UEQO</title>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="estilos/login.css">
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-
 <body>
+
+    <div class="orb orb-left"></div>
+    <div class="orb orb-right"></div>
 
     <a href="index.html" class="btn-volver-inicio">
         <i class="fa-solid fa-arrow-left"></i> Volver al inicio
     </a>
 
     <div class="login-container">
-        <div class="brand-header">UEQO</div>
 
+        <div class="brand-header">UEQO</div>
         <h1>¡Bienvenido de nuevo!</h1>
         <p class="form-subtitle">Inicia sesión para buscar o publicar viajes</p>
 
         <form id="loginForm" novalidate>
-            <label for="emailLogin">Tu correo electrónico</label>
+
             <div class="field-wrapper">
+                <label for="emailLogin">Correo electrónico</label>
                 <div class="input-group">
                     <input type="email" id="emailLogin" placeholder="Tu correo electrónico">
                     <i class="fa-solid fa-envelope"></i>
@@ -36,8 +34,8 @@
                 <span class="error-msg" id="emailError"></span>
             </div>
 
-            <label for="contrasenaLogin">Contraseña</label>
             <div class="field-wrapper">
+                <label for="contrasenaLogin">Contraseña</label>
                 <div class="input-group">
                     <input type="password" id="contrasenaLogin" placeholder="Tu contraseña">
                     <i class="fa-solid fa-lock"></i>
@@ -51,11 +49,10 @@
         <div class="footer-links">
             <p>¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
         </div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script src="jscode/login.js"></script>
 </body>
-
 </html>

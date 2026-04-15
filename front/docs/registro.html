@@ -11,7 +11,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Anton&display=swap">
 
     <link rel="stylesheet" href="estilos/registro.css">
 
@@ -36,15 +36,19 @@
                 <div class="col">
                     <label for="nombre">Nombre</label>
                     <div class="input-group">
-                        <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
-                        <i class="fa-solid fa-user"></i>
+                        <div class="input-wrapper">
+                            <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+                            <i class="fa-solid fa-user"></i>
+                        </div>
                     </div>
                 </div>
                 <div class="col">
                     <label for="apellidos">Apellidos</label>
                     <div class="input-group">
-                        <input type="text" id="apellidos" name="apellidos" placeholder="Tus apellidos" required>
-                        <i class="fa-solid fa-users"></i>
+                        <div class="input-wrapper">
+                            <input type="text" id="apellidos" name="apellidos" placeholder="Tus apellidos" required>
+                            <i class="fa-solid fa-users"></i>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -72,9 +76,11 @@
 
             <label for="confirmar-contrasena">Confirmar Contraseña</label>
             <div class="input-group">
-                <input type="password" id="confirmar-contrasena" name="confirmar-contrasena"
-                    placeholder="Confirma tu contraseña" required>
-                <i class="fa-solid fa-lock"></i>
+                <div class="input-wrapper">
+                    <input type="password" id="confirmar-contrasena" name="confirmar-contrasena"
+                        placeholder="Confirma tu contraseña" required>
+                    <i class="fa-solid fa-lock"></i>
+                </div>
                 <span id="error-confirmar" class="error-texto"></span>
             </div>
 

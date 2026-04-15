@@ -41,15 +41,19 @@ body, html {
 }
 
 .brand-header {
-  font-family: 'Bebas Neue', sans-serif;
-  color: #4ade80;
+  font-family: 'Anton', sans-serif;
+  color: #a7f3c4;
   font-size: 65px;
-  font-weight: 400; /* <-- Muy importante que sea 400 */
+  font-weight: 400;
   letter-spacing: 4px;
   margin-bottom: 20px;
   line-height: 1;
   text-align: center;
   user-select: none;
+  text-shadow:
+    0 0 6px rgba(74, 222, 128, 0.5),
+    0 0 18px rgba(74, 222, 128, 0.25),
+    0 0 40px rgba(74, 222, 128, 0.1);
 }
 
 h1 {
@@ -87,7 +91,8 @@ label {
 }
 
 /* Ahora el icono se centra con respecto al input-wrapper */
-.input-wrapper i {
+.input-wrapper i,
+.input-group > i {
   position: absolute;
   left: 18px; 
   top: 50%;
@@ -95,12 +100,11 @@ label {
   color: #6b7280;
   font-size: 16px; 
   transition: color 0.2s;
-  pointer-events: none; /* Evita que el usuario haga clic en el icono por error */
+  pointer-events: none;
 }
 
-/* El input-group ya no necesita ser relative porque lo es el wrapper */
 .input-group {
-  margin-bottom: 28px; 
+  position: relative;
 }
 
 /* Campos extraños en el registro (para que entren dos en una línea si quieres) */
