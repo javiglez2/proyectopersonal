@@ -183,13 +183,13 @@ body {
     align-items: center; padding: 0 30px; z-index: 1000; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 .nav-logo { 
-    font-family: 'Bebas Neue', sans-serif; 
-    font-size: 34px; 
-    color: var(--primary); /* Usa tu variable verde */
-    letter-spacing: 3px; 
-    line-height: 1;
+    height: 52px;
+    width: auto;
+    display: block;
     user-select: none;
     cursor: pointer;
+    object-fit: contain;
+    mix-blend-mode: screen;
 }
 .btn-nav-login {
     color: #070d0a;
