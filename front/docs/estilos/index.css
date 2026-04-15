@@ -46,9 +46,9 @@ body {
 #ueqo-bg-giant {
     position: fixed;
     top: 50%;
-    left: 50%;
+    left: 52.5%;
     transform: translate(-50%, -50%);
-    font-family: 'Bebas Neue', sans-serif;
+    font-family: 'Anton', sans-serif;
     font-size: 35vw; 
     color: rgba(74, 222, 128, 0.04); 
     z-index: -2;
