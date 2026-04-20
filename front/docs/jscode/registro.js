@@ -279,7 +279,7 @@
         btn.disabled = false;
         btn.textContent = originalText;
       }
-
+      /*
       if (typeof Swal !== "undefined") {
         Swal.fire({
           icon: "info",
@@ -288,6 +288,7 @@
           confirmButtonColor: "#16a34a",
         });
       }
+        */
     });
   });
 })();
