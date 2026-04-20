@@ -47,20 +47,21 @@ html {
   }
 }
 
+/* Reemplaza esta clase en registro.css */
 .brand-header {
   font-family: 'Anton', sans-serif;
-  color: #a7f3c4;
-  font-size: 65px;
+  color: #16a34a; /* Mismo color que en el login */
+  font-size: 85px; /* Lo subimos a 85px para que tenga el mismo tamaño exacto */
   font-weight: 400;
-  letter-spacing: 4px;
+  letter-spacing: 3px;
   margin-bottom: 20px;
   line-height: 1;
   text-align: center;
   user-select: none;
+  /* Misma sombra que en el login */
   text-shadow:
-    0 0 6px rgba(74, 222, 128, 0.5),
-    0 0 18px rgba(74, 222, 128, 0.25),
-    0 0 40px rgba(74, 222, 128, 0.1);
+    0 0 12px rgba(22, 163, 74, 0.35),
+    0 0 30px rgba(22, 163, 74, 0.15);
 }
 
 h1 {
