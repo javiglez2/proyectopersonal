@@ -95,10 +95,11 @@ label {
 }
 
 input[type="email"],
-input[type="password"] {
+input[type="password"],
+input[type="text"] { /* <-- Añadido */
   width: 100%;
-  padding: 18px 24px;
-  padding-left: 60px;
+  /* Padding: arriba(18px) derecha(55px) abajo(18px) izquierda(60px) */
+  padding: 18px 55px 18px 60px; 
   border-radius: 14px;
   border: 2px solid #e5e7eb;
   background: #f9fafb;
@@ -107,8 +108,10 @@ input[type="password"] {
   color: #111827;
 }
 
+/* Modifica también la regla de :focus */
 input[type="email"]:focus,
-input[type="password"]:focus {
+input[type="password"]:focus,
+input[type="text"]:focus { /* <-- Añadido */
   border-color: #16a34a;
   background: #ffffff;
   box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.15);
@@ -116,7 +119,8 @@ input[type="password"]:focus {
 }
 
 input[type="email"]:focus + i,
-input[type="password"]:focus + i {
+input[type="password"]:focus + i,
+input[type="text"]:focus + i { /* <-- Añadido */
   color: #16a34a;
 }
 
@@ -223,10 +227,10 @@ input.input-error + i {
     font-size: 14px;
     margin-bottom: 35px;
   }
-  input[type="email"],
-  input[type="password"] {
-    padding: 14px 18px;
-    padding-left: 45px;
+ input[type="email"],
+  input[type="password"],
+  input[type="text"] {
+    padding: 14px 45px 14px 45px;
     font-size: 14px;
   }
   .input-group i {

@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Regístrate en UEQO y empieza a compartir viajes en Málaga.">
     <meta name="robots" content="noindex, follow">
     <title>Regístrate - UEQO</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%234ade80'/%3E%3Ctext x='50' y='68' font-family='Arial' font-size='60' font-weight='900' text-anchor='middle' fill='%23070d0a'%3EU%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%234ade80'/%3E%3Ctext x='50' y='68' font-family='Arial' font-size='60' font-weight='900' text-anchor='middle' fill='%23070d0a'%3EU%3C/text%3E%3C/svg%3E">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="estilos/registro.css">
 </head>
+
 <body>
 
     <a href="index.html" class="btn-volver-inicio">
@@ -31,16 +35,8 @@
                     <div class="input-group">
                         <label for="nombre">Nombre <span style="color:#ef4444">*</span></label>
                         <div class="input-wrapper">
-                            <input
-                                type="text"
-                                id="nombre"
-                                placeholder="Tu nombre"
-                                autocomplete="given-name"
-                                required
-                                aria-required="true"
-                                aria-describedby="nombreError"
-                                minlength="2"
-                            >
+                            <input type="text" id="nombre" placeholder="Tu nombre" autocomplete="given-name" required
+                                aria-required="true" aria-describedby="nombreError" minlength="2">
                             <i class="fa-solid fa-user"></i>
                         </div>
                         <span class="error-texto" id="nombreError" role="alert" aria-live="polite"></span>
@@ -50,16 +46,8 @@
                     <div class="input-group">
                         <label for="apellidos">Apellidos <span style="color:#ef4444">*</span></label>
                         <div class="input-wrapper">
-                            <input
-                                type="text"
-                                id="apellidos"
-                                placeholder="Tus apellidos"
-                                autocomplete="family-name"
-                                required
-                                aria-required="true"
-                                aria-describedby="apellidosError"
-                                minlength="2"
-                            >
+                            <input type="text" id="apellidos" placeholder="Tus apellidos" autocomplete="family-name"
+                                required aria-required="true" aria-describedby="apellidosError" minlength="2">
                             <i class="fa-solid fa-user"></i>
                         </div>
                         <span class="error-texto" id="apellidosError" role="alert" aria-live="polite"></span>
@@ -71,18 +59,13 @@
             <div class="input-group">
                 <label for="telefono">Teléfono <span style="color:#ef4444">*</span></label>
                 <div class="input-wrapper">
-                    <input
-                        type="tel"
-                        id="telefono"
-                        placeholder="612 345 678"
-                        autocomplete="tel"
-                        required
-                        aria-required="true"
-                        aria-describedby="telefonoError telefonoHint"
-                    >
+                    <input type="tel" id="telefono" placeholder="612 345 678" autocomplete="tel" required
+                        aria-required="true" aria-describedby="telefonoError telefonoHint">
                     <i class="fa-solid fa-phone"></i>
                 </div>
-                <small id="telefonoHint" style="color:#9ca3af; font-size:12px; margin-top:2px; display:block; padding-left:5px;">9 dígitos, empezando por 6, 7, 8 o 9</small>
+                <small id="telefonoHint"
+                    style="color:#9ca3af; font-size:12px; margin-top:2px; display:block; padding-left:5px;">9 dígitos,
+                    empezando por 6, 7, 8 o 9</small>
                 <span class="error-texto" id="telefonoError" role="alert" aria-live="polite"></span>
             </div>
 
@@ -90,15 +73,8 @@
             <div class="input-group">
                 <label for="email">Correo electrónico <span style="color:#ef4444">*</span></label>
                 <div class="input-wrapper">
-                    <input
-                        type="email"
-                        id="email"
-                        placeholder="Tu correo electrónico"
-                        autocomplete="email"
-                        required
-                        aria-required="true"
-                        aria-describedby="emailError"
-                    >
+                    <input type="email" id="email" placeholder="Tu correo electrónico" autocomplete="email" required
+                        aria-required="true" aria-describedby="emailError">
                     <i class="fa-solid fa-envelope"></i>
                 </div>
                 <span class="error-texto" id="emailError" role="alert" aria-live="polite"></span>
@@ -108,28 +84,17 @@
             <div class="input-group">
                 <label for="contrasena">Contraseña <span style="color:#ef4444">*</span></label>
                 <div class="input-wrapper">
-                    <input
-                        type="password"
-                        id="contrasena"
-                        placeholder="Mínimo 8 caracteres"
-                        autocomplete="new-password"
-                        required
-                        aria-required="true"
-                        aria-describedby="contrasenaError passReqs"
-                        minlength="8"
-                    >
+                    <input type="password" id="contrasena" placeholder="Mínimo 8 caracteres" autocomplete="new-password"
+                        required aria-required="true" aria-describedby="contrasenaError passReqs" minlength="8">
                     <i class="fa-solid fa-lock"></i>
-                    <button
-                        type="button"
-                        class="toggle-pass"
-                        aria-label="Mostrar contraseña"
-                        style="position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#6b7280; font-size:16px; padding:4px; z-index:2;"
-                    >
+                    <button type="button" class="toggle-pass" aria-label="Mostrar contraseña"
+                        style="position:absolute; right:45px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#6b7280; font-size:16px; padding:4px; z-index:2;">
                         <i class="fa-solid fa-eye"></i>
                     </button>
                 </div>
                 <!-- Requisitos de contraseña -->
-                <div id="passReqs" style="display:grid; grid-template-columns:1fr 1fr; gap:2px 12px; margin-top:8px; font-size:12px; padding-left:5px;">
+                <div id="passReqs"
+                    style="display:grid; grid-template-columns:1fr 1fr; gap:2px 12px; margin-top:8px; font-size:12px; padding-left:5px;">
                     <span data-req="length" style="color:#9ca3af;">○ 8 caracteres</span>
                     <span data-req="uppercase" style="color:#9ca3af;">○ Una mayúscula</span>
                     <span data-req="lowercase" style="color:#9ca3af;">○ Una minúscula</span>
@@ -142,22 +107,12 @@
             <div class="input-group">
                 <label for="contrasenaConfirm">Confirmar contraseña <span style="color:#ef4444">*</span></label>
                 <div class="input-wrapper">
-                    <input
-                        type="password"
-                        id="contrasenaConfirm"
-                        placeholder="Repite tu contraseña"
-                        autocomplete="new-password"
-                        required
-                        aria-required="true"
-                        aria-describedby="contrasenaConfirmError"
-                    >
+                    <input type="password" id="contrasenaConfirm" placeholder="Repite tu contraseña"
+                        autocomplete="new-password" required aria-required="true"
+                        aria-describedby="contrasenaConfirmError">
                     <i class="fa-solid fa-lock"></i>
-                    <button
-                        type="button"
-                        class="toggle-pass"
-                        aria-label="Mostrar contraseña"
-                        style="position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#6b7280; font-size:16px; padding:4px; z-index:2;"
-                    >
+                    <button type="button" class="toggle-pass" aria-label="Mostrar contraseña"
+                        style="position:absolute; right:45px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#6b7280; font-size:16px; padding:4px; z-index:2;">
                         <i class="fa-solid fa-eye"></i>
                     </button>
                 </div>
@@ -166,13 +121,17 @@
 
             <!-- RGPD: consentimiento obligatorio -->
             <div style="margin-bottom:20px;">
-                <label style="display:flex; align-items:flex-start; gap:10px; font-size:13px; font-weight:400; color:#6b7280; cursor:pointer; line-height:1.5;">
-                    <input type="checkbox" id="termsCheck" required aria-required="true" style="margin-top:3px; width:18px; height:18px; accent-color:#16a34a; cursor:pointer; flex-shrink:0;">
+                <label
+                    style="display:flex; align-items:flex-start; gap:10px; font-size:13px; font-weight:400; color:#6b7280; cursor:pointer; line-height:1.5;">
+                    <input type="checkbox" id="termsCheck" required aria-required="true"
+                        style="margin-top:3px; width:18px; height:18px; accent-color:#16a34a; cursor:pointer; flex-shrink:0;">
                     <span>
                         Acepto la
-                        <a href="privacidad.html" target="_blank" rel="noopener" style="color:#16a34a; text-decoration:underline;">política de privacidad</a>
+                        <a href="privacidad.html" target="_blank" rel="noopener"
+                            style="color:#16a34a; text-decoration:underline;">política de privacidad</a>
                         y los
-                        <a href="terminos.html" target="_blank" rel="noopener" style="color:#16a34a; text-decoration:underline;">términos de uso</a>
+                        <a href="terminos.html" target="_blank" rel="noopener"
+                            style="color:#16a34a; text-decoration:underline;">términos de uso</a>
                         <span style="color:#ef4444">*</span>
                     </span>
                 </label>
@@ -190,4 +149,5 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="jscode/registro.js"></script>
 </body>
+
 </html>

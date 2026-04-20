@@ -11,12 +11,14 @@
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-body, html {
+body,
+html {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #0d1712; /* Fondo oscuro de la marca */
+  background-color: #0d1712;
+  /* Fondo oscuro de la marca */
   color: #111827;
   overflow-x: hidden;
   padding: 20px;
@@ -24,20 +26,25 @@ body, html {
 
 .register-container {
   background: #ffffff;
-  padding: 60px 60px; /* Más relleno interior */
+  padding: 60px 60px;
+  /* Más relleno interior */
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   text-align: center;
-  max-width: 650px; /* ¡AQUÍ LA CLAVE! Pasamos de 500px a 650px */
+  max-width: 650px;
+  /* ¡AQUÍ LA CLAVE! Pasamos de 500px a 650px */
   width: 100%;
-  
+
   transform: scale(0.95);
   opacity: 0;
   animation: fadeIn 0.4s ease-out forwards;
 }
 
 @keyframes fadeIn {
-  to { transform: scale(1); opacity: 1; }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .brand-header {
@@ -57,24 +64,26 @@ body, html {
 }
 
 h1 {
-  color: #1a2e25; 
-  font-size: 24px; 
+  color: #1a2e25;
+  font-size: 24px;
   font-weight: 700;
   margin-bottom: 10px;
 }
 
 .form-subtitle {
   color: #6b7280;
-  font-size: 15px; 
-  margin-bottom: 40px; 
+  font-size: 15px;
+  margin-bottom: 40px;
 }
 
-form { text-align: left; }
+form {
+  text-align: left;
+}
 
 label {
   display: block;
   margin-bottom: 8px;
-  font-size: 14px; 
+  font-size: 14px;
   font-weight: 600;
   color: #1a2e25;
 }
@@ -92,13 +101,13 @@ label {
 
 /* Ahora el icono se centra con respecto al input-wrapper */
 .input-wrapper i,
-.input-group > i {
+.input-group>i {
   position: absolute;
-  left: 18px; 
+  left: 18px;
   top: 50%;
   transform: translateY(-50%);
   color: #6b7280;
-  font-size: 16px; 
+  font-size: 16px;
   transition: color 0.2s;
   pointer-events: none;
 }
@@ -112,6 +121,7 @@ label {
   display: flex;
   gap: 15px;
 }
+
 .row .col {
   flex: 1;
 }
@@ -121,13 +131,13 @@ input[type="email"],
 input[type="password"],
 input[type="tel"] {
   width: 100%;
-  padding: 14px 20px; 
-  padding-left: 45px; 
+  /* Padding: arriba(14px) derecha(45px) abajo(14px) izquierda(45px) */
+  padding: 14px 45px 14px 45px;
   border-radius: 12px;
   border: 2px solid #e5e7eb;
   background: #f9fafb;
   transition: all 0.2s;
-  font-size: 14px; 
+  font-size: 14px;
   color: #111827;
 }
 
@@ -135,58 +145,69 @@ input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus,
 input[type="tel"]:focus {
-  border-color: #16a34a; 
+  border-color: #16a34a;
   background: #ffffff;
   box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.15);
   outline: none;
 }
 
-input[type="text"]:focus + i,
-input[type="email"]:focus + i,
-input[type="password"]:focus + i,
-input[type="tel"]:focus + i {
+input[type="text"]:focus+i,
+input[type="email"]:focus+i,
+input[type="password"]:focus+i,
+input[type="tel"]:focus+i {
   color: #16a34a;
 }
 
 .btn-submit {
   width: 100%;
-  padding: 16px 25px; 
+  padding: 16px 25px;
   border-radius: 12px;
   border: none;
-  background: #16a34a; 
+  background: #16a34a;
   color: #ffffff;
-  font-size: 17px; 
+  font-size: 17px;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
-  margin-top: 10px; 
+  margin-top: 10px;
 }
 
-.btn-submit:hover { background: #15803d; }
-.btn-submit:active { transform: scale(0.98); }
+.btn-submit:hover {
+  background: #15803d;
+}
+
+.btn-submit:active {
+  transform: scale(0.98);
+}
 
 .footer-links {
-  margin-top: 30px; 
-  font-size: 15px; 
+  margin-top: 30px;
+  font-size: 15px;
   color: #1a2e25;
   text-align: center;
 }
 
 .footer-links a {
-  color: #16a34a; 
+  color: #16a34a;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s;
 }
 
 .footer-links a:hover {
-  color: #4ade80; 
+  color: #4ade80;
   text-decoration: underline;
 }
 
 @media (max-width: 480px) {
-  .register-container { padding: 35px 25px; }
-  .row { flex-direction: column; gap: 0; }
+  .register-container {
+    padding: 35px 25px;
+  }
+
+  .row {
+    flex-direction: column;
+    gap: 0;
+  }
 }
 
 /* Botón flotante para volver al inicio */
@@ -194,7 +215,8 @@ input[type="tel"]:focus + i {
   position: absolute;
   top: 30px;
   left: 30px;
-  color: #9ca3af; /* Gris claro para que no distraiga */
+  color: #9ca3af;
+  /* Gris claro para que no distraiga */
   text-decoration: none;
   font-size: 15px;
   font-weight: 600;
@@ -206,8 +228,10 @@ input[type="tel"]:focus + i {
 }
 
 .btn-volver-inicio:hover {
-  color: #4ade80; /* Se ilumina en el verde de IRIGO */
-  transform: translateX(-4px); /* Se mueve un pelín a la izquierda */
+  color: #4ade80;
+  /* Se ilumina en el verde de IRIGO */
+  transform: translateX(-4px);
+  /* Se mueve un pelín a la izquierda */
 }
 
 /* Ajuste para pantallas de móvil */
@@ -225,27 +249,32 @@ input[type="tel"]:focus + i {
 
 .input-group {
   position: relative;
-  margin-bottom: 28px; /* Aumentamos un poco el margen para que quepa el texto de error debajo */
+  margin-bottom: 28px;
+  /* Aumentamos un poco el margen para que quepa el texto de error debajo */
 }
 
 .error-texto {
-  color: #ef4444; 
+  color: #ef4444;
   font-size: 13px;
   font-weight: 600;
-  display: block; 
-  margin-top: 6px; /* 🔥 EL CAMBIO CLAVE: Positivo para que caiga por debajo de la caja */
-  padding-left: 5px; /* Lo metemos un poquito hacia la derecha para que quede alineado */
+  display: block;
+  margin-top: 6px;
+  /* 🔥 EL CAMBIO CLAVE: Positivo para que caiga por debajo de la caja */
+  padding-left: 5px;
+  /* Lo metemos un poquito hacia la derecha para que quede alineado */
   line-height: 1.2;
 }
 
 /* Clase que el JS añadirá si hay un error */
 input.input-error {
   border-color: #ef4444 !important;
-  background-color: #fef2f2 !important; /* Fondo rojizo suave */
+  background-color: #fef2f2 !important;
+  /* Fondo rojizo suave */
 }
 
-input.input-error + i {
-  color: #ef4444 !important; /* El icono también se pone rojo */
+input.input-error+i {
+  color: #ef4444 !important;
+  /* El icono también se pone rojo */
 }
 
 /* ==========================================
@@ -254,14 +283,14 @@ input.input-error + i {
 /* ==========================================
    LIBRERÍA DE BANDERAS (TELÉFONO)
    ========================================== */
-.iti { 
-  width: 100%; 
-  display: block; 
+.iti {
+  width: 100%;
+  display: block;
 }
 
 /* Espacio para que el número no pise la bandera */
 .iti input[type="tel"] {
-  padding-left: 90px !important; 
+  padding-left: 90px !important;
 }
 
 /* Diseño del recuadro de la bandera */
@@ -275,14 +304,15 @@ input.input-error + i {
 .iti__country-list {
   border-radius: 12px;
   border: 1px solid #e5e7eb;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   font-family: 'Segoe UI', sans-serif;
   font-size: 14px;
 }
 
 .select-prefijo {
   width: 120px;
-  padding: 14px 10px 14px 42px; /* Los 42px dejan sitio al icono del teléfono */
+  padding: 14px 10px 14px 42px;
+  /* Los 42px dejan sitio al icono del teléfono */
   border-radius: 12px;
   border: 2px solid #e5e7eb;
   background: #f9fafb;
@@ -291,19 +321,21 @@ input.input-error + i {
   cursor: pointer;
   outline: none;
   transition: all 0.2s;
-  appearance: none; /* Quita la flechita fea por defecto del navegador */
+  appearance: none;
+  /* Quita la flechita fea por defecto del navegador */
 }
 
 .select-prefijo:focus {
-  border-color: #16a34a; 
+  border-color: #16a34a;
   background: #ffffff;
   box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.15);
 }
 
 /* Al input del teléfono le quitamos el padding gigante izquierdo porque el icono ahora está en el select */
 .prefijo-input-group input[type="tel"] {
-  padding-left: 20px !important; 
-  flex: 1; /* Ocupa todo el espacio restante a la derecha */
+  padding-left: 20px !important;
+  flex: 1;
+  /* Ocupa todo el espacio restante a la derecha */
 }
 
 /* Aseguramos que el icono se quede flotando encima del selector */
