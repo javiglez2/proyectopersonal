@@ -6,6 +6,7 @@ const URL_BACKEND = 'https://proyectopersonal-0xcu.onrender.com';
 let chatActivoId = null;
 let tipoChatActivo = null;
 let intervaloChat = null;
+let intervaloLista = null;
 
 const STORAGE_KEY = 'estado_chats_' + userId;
 
@@ -13,7 +14,50 @@ if (!userId) {
     window.location.href = 'login.html';
 }
 
-document.addEventListener('DOMContentLoaded', cargarListaDeChats);
+// ==========================================
+// HELPERS
+// ==========================================
+// Escapa HTML para evitar XSS cuando se pinta texto de usuario con innerHTML.
+// Esto es crítico aquí: los mensajes del chat los escribe cualquier usuario.
+function escapeHTML(str) {
+    if (str == null) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function urlAvatarFallback(nombre) {
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre || '?')}&background=1a2e25&color=4ade80`;
+}
+
+// Wrapper de fetch que detecta sesión expirada y redirige al login.
+// Antes una sesión caducada provocaba errores silenciosos en el catch: el usuario
+// se quedaba viendo la lista vacía sin entender qué pasaba.
+async function fetchConAuth(url, opts = {}) {
+    const res = await fetch(url, opts);
+    if (res.status === 401 || res.status === 403) {
+        localStorage.clear();
+        await Swal.fire({
+            icon: 'warning',
+            title: 'Sesión caducada',
+            text: 'Vuelve a iniciar sesión para seguir chateando.',
+            confirmButtonColor: '#16a34a',
+            confirmButtonText: 'Ir al login'
+        }).catch(() => { });
+        window.location.href = 'login.html';
+        throw new Error('Sesión expirada');
+    }
+    return res;
+}
+
+// SweetAlert puede no estar cargado en chat.html actualmente. Fallback con alert nativo.
+// (Si quieres, en la Tanda 3 añadimos el <script> de SweetAlert a chat.html para alertas bonitas.)
+const Swal = window.Swal || {
+    fire: (opts) => { alert((opts.title || '') + '\n' + (opts.text || '')); return Promise.resolve({ isConfirmed: true }); }
+};
 
 // ==========================================
 // HELPERS DE ESTADO (leído / no leído)
@@ -33,14 +77,19 @@ function estaNoLeido(idChat, ultimoMensaje) {
 // ==========================================
 // 1. CARGAR LA LISTA DE CHATS UNIFICADA
 // ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    cargarListaDeChats();
+    iniciarPollingLista();
+});
+
 async function cargarListaDeChats() {
     const listaDiv = document.getElementById('lista-conversaciones');
     listaDiv.innerHTML = '<p style="text-align:center; padding:20px; color:#8b949e;">Cargando tus chats...</p>';
 
     try {
-        const resViajes = await fetch(`${URL_BACKEND}/api/mis-viajes/${userId}`);
+        const resViajes = await fetchConAuth(`${URL_BACKEND}/api/mis-viajes/${userId}`);
         const viajes = resViajes.ok ? await resViajes.json() : [];
-        const resPrivados = await fetch(`${URL_BACKEND}/api/inbox/${userId}`);
+        const resPrivados = await fetchConAuth(`${URL_BACKEND}/api/inbox/${userId}`);
         const privados = resPrivados.ok ? await resPrivados.json() : [];
 
         listaDiv.innerHTML = '';
@@ -53,15 +102,15 @@ async function cargarListaDeChats() {
         const todosLosChats = [
             ...viajes.map(v => ({
                 idOriginal: v.id, tipo: 'grupal',
-                nombre: `Viaje a ${v.destino}`,
+                nombre: `Viaje a ${v.destino || ''}`,
                 sub: 'Grupo del viaje',
                 foto: 'fotos/fotogrupo2.png'
             })),
             ...privados.map(p => ({
                 idOriginal: p.usuario.id, tipo: 'privado',
-                nombre: p.usuario.nombre,
+                nombre: p.usuario.nombre || 'Usuario',
                 sub: p.ultimoMensaje || 'Chat privado',
-                foto: p.usuario.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(p.usuario.nombre)}&background=1a2e25&color=4ade80`
+                foto: p.usuario.avatar_url || urlAvatarFallback(p.usuario.nombre)
             }))
         ];
 
@@ -70,41 +119,42 @@ async function cargarListaDeChats() {
             const div = document.createElement('div');
             div.className = 'contacto-item';
             div.id = `chat-item-${c.tipo}-${c.idOriginal}`;
+            // 🔒 Pasamos los valores crudos a abrirChat (innerText los tratará como texto plano)
             div.onclick = () => abrirChat(c.idOriginal, c.tipo, c.nombre);
+            // 🔒 TODAS las strings de usuario pasan por escapeHTML antes de ir al innerHTML
             div.innerHTML = `
-                <img src="${c.foto}" alt="perfil" onerror="this.src='https://ui-avatars.com/api/?name=?&background=1a2e25&color=4ade80'">
+                <img src="${escapeHTML(c.foto)}" alt="perfil" onerror="this.src='${urlAvatarFallback('?')}'">
                 <div class="contacto-info">
-                    <strong>${c.nombre}</strong>
-                    <span class="ultimo-mensaje-txt">${c.sub}</span>
+                    <strong>${escapeHTML(c.nombre)}</strong>
+                    <span class="ultimo-mensaje-txt">${escapeHTML(c.sub)}</span>
                 </div>
                 <div class="badge-chat ${noLeido ? 'activo' : ''}" id="badge-chat-item-${c.tipo}-${c.idOriginal}">${noLeido ? '1' : ''}</div>
             `;
             listaDiv.appendChild(div);
         });
 
-        // --- NUEVO: Leer la URL para abrir un chat privado automáticamente ---
+        // --- Leer la URL para abrir un chat privado automáticamente ---
         const urlParams = new URLSearchParams(window.location.search);
         const targetUserId = urlParams.get('userId');
-        const targetUserName = urlParams.get('userName');
+        const targetUserName = urlParams.get('userName');  // 🔒 Valor crudo, se escapa al usarlo
 
         if (targetUserId && targetUserName) {
             const idElemento = `chat-item-privado-${targetUserId}`;
             let item = document.getElementById(idElemento);
 
-            // Si ya tenías un chat con él en la lista, actualizamos su nombre visual
             if (item) {
                 const nombreEl = item.querySelector('strong');
-                if (nombreEl) nombreEl.innerText = targetUserName;
+                if (nombreEl) nombreEl.innerText = targetUserName; // innerText es seguro (no parsea HTML)
             } else {
-                // Si nunca habéis hablado, le creamos la tarjeta temporalmente en la lista
                 item = document.createElement('div');
                 item.className = 'contacto-item';
                 item.id = idElemento;
                 item.onclick = () => abrirChat(targetUserId, 'privado', targetUserName);
+                // 🔒 encodeURIComponent para la URL del avatar + escapeHTML para el <strong>
                 item.innerHTML = `
-                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(targetUserName)}&background=1a2e25&color=4ade80" alt="perfil">
+                    <img src="${urlAvatarFallback(targetUserName)}" alt="perfil">
                     <div class="contacto-info">
-                        <strong>${targetUserName}</strong>
+                        <strong>${escapeHTML(targetUserName)}</strong>
                         <span class="ultimo-mensaje-txt">Empieza a escribir...</span>
                     </div>
                     <div class="badge-chat" id="badge-${idElemento}"></div>
@@ -112,16 +162,15 @@ async function cargarListaDeChats() {
                 listaDiv.prepend(item);
             }
 
-            // Forzamos a que se abra ese chat al instante
             abrirChat(targetUserId, 'privado', targetUserName);
-
-            // Limpiamos la URL silenciosamente para que al recargar la página con F5 no se vuelva a ejecutar
             window.history.replaceState({}, document.title, window.location.pathname);
         }
 
     } catch (error) {
-        console.error(error);
-        listaDiv.innerHTML = `<p style="color:#ef4444; text-align:center; padding:20px;">Error al cargar los chats.</p>`;
+        if (error.message !== 'Sesión expirada') {
+            console.error(error);
+            listaDiv.innerHTML = `<p style="color:#ef4444; text-align:center; padding:20px;">Error al cargar los chats. <button onclick="cargarListaDeChats()" style="margin-left:8px; background:#16a34a; color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer;">Reintentar</button></p>`;
+        }
     }
 }
 
@@ -139,22 +188,20 @@ window.abrirChat = function (idChat, tipoChat, tituloChat) {
     document.querySelector('.chat-card').classList.add('chat-activo');
 
     if (itemClickado) {
-        lista.prepend(itemClickado); // Mover al tope
+        lista.prepend(itemClickado);
         itemClickado.classList.add('activo');
 
-        // Marcar como leído
         const spanTexto = itemClickado.querySelector('.ultimo-mensaje-txt');
         const ultimoMsg = spanTexto ? spanTexto.innerText : '';
         marcarLeido(idChat, ultimoMsg);
 
-        // Quitar badge
         const badge = itemClickado.querySelector('.badge-chat');
         if (badge) { badge.classList.remove('activo'); badge.innerText = ''; }
     }
 
-    // Mostrar cabecera y nombre
     const cabecera = document.getElementById('chat-header-dinamico');
     cabecera.style.display = 'flex';
+    // 🔒 innerText en vez de innerHTML: el título no puede ejecutar HTML/JS aunque venga de la URL
     document.getElementById('nombre-chat-actual').innerText = tituloChat;
 
     const msgBienvenida = document.querySelector('.mensaje-bienvenida');
@@ -180,7 +227,7 @@ async function cargarMensajesActivos() {
             ? `${URL_BACKEND}/api/mensajes/${chatActivoId}`
             : `${URL_BACKEND}/api/mensajes-privados/${userId}/${chatActivoId}`;
 
-        const res = await fetch(url);
+        const res = await fetchConAuth(url);
         const mensajes = await res.json();
 
         if (mensajes.length === 0) {
@@ -199,28 +246,34 @@ async function cargarMensajesActivos() {
             if (tipoChatActivo === 'grupal') {
                 esMio = String(msg.id_usuario) === String(userId);
                 nombre = msg.usuarios?.nombre || 'Usuario';
-                avatar = msg.usuarios?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&background=1a2e25&color=4ade80`;
+                avatar = msg.usuarios?.avatar_url || urlAvatarFallback(nombre);
                 textoMsg = msg.mensaje;
             } else {
                 esMio = String(msg.id_emisor) === String(userId);
                 nombre = esMio ? 'Tú' : (msg.emisor?.nombre || 'Usuario');
-                avatar = msg.emisor?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&background=1a2e25&color=4ade80`;
+                avatar = msg.emisor?.avatar_url || urlAvatarFallback(nombre);
                 textoMsg = msg.mensaje;
             }
+
+            // 🔒🔒🔒 CRÍTICO: escapar el texto del mensaje antes de insertarlo.
+            // Antes esto permitía a cualquiera inyectar <script>, <img onerror>, etc. en el chat.
+            const textoSeguro = escapeHTML(textoMsg);
+            const nombreSeguro = escapeHTML(nombre);
+            const avatarSeguro = escapeHTML(avatar);
 
             if (esMio) {
                 htmlMensajes += `
                     <div class="burbuja mia">
-                        ${textoMsg}
+                        ${textoSeguro}
                         <span style="display:block; font-size:10px; text-align:right; margin-top:5px; opacity:0.7;">${hora}</span>
                     </div>`;
             } else {
                 htmlMensajes += `
                     <div style="display:flex; gap:8px; align-items:flex-end; align-self:flex-start; margin-bottom:10px; max-width:75%;">
-                        <img src="${avatar}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid rgba(255,255,255,0.1);" onerror="this.src='https://ui-avatars.com/api/?name=?&background=1a2e25&color=4ade80'">
+                        <img src="${avatarSeguro}" alt="" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid rgba(255,255,255,0.1);" onerror="this.src='${urlAvatarFallback('?')}'">
                         <div class="burbuja otra" style="max-width:100%; margin-bottom:0;">
-                            ${tipoChatActivo === 'grupal' ? `<strong style="font-size:11px; display:block; margin-bottom:4px; color:#4ade80;">${nombre}</strong>` : ''}
-                            ${textoMsg}
+                            ${tipoChatActivo === 'grupal' ? `<strong style="font-size:11px; display:block; margin-bottom:4px; color:#4ade80;">${nombreSeguro}</strong>` : ''}
+                            ${textoSeguro}
                             <span style="display:block; font-size:10px; text-align:right; margin-top:5px; opacity:0.7;">${hora}</span>
                         </div>
                     </div>`;
@@ -230,13 +283,13 @@ async function cargarMensajesActivos() {
         historial.innerHTML = htmlMensajes;
         if (estaAlFinal) historial.scrollTop = historial.scrollHeight;
 
-        // Marcar como leído el último mensaje del chat activo
         const ultimoMsg = mensajes[mensajes.length - 1].mensaje;
         marcarLeido(chatActivoId, ultimoMsg);
         const spanActivo = document.querySelector(`#chat-item-${tipoChatActivo}-${chatActivoId} .ultimo-mensaje-txt`);
-        if (spanActivo) spanActivo.innerText = ultimoMsg;
+        if (spanActivo) spanActivo.innerText = ultimoMsg; // innerText es seguro
 
     } catch (e) {
+        if (e.message === 'Sesión expirada') return;
         console.error("Error pintando mensajes:", e);
         if (historial.children.length === 0 || historial.innerHTML.includes('Cargando')) {
             historial.innerHTML = `<p style="color:#ef4444; text-align:center; margin-top:20px;">Error al cargar mensajes.</p>`;
@@ -250,9 +303,15 @@ async function cargarMensajesActivos() {
 document.getElementById('form-enviar-mensaje').addEventListener('submit', async (e) => {
     e.preventDefault();
     const input = document.getElementById('input-mensaje');
+    const btn = e.target.querySelector('button[type="submit"]');
     const texto = input.value.trim();
     if (!texto || !chatActivoId) return;
+
+    // 🛡️ Prevenir doble envío
+    if (btn && btn.disabled) return;
+    if (btn) btn.disabled = true;
     input.value = '';
+    input.disabled = true;
 
     try {
         const url = tipoChatActivo === 'grupal' ? `${URL_BACKEND}/api/mensajes` : `${URL_BACKEND}/api/mensajes-privados`;
@@ -260,7 +319,7 @@ document.getElementById('form-enviar-mensaje').addEventListener('submit', async 
             ? { id_viaje: chatActivoId, id_usuario: userId, mensaje: texto }
             : { id_emisor: userId, id_receptor: chatActivoId, mensaje: texto };
 
-        const res = await fetch(url, {
+        const res = await fetchConAuth(url, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(bodyData)
         });
@@ -271,21 +330,31 @@ document.getElementById('form-enviar-mensaje').addEventListener('submit', async 
                 const h = document.getElementById('historial-mensajes');
                 h.scrollTop = h.scrollHeight;
             }, 50);
+        } else {
+            // Si falla, devolvemos el texto al input para que el usuario no lo pierda
+            input.value = texto;
         }
-    } catch (e) { console.error("Error al enviar", e); }
+    } catch (err) {
+        if (err.message !== 'Sesión expirada') {
+            console.error("Error al enviar", err);
+            input.value = texto; // restaurar
+        }
+    } finally {
+        if (btn) btn.disabled = false;
+        input.disabled = false;
+        input.focus();
+    }
 });
 
 // ==========================================
 // 5. VIGILANTE SILENCIOSO DE NUEVOS MENSAJES
 // ==========================================
-setInterval(actualizarListaSilenciosa, 4000);
-
 async function actualizarListaSilenciosa() {
     if (!userId) return;
     try {
-        const resViajes = await fetch(`${URL_BACKEND}/api/mis-viajes/${userId}`);
+        const resViajes = await fetchConAuth(`${URL_BACKEND}/api/mis-viajes/${userId}`);
         const viajes = resViajes.ok ? await resViajes.json() : [];
-        const resPrivados = await fetch(`${URL_BACKEND}/api/inbox/${userId}`);
+        const resPrivados = await fetchConAuth(`${URL_BACKEND}/api/inbox/${userId}`);
         const privados = resPrivados.ok ? await resPrivados.json() : [];
 
         const todos = [
@@ -301,14 +370,13 @@ async function actualizarListaSilenciosa() {
 
             const spanTexto = item.querySelector('.ultimo-mensaje-txt');
             const textoActual = spanTexto ? spanTexto.innerText : '';
-            if (textoActual === c.sub) return; // Sin cambios
+            if (textoActual === c.sub) return;
 
-            if (spanTexto) spanTexto.innerText = c.sub;
-            lista.prepend(item); // Subir al tope
+            if (spanTexto) spanTexto.innerText = c.sub; // innerText es seguro
+            lista.prepend(item);
 
             const esElChatAbierto = chatActivoId === String(c.idOriginal);
             if (!esElChatAbierto) {
-                // Incrementar badge
                 const badge = item.querySelector('.badge-chat');
                 if (badge) {
                     badge.classList.add('activo');
@@ -316,29 +384,71 @@ async function actualizarListaSilenciosa() {
                     badge.innerText = n + 1;
                 }
             } else {
-                // Ya lo estamos viendo, marcar leído
                 marcarLeido(c.idOriginal, c.sub);
             }
         });
-    } catch (e) { /* silenciado */ }
+    } catch (e) {
+        // Silenciado (excepto la sesión expirada, que la gestiona fetchConAuth)
+    }
 }
 
 // ==========================================
 // 6. CERRAR CHAT EN MÓVIL (VOLVER A LA LISTA)
 // ==========================================
-window.cerrarChatMovil = function() {
-    // Quitamos la clase que muestra el chat a pantalla completa
+window.cerrarChatMovil = function () {
     const chatCard = document.querySelector('.chat-card');
-    if (chatCard) {
-        chatCard.classList.remove('chat-activo');
-    }
-    
-    // Dejamos de pedir los mensajes de ese chat al servidor constantemente 
-    // para ahorrar datos y batería cuando estamos viendo la lista
+    if (chatCard) chatCard.classList.remove('chat-activo');
+
     chatActivoId = null;
     tipoChatActivo = null;
-    
+
     if (intervaloChat) {
         clearInterval(intervaloChat);
+        intervaloChat = null;
     }
 };
+
+// ==========================================
+// 🔋 GESTIÓN DE POLLING (pausa en segundo plano)
+// ==========================================
+// Antes los intervalos corrían eternamente cada 2.5s y 4s aunque la pestaña estuviera
+// oculta. Eso gasta batería del móvil, datos, y tira del free tier de Render sin necesidad.
+function iniciarPollingLista() {
+    if (intervaloLista) return;
+    intervaloLista = setInterval(actualizarListaSilenciosa, 4000);
+}
+
+function pararPollingLista() {
+    if (intervaloLista) {
+        clearInterval(intervaloLista);
+        intervaloLista = null;
+    }
+}
+
+function pararPollingChat() {
+    if (intervaloChat) {
+        clearInterval(intervaloChat);
+        intervaloChat = null;
+    }
+}
+
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        pararPollingLista();
+        pararPollingChat();
+    } else {
+        // Al volver a la pestaña: refrescamos de inmediato y reanudamos el polling
+        actualizarListaSilenciosa();
+        iniciarPollingLista();
+        if (chatActivoId) {
+            cargarMensajesActivos();
+            intervaloChat = setInterval(cargarMensajesActivos, 2500);
+        }
+    }
+});
+
+// Limpiar intervalos al salir de la página (evita fugas)
+window.addEventListener('beforeunload', () => {
+    pararPollingLista();
+    pararPollingChat();
+});
