@@ -4,11 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Gestiona tu perfil de UEQO: datos personales, teléfono, avatar y contraseña.">
     <title>UEQO - Mi Perfil</title>
-    
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5/dark.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+
     <link rel="stylesheet" href="estilos/perfil.css?v=2.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/css/intlTelInput.css">
 </head>
@@ -27,51 +28,52 @@
                     onchange="subirFoto(this)">
             </div>
 
-            <div class="fila-dos">
+            <form id="form-perfil" onsubmit="event.preventDefault(); alternarEdicion();" autocomplete="on">
+                <div class="fila-dos">
+                    <div class="form-group">
+                        <label for="perfil-nombre">Nombre</label>
+                        <input type="text" id="perfil-nombre" name="nombre" autocomplete="given-name" readonly placeholder="Cargando...">
+                    </div>
+                    <div class="form-group">
+                        <label for="perfil-apellidos">Apellidos</label>
+                        <input type="text" id="perfil-apellidos" name="apellidos" autocomplete="family-name" readonly placeholder="Cargando...">
+                    </div>
+                </div>
+
                 <div class="form-group">
-                    <label>Nombre</label>
-                    <input type="text" id="perfil-nombre" readonly placeholder="Cargando...">
+                    <label for="perfil-telefono">Teléfono</label>
+                    <div class="telefono-row">
+                        <input type="tel" id="perfil-telefono" name="telefono" autocomplete="tel" disabled placeholder="Cargando...">
+                    </div>
                 </div>
+
                 <div class="form-group">
-                    <label>Apellidos</label>
-                    <input type="text" id="perfil-apellidos" readonly placeholder="Cargando...">
+                    <label for="perfil-email">Correo Electrónico</label>
+                    <input type="email" id="perfil-email" name="email" autocomplete="email" disabled title="El email no se puede modificar por seguridad">
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label>Teléfono</label>
-                <div class="telefono-row">
-                    <input type="tel" id="perfil-telefono" disabled placeholder="Cargando...">
+                <div class="form-group" id="grupo-nueva-contrasena" style="display:none;">
+                    <label for="perfil-nueva-contrasena">Nueva Contraseña</label>
+                    <input type="password" id="perfil-nueva-contrasena" name="nueva-contrasena" autocomplete="new-password" placeholder="Nueva contraseña (opcional)">
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label>Correo Electrónico</label>
-                <input type="email" id="perfil-email" disabled title="El email no se puede modificar por seguridad">
-            </div>
+                <div class="form-group" id="grupo-confirmar-contrasena" style="display:none;">
+                    <label for="perfil-confirmar-contrasena">Confirmar Nueva Contraseña</label>
+                    <input type="password" id="perfil-confirmar-contrasena" name="confirmar-contrasena" autocomplete="new-password" placeholder="Repite la nueva contraseña">
+                </div>
 
-            <div class="form-group" id="grupo-nueva-contrasena" style="display:none;">
-                <label>Nueva Contraseña</label>
-                <input type="password" id="perfil-nueva-contrasena" placeholder="Nueva contraseña (opcional)">
-            </div>
-
-            <div class="form-group" id="grupo-confirmar-contrasena" style="display:none;">
-                <label>Confirmar Nueva Contraseña</label>
-                <input type="password" id="perfil-confirmar-contrasena" placeholder="Repite la nueva contraseña">
-            </div>
-
-            <div class="acciones-perfil">
-                <button id="btn-accion-perfil" onclick="alternarEdicion()">
-                    Editar Perfil
-                </button>
-                <button id="btn-cerrar-sesion" onclick="cerrarSesion()" class="btn-peligro">
-                    Cerrar Sesión
-                </button>
-            </div>
+                <div class="acciones-perfil">
+                    <button type="submit" id="btn-accion-perfil">
+                        Editar Perfil
+                    </button>
+                    <button type="button" id="btn-cerrar-sesion" onclick="cerrarSesion()" class="btn-peligro">
+                        Cerrar Sesión
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/js/intlTelInput.min.js"></script>
-    <script src="jscode/perfil.js"></script>
     <script src="jscode/perfil.js"></script>
 </body>
 
