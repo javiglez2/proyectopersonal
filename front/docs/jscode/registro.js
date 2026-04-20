@@ -167,31 +167,43 @@
       let hasError = false;
 
       const checks = [
-        { input: inputs.nombre, errorId: "nombreError", validate: () => {
-          if (!inputs.nombre.value.trim()) return "El nombre es obligatorio";
-          return validar.nombre(inputs.nombre.value);
-        }},
-        { input: inputs.apellidos, errorId: "apellidosError", validate: () => {
-          if (!inputs.apellidos.value.trim()) return "Los apellidos son obligatorios";
-          return validar.nombre(inputs.apellidos.value);
-        }},
-        { input: inputs.telefono, errorId: "telefonoError", validate: () => {
-          if (!inputs.telefono.value.trim()) return "El teléfono es obligatorio";
-          return validar.telefono(inputs.telefono.value);
-        }},
-        { input: inputs.email, errorId: "emailError", validate: () => {
-          if (!inputs.email.value.trim()) return "El correo es obligatorio";
-          return validar.email(inputs.email.value);
-        }},
-        { input: inputs.contrasena, errorId: "contrasenaError", validate: () => {
-          if (!inputs.contrasena.value) return "La contraseña es obligatoria";
-          return validar.password(inputs.contrasena.value);
-        }},
-        { input: inputs.contrasenaConfirm, errorId: "contrasenaConfirmError", validate: () => {
-          if (!inputs.contrasenaConfirm.value) return "Debes confirmar la contraseña";
-          if (inputs.contrasenaConfirm.value !== inputs.contrasena.value) return "Las contraseñas no coinciden";
-          return true;
-        }},
+        {
+          input: inputs.nombre, errorId: "nombreError", validate: () => {
+            if (!inputs.nombre.value.trim()) return "El nombre es obligatorio";
+            return validar.nombre(inputs.nombre.value);
+          }
+        },
+        {
+          input: inputs.apellidos, errorId: "apellidosError", validate: () => {
+            if (!inputs.apellidos.value.trim()) return "Los apellidos son obligatorios";
+            return validar.nombre(inputs.apellidos.value);
+          }
+        },
+        {
+          input: inputs.telefono, errorId: "telefonoError", validate: () => {
+            if (!inputs.telefono.value.trim()) return "El teléfono es obligatorio";
+            return validar.telefono(inputs.telefono.value);
+          }
+        },
+        {
+          input: inputs.email, errorId: "emailError", validate: () => {
+            if (!inputs.email.value.trim()) return "El correo es obligatorio";
+            return validar.email(inputs.email.value);
+          }
+        },
+        {
+          input: inputs.contrasena, errorId: "contrasenaError", validate: () => {
+            if (!inputs.contrasena.value) return "La contraseña es obligatoria";
+            return validar.password(inputs.contrasena.value);
+          }
+        },
+        {
+          input: inputs.contrasenaConfirm, errorId: "contrasenaConfirmError", validate: () => {
+            if (!inputs.contrasenaConfirm.value) return "Debes confirmar la contraseña";
+            if (inputs.contrasenaConfirm.value !== inputs.contrasena.value) return "Las contraseñas no coinciden";
+            return true;
+          }
+        },
       ];
 
       checks.forEach(({ input, errorId, validate }) => {
@@ -226,17 +238,47 @@
         return;
       }
 
-      // Simular envío
+      // Enviar con EmailJS
       const btn = form.querySelector(".btn-submit");
       const originalText = btn.textContent;
       btn.disabled = true;
       btn.textContent = "Registrando...";
 
-      // TODO: Reemplazar por tu fetch al backend
-      await new Promise((r) => setTimeout(r, 1500));
+      try {
+        // Estos nombres deben coincidir EXACTAMENTE con las variables {{ }} de tu plantilla
+        const templateParams = {
+          to_name: inputs.nombre.value.trim(),
+          to_email: inputs.email.value.trim(),
+        };
 
-      btn.disabled = false;
-      btn.textContent = originalText;
+        // Reemplaza los IDs por los tuyos
+        await emailjs.send("service_xu4vaps", "template_ska0k0x", templateParams);
+
+        if (typeof Swal !== "undefined") {
+          Swal.fire({
+            icon: "success",
+            title: "¡Cuenta creada!",
+            text: "Revisa tu bandeja de entrada, te hemos enviado un correo de bienvenida.",
+            confirmButtonColor: "#16a34a",
+          }).then(() => {
+            // Opcional: Redirigir al usuario al login tras registrarse
+            window.location.href = "login.html";
+          });
+        }
+      } catch (error) {
+        console.error("Error de EmailJS:", error);
+        if (typeof Swal !== "undefined") {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Hubo un problema al enviar el correo de confirmación.",
+            confirmButtonColor: "#16a34a",
+          });
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
 
       if (typeof Swal !== "undefined") {
         Swal.fire({
