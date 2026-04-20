@@ -95,7 +95,7 @@ body {
     margin-top: 14px;
 }
 
-label {
+.contenedor-perfil label {
     display: block !important;
     font-size: 12px;
     font-weight: 700;

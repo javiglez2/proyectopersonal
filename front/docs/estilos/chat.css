@@ -83,6 +83,16 @@ body {
     }
 }
 
+/* ♿ Accesibilidad: si el usuario tiene activado "reducir movimiento" en su sistema,
+   saltamos la animación de entrada y mostramos la tarjeta en su estado final. */
+@media (prefers-reduced-motion: reduce) {
+    .chat-card {
+        animation: none;
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
 /* ==========================================
    COLUMNA IZQUIERDA (SIDEBAR) - GENERAL
    ========================================== */

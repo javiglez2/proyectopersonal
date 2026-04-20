@@ -4,16 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Chat de UEQO: habla con tus compañeros de viaje y organiza los detalles de la ruta.">
     <title>Mis Chats - UEQO</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap">
     <link rel="stylesheet" href="estilos/chat.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5/dark.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
 
     <a href="mapa.html" class="btn-volver-inicio">
-        <i class="fa-solid fa-arrow-left"></i> Volver al Mapa
+        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Volver al Mapa
     </a>
 
     <div class="chat-card">
@@ -29,22 +33,25 @@
 
         <section class="chat-mensajes-area">
             <div id="chat-header-dinamico" class="chat-header-top" style="display: none;">
-                <button type="button" class="btn-volver-chat" onclick="cerrarChatMovil()">
-                    <i class="fa-solid fa-arrow-left"></i>
+                <button type="button" class="btn-volver-chat" onclick="cerrarChatMovil()" aria-label="Volver a la lista de chats">
+                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
                 </button>
                 <h3 id="nombre-chat-actual">Nombre del Chat</h3>
             </div>
 
-            <div id="historial-mensajes" class="mensajes-box">
+            <div id="historial-mensajes" class="mensajes-box" aria-live="polite" aria-relevant="additions">
                 <div class="mensaje-bienvenida">
-                    <i class="fa-solid fa-comments"></i>
+                    <i class="fa-solid fa-comments" aria-hidden="true"></i>
                     <p>Selecciona una conversación para empezar a hablar</p>
                 </div>
             </div>
 
-            <form id="form-enviar-mensaje" class="chat-input-area oculto">
-                <input type="text" id="input-mensaje" placeholder="Escribe un mensaje..." required>
-                <button type="submit" class="btn-enviar"><i class="fa-solid fa-paper-plane"></i></button>
+            <form id="form-enviar-mensaje" class="chat-input-area oculto" action="javascript:void(0);" onsubmit="return false;" autocomplete="off">
+                <label for="input-mensaje" class="sr-only" style="position:absolute; left:-9999px;">Escribe un mensaje</label>
+                <input type="text" id="input-mensaje" name="mensaje" placeholder="Escribe un mensaje..." required>
+                <button type="submit" class="btn-enviar" aria-label="Enviar mensaje">
+                    <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+                </button>
             </form>
         </section>
 

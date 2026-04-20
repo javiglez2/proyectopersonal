@@ -16,7 +16,7 @@ body {
 }
 
 /* --- LOGO UEQO: MENOS BRILLANTE Y MÁS LEGIBLE --- */
-header h1 { 
+#menu-superior h1 { 
     font-family: 'Bebas Neue', sans-serif; 
     color: #4ade80; 
     font-size: 34px; 
@@ -300,7 +300,7 @@ header h1 {
         height: calc(100vh - 60px) !important;
     }
 
-    header h1 {
+    header h1, #menu-superior h1 {
         font-size: 24px; /* Logo más pequeño en móvil */
     }
 
