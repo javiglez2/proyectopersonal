@@ -270,3 +270,29 @@ input.input-error + i {
     font-size: 14px;
   }
 }
+
+/* =========================================
+   ARREGLO ZONA CLICABLE DEL OJITO
+   ========================================= */
+
+/* 1. Obligamos al icono a quedarse dentro de su botón */
+#togglePassword i,
+.toggle-pass i {
+  position: static !important;
+  transform: none !important;
+  left: auto !important;
+  pointer-events: none; /* Asegura que el clic lo reciba el botón, no el icono */
+}
+
+/* 2. Le damos forma al botón para que sea un cuadrado perfecto y fácil de clicar */
+#togglePassword,
+.toggle-pass {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  
+  /* Con esto controlas la posición de TODO el bloque (dibujo + zona de clic) */
+  right: 10px !important; 
+}
