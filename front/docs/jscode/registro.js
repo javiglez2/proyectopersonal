@@ -1,10 +1,12 @@
 /* ==========================================================================
    UEQO - registro.js
-   Validación completa, toggle de contraseña, requisitos en tiempo real
+   Validación completa + alta real en el backend + email de bienvenida
    ========================================================================== */
 
 (function () {
   "use strict";
+
+  const URL_BACKEND = "https://proyectopersonal-0xcu.onrender.com";
 
   document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("registroForm");
@@ -21,7 +23,15 @@
     };
 
     // ======================================================================
-    // Toggle de contraseña (todos los .toggle-pass)
+    // Si ya hay sesión, al mapa directo
+    // ======================================================================
+    if (localStorage.getItem("benaluma_user_id")) {
+      window.location.href = "mapa.html";
+      return;
+    }
+
+    // ======================================================================
+    // Toggle de contraseña
     // ======================================================================
     document.querySelectorAll(".toggle-pass").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -40,7 +50,7 @@
     });
 
     // ======================================================================
-    // Helpers de error (usan tus clases .error-texto, .input-error)
+    // Helpers de error
     // ======================================================================
     function showError(input, errorId, message) {
       const el = document.getElementById(errorId);
@@ -108,8 +118,6 @@
     // ======================================================================
     // Eventos en tiempo real
     // ======================================================================
-
-    // Contraseña: requisitos + sincronización con confirmar
     inputs.contrasena.addEventListener("input", () => {
       clearError(inputs.contrasena, "contrasenaError");
       updateRequirements(inputs.contrasena.value);
@@ -135,7 +143,6 @@
       }
     });
 
-    // Limpiar errores al escribir en los demás
     const blurMap = {
       nombre: { errorId: "nombreError", validator: validar.nombre },
       apellidos: { errorId: "apellidosError", validator: validar.nombre },
@@ -160,7 +167,7 @@
     });
 
     // ======================================================================
-    // Submit
+    // Submit: alta real en el backend
     // ======================================================================
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -216,7 +223,6 @@
         }
       });
 
-      // RGPD
       if (!inputs.terms.checked) {
         if (typeof Swal !== "undefined") {
           Swal.fire({
@@ -238,57 +244,135 @@
         return;
       }
 
-      // Enviar con EmailJS
       const btn = form.querySelector(".btn-submit");
       const originalText = btn.textContent;
       btn.disabled = true;
       btn.textContent = "Registrando...";
 
+      // ======================================================================
+      // 1. Alta real en el backend (crea el usuario en Supabase con bcrypt)
+      // ======================================================================
       try {
-        // Estos nombres deben coincidir EXACTAMENTE con las variables {{ }} de tu plantilla
-        const templateParams = {
-          to_name: inputs.nombre.value.trim(),
-          to_email: inputs.email.value.trim(),
-        };
+        // Normalizamos el teléfono: quitamos espacios, guiones, y separamos el prefijo
+        let telefonoLimpio = inputs.telefono.value.replace(/\s|-/g, "");
+        let prefijoTelefono = "+34";
+        if (telefonoLimpio.startsWith("+34")) {
+          telefonoLimpio = telefonoLimpio.slice(3);
+        }
 
-        // Reemplaza los IDs por los tuyos
-        await emailjs.send("service_xu4vaps", "template_ska0k0x", templateParams);
+        const res = await fetch(`${URL_BACKEND}/api/signup`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nombre: inputs.nombre.value.trim(),
+            apellidos: inputs.apellidos.value.trim(),
+            email: inputs.email.value.trim().toLowerCase(),
+            telefono: telefonoLimpio,
+            prefijo_telefono: prefijoTelefono,
+            contrasena: inputs.contrasena.value,
+          }),
+        });
 
-        if (typeof Swal !== "undefined") {
-          Swal.fire({
-            icon: "success",
-            title: "¡Cuenta creada!",
-            text: "Revisa tu bandeja de entrada, te hemos enviado un correo de bienvenida.",
-            confirmButtonColor: "#16a34a",
-          }).then(() => {
-            // Opcional: Redirigir al usuario al login tras registrarse
-            window.location.href = "login.html";
-          });
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          // Supabase devuelve mensajes de error útiles. El más común es el
+          // de email duplicado (violación de unique constraint).
+          let mensajeError = data.error || "No hemos podido crear tu cuenta. Inténtalo de nuevo.";
+          const esEmailDuplicado = /duplicate|ya existe|unique|usuarios_email/i.test(mensajeError);
+
+          if (esEmailDuplicado) {
+            mensajeError = "Ya existe una cuenta con este correo. ¿Quieres iniciar sesión?";
+            if (typeof Swal !== "undefined") {
+              const result = await Swal.fire({
+                icon: "warning",
+                title: "Correo ya registrado",
+                text: mensajeError,
+                showCancelButton: true,
+                confirmButtonColor: "#16a34a",
+                cancelButtonColor: "#6b7280",
+                confirmButtonText: "Ir al login",
+                cancelButtonText: "Usar otro correo",
+              });
+              if (result.isConfirmed) {
+                window.location.href = "login.html";
+                return;
+              }
+            }
+            showError(inputs.email, "emailError", "Este correo ya está registrado");
+          } else if (typeof Swal !== "undefined") {
+            Swal.fire({
+              icon: "error",
+              title: "Error al registrarte",
+              text: mensajeError,
+              confirmButtonColor: "#16a34a",
+            });
+          }
+          btn.disabled = false;
+          btn.textContent = originalText;
+          return;
+        }
+
+        // ======================================================================
+        // 2. Email de bienvenida (opcional, no bloqueante)
+        //    Si EmailJS falla, el registro SIGUE siendo válido. Solo logueamos el error.
+        // ======================================================================
+        try {
+          if (typeof emailjs !== "undefined") {
+            await emailjs.send("service_xu4vaps", "template_ska0k0x", {
+              to_name: inputs.nombre.value.trim(),
+              to_email: inputs.email.value.trim().toLowerCase(),
+            });
+          }
+        } catch (emailError) {
+          // No mostramos nada al usuario — el registro se ha completado.
+          console.warn("EmailJS falló (no crítico):", emailError);
+        }
+
+        // ======================================================================
+        // 3. Auto-login: guardamos la sesión y llevamos directo al mapa
+        //    El back devuelve el usuario creado con su `id`.
+        // ======================================================================
+        if (data.id) {
+          localStorage.setItem("benaluma_user_id", data.id);
+          localStorage.setItem("benaluma_user_nombre", data.nombre || inputs.nombre.value.trim());
+
+          if (typeof Swal !== "undefined") {
+            await Swal.fire({
+              icon: "success",
+              title: "¡Bienvenido a UEQO!",
+              text: "Tu cuenta ha sido creada. Revisa tu correo para más información.",
+              confirmButtonColor: "#16a34a",
+              confirmButtonText: "Empezar",
+            });
+          }
+
+          window.location.href = "mapa.html";
+        } else {
+          // Caso raro: 200 OK pero sin id. Mandamos al login para que entre.
+          if (typeof Swal !== "undefined") {
+            await Swal.fire({
+              icon: "success",
+              title: "¡Cuenta creada!",
+              text: "Inicia sesión con tu email y contraseña.",
+              confirmButtonColor: "#16a34a",
+            });
+          }
+          window.location.href = "login.html";
         }
       } catch (error) {
-        console.error("Error de EmailJS:", error);
+        console.error("Error en registro:", error);
         if (typeof Swal !== "undefined") {
           Swal.fire({
             icon: "error",
-            title: "Oops...",
-            text: "Hubo un problema al enviar el correo de confirmación.",
+            title: "Error de conexión",
+            text: "No se ha podido contactar con el servidor. Si es la primera vez hoy, el servidor puede tardar unos segundos en despertar. Inténtalo de nuevo en unos instantes.",
             confirmButtonColor: "#16a34a",
           });
         }
-      } finally {
         btn.disabled = false;
         btn.textContent = originalText;
       }
-      /*
-      if (typeof Swal !== "undefined") {
-        Swal.fire({
-          icon: "info",
-          title: "Próximamente",
-          text: "El registro estará disponible pronto. UEQO se encuentra en desarrollo.",
-          confirmButtonColor: "#16a34a",
-        });
-      }
-        */
     });
   });
 })();
