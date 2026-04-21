@@ -1,59 +1,152 @@
 /* ==========================================================================
-   UEQO - Estilos específicos de privacidad.html
-   Requiere common.css cargado antes
+   UEQO - Estilos Modo Oscuro para Páginas Legales (Privacidad y Términos)
    ========================================================================== */
 
-.legal-page {
-  padding: var(--space-2xl) 0;
+/* 1. Fondo general de la página para que coincida con el index */
+body {
+  background-color: #0d1712 !important; /* Verde muy oscuro/casi negro */
+  color: #d1d5db;
+  font-family: 'DM Sans', 'Segoe UI', Roboto, sans-serif;
 }
 
+/* 2. Contenedor principal */
+.legal-page {
+  padding: 60px 20px;
+  background-color: #0d1712;
+  min-height: 100vh;
+}
+
+/* 3. Tarjeta donde va el texto (le damos un toque premium) */
 .legal-content {
   max-width: 800px;
   margin: 0 auto;
+  background: #111f18; /* Un tono sutilmente más claro que el fondo */
+  padding: 60px;
+  border-radius: 24px;
+  border: 1px solid rgba(74, 222, 128, 0.1); /* Borde verde muy sutil */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
+/* 4. Títulos principales */
 .legal-content h1 {
-  font-size: 2.25rem;
+  font-size: 2.5rem;
   font-weight: 800;
-  margin-bottom: var(--space-md);
+  margin-bottom: 15px;
   letter-spacing: -0.02em;
+  color: #ffffff;
 }
 
+/* 5. Metadatos (Fecha de actualización) */
 .legal-meta {
-  color: var(--color-text-muted);
-  font-size: 0.9rem;
-  margin-bottom: var(--space-xl);
-  padding-bottom: var(--space-lg);
-  border-bottom: 1px solid var(--color-border);
+  color: #16a34a; /* Verde marca */
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+/* 6. Subtítulos (Secciones) */
 .legal-content h2 {
   font-size: 1.5rem;
   font-weight: 700;
-  margin: var(--space-xl) 0 var(--space-md);
-  color: var(--color-text);
+  margin: 45px 0 20px;
+  color: #4ade80; /* Verde brillante/neón */
+  text-shadow: 0 0 15px rgba(74, 222, 128, 0.2);
 }
 
 .legal-content h3 {
   font-size: 1.125rem;
   font-weight: 600;
-  margin: var(--space-lg) 0 var(--space-sm);
+  margin: 30px 0 10px;
+  color: #e5e7eb;
 }
 
-.legal-content p {
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-md);
-  line-height: 1.7;
+/* 7. Párrafos y Listas */
+.legal-content p,
+.legal-content ul,
+.legal-content ol {
+  color: #9ca3af; /* Gris claro para no cansar la vista */
+  margin-bottom: 20px;
+  line-height: 1.8;
+  font-size: 1.05rem;
 }
 
 .legal-content ul,
 .legal-content ol {
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-md);
-  padding-left: var(--space-lg);
-  line-height: 1.7;
+  padding-left: 25px;
 }
 
 .legal-content li {
-  margin-bottom: var(--space-xs);
+  margin-bottom: 10px;
+}
+
+/* 8. Enlaces dentro del texto */
+.legal-content a {
+  color: #4ade80;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.legal-content a:hover {
+  color: #16a34a;
+  text-decoration: underline;
+  text-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+}
+
+/* 9. Botón de Volver */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 30px;
+  color: #9ca3af !important;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none !important;
+  transition: all 0.2s ease;
+}
+
+.back-link:hover {
+  color: #4ade80 !important;
+  transform: translateX(-5px); /* Se mueve un poco a la izquierda al pasar el ratón */
+}
+
+/* 10. Adaptabilidad para móviles */
+@media (max-width: 768px) {
+  .legal-content {
+    padding: 35px 25px;
+    border-radius: 16px;
+  }
+  .legal-content h1 {
+    font-size: 2rem;
+  }
+}
+
+/* ==========================================================================
+   ARREGLO DE NAVBAR Y FOOTER PARA MODO OSCURO
+   (Por si el common.css los estuviera pintando de blanco)
+   ========================================================================== */
+.navbar, .footer {
+  background-color: #0d1712 !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.navbar-brand .navbar-logo,
+.navbar-brand span {
+  color: #4ade80 !important;
+  font-family: 'Anton', sans-serif !important;
+  text-shadow: 0 0 12px rgba(74, 222, 128, 0.35) !important;
+}
+
+.footer-bottom p {
+  color: #6b7280 !important;
+}
+
+.footer-bottom a {
+  color: #9ca3af !important;
+}
+
+.footer-bottom a:hover {
+  color: #4ade80 !important;
 }
