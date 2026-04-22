@@ -22,7 +22,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 // Si falta alguna, mejor crashear al arrancar que quedarnos con un server zombie.
 if (!SUPABASE_URL || !SUPABASE_KEY || !JWT_SECRET) {
-    console.error('❌ Faltan variables de entorno obligatorias: SUPABASE_URL, SUPABASE_KEY, 9duzs5MpinlPVzusL5W0kkKeUHBZ3DQ1vBYochXiRxo2LVI4ijNyFYBWnKNkOyZN');
+    console.error('❌ Faltan variables de entorno obligatorias: SUPABASE_URL, SUPABASE_KEY, JWT_SECRET');
     process.exit(1);
 }
 

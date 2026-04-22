@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Gestiona tu perfil de UEQO: datos personales, teléfono, avatar y contraseña.">
+    <meta name="description" content="Gestiona tu perfil de UEQO.">
     <title>UEQO - Mi Perfil</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5/dark.css">
@@ -63,17 +63,14 @@
                 </div>
 
                 <div class="acciones-perfil">
-                    <button type="submit" id="btn-accion-perfil">
-                        Editar Perfil
-                    </button>
-                    <button type="button" id="btn-cerrar-sesion" onclick="cerrarSesion()" class="btn-peligro">
-                        Cerrar Sesión
-                    </button>
+                    <button type="submit" id="btn-accion-perfil">Editar Perfil</button>
+                    <button type="button" id="btn-cerrar-sesion" onclick="cerrarSesion()" class="btn-peligro">Cerrar Sesión</button>
                 </div>
             </form>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.2.1/js/intlTelInput.min.js"></script>
+    <script src="jscode/api.js"></script>
     <script src="jscode/perfil.js"></script>
 </body>
 
